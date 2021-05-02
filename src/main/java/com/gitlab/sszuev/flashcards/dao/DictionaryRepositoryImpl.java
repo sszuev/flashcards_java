@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class DictionaryRepositoryImpl implements DictionaryRepository {
     private final Map<String, Dictionary> data;
 
-    public DictionaryRepositoryImpl(@Value("${app.data.dir#classpath:data/*}") String dir,
+    public DictionaryRepositoryImpl(@Value("${app.data.dir:classpath:data/*}") String dir,
                                     ResourcePatternResolver resolver,
                                     LingvoParser parser) throws IOException {
         this.data = Arrays.stream(resolver.getResources(dir)).map(parser::parse)

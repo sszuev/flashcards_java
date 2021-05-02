@@ -6,7 +6,7 @@ import java.util.Optional;
 
 /**
  * A repository to work with {@link Dictionary} entity.
- *
+ * <p>
  * Created by @ssz on 02.05.2021.
  */
 public interface DictionaryRepository {

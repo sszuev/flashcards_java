@@ -14,7 +14,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -94,7 +93,7 @@ public class LingvoParser {
         return WrongDataException.requireNonNull(LANGUAGE_MAP.get(root.getAttribute(id)), "Can't find language " + id);
     }
 
-    private static Collection<Card> parseCards(Element root) {
+    private static List<Card> parseCards(Element root) {
         return DOMUtils.elements(root, "card").map(LingvoParser::parseCard).collect(Collectors.toUnmodifiableList());
     }
 
