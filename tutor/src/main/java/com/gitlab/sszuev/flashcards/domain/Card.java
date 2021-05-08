@@ -5,17 +5,41 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
- * Created by @ssz on 29.04.2021.
+ * Describes a card entity.
+ *
+ * Created by @ssz on 01.05.2021.
  */
 public class Card extends WithText {
-    private final Collection<Meaning> meanings;
+    private final String transcription;
+    private final PartOfSpeech partOfSpeech;
+    private final Collection<Translation> translations;
+    private final Collection<Example> examples;
 
-    public Card(String word, Collection<Meaning> meanings) {
+    public Card(String word,
+                String transcription,
+                PartOfSpeech partOfSpeech,
+                Collection<Translation> translations,
+                Collection<Example> examples) {
         super(word);
-        this.meanings = Objects.requireNonNull(meanings);
+        this.transcription = transcription;
+        this.partOfSpeech = partOfSpeech;
+        this.translations = Objects.requireNonNull(translations);
+        this.examples = Objects.requireNonNull(examples);
     }
 
-    public Stream<Meaning> meanings() {
-        return meanings.stream();
+    public String getTranscription() {
+        return transcription;
+    }
+
+    public PartOfSpeech getPartOfSpeech() {
+        return partOfSpeech;
+    }
+
+    public Stream<Translation> translations() {
+        return translations.stream();
+    }
+
+    public Stream<Example> examples() {
+        return examples.stream();
     }
 }

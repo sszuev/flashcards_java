@@ -86,25 +86,24 @@ public class LingvoParser {
         Element root = doc.getDocumentElement();
         Language src = parseLanguage(root, "sourceLanguageId");
         Language dst = parseLanguage(root, "destinationLanguageId");
-        return new Dictionary(root.getAttribute("title"), src, dst, parseCards(root));
+        return new Dictionary(root.getAttribute("title"), src, dst, parseCardList(root));
     }
 
     private static Language parseLanguage(Element root, String id) {
         return WrongDataException.requireNonNull(LANGUAGE_MAP.get(root.getAttribute(id)), "Can't find language " + id);
     }
 
-    private static List<Card> parseCards(Element root) {
-        return DOMUtils.elements(root, "card").map(LingvoParser::parseCard).collect(Collectors.toUnmodifiableList());
+    private static List<Card> parseCardList(Element root) {
+        return DOMUtils.elements(root, "card").flatMap(LingvoParser::parseMeanings).collect(Collectors.toUnmodifiableList());
     }
 
-    private static Card parseCard(Element node) {
+    private static Stream<Card> parseMeanings(Element node) {
         String word = DOMUtils.getElement(node, "word").getTextContent();
-        List<Meaning> meanings = DOMUtils.elements(DOMUtils.getElement(node, "meanings"), "meaning")
-                .map(LingvoParser::parseMeaning).collect(Collectors.toUnmodifiableList());
-        return new Card(word, meanings);
+        return DOMUtils.elements(DOMUtils.getElement(node, "meanings"), "meaning")
+                .map(n -> parseMeaning(word, n));
     }
 
-    private static Meaning parseMeaning(Element node) {
+    private static Card parseMeaning(String word, Element node) {
         String transcription = node.getAttribute("transcription");
         String id = node.getAttribute("partOfSpeech");
         PartOfSpeech pos = id == null ? null : PART_OF_SPEECH_MAP.get(id);
@@ -113,7 +112,7 @@ public class LingvoParser {
         List<Example> examples = DOMUtils.findElement(node, "examples")
                 .map(x -> DOMUtils.elements(x, "example")).orElseGet(Stream::empty)
                 .map(LingvoParser::parseExample).collect(Collectors.toUnmodifiableList());
-        return new Meaning(transcription, pos, translations, examples);
+        return new Card(word, transcription, pos, translations, examples);
     }
 
     private static Translation parseTranslation(Element node) {

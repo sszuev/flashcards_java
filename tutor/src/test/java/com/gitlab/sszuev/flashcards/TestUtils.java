@@ -2,7 +2,6 @@ package com.gitlab.sszuev.flashcards;
 
 import com.gitlab.sszuev.flashcards.domain.Card;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
-import com.gitlab.sszuev.flashcards.domain.Meaning;
 
 import java.util.stream.Collectors;
 
@@ -17,6 +16,6 @@ public class TestUtils {
 
     public static String format(Card c) {
         return String.format("%s => %s", c.getText(),
-                c.meanings().flatMap(Meaning::translations).map(x -> x.getText()).collect(Collectors.joining(", ")));
+                c.translations().map(x -> x.getText()).collect(Collectors.joining(", ")));
     }
 }
