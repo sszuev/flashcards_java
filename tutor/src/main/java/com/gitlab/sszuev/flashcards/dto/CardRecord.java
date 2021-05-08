@@ -3,6 +3,7 @@ package com.gitlab.sszuev.flashcards.dto;
 /**
  * Created by @ssz on 02.05.2021.
  */
+@SuppressWarnings("unused")
 public final class CardRecord {
     private final String word;
     private final String translations;

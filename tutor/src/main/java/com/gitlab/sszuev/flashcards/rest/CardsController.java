@@ -2,7 +2,7 @@ package com.gitlab.sszuev.flashcards.rest;
 
 import com.gitlab.sszuev.flashcards.dto.CardRecord;
 import com.gitlab.sszuev.flashcards.service.CardsService;
-import org.springframework.core.io.ClassPathResource;
+import com.gitlab.sszuev.flashcards.service.SoundService;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -22,23 +22,25 @@ import java.util.Objects;
  */
 @RestController
 public class CardsController {
-    private final CardsService service;
+    private final CardsService cardService;
+    private final SoundService soundService;
 
-    public CardsController(CardsService service) {
-        this.service = Objects.requireNonNull(service);
+    public CardsController(CardsService cardService, SoundService soundService) {
+        this.cardService = Objects.requireNonNull(cardService);
+        this.soundService = Objects.requireNonNull(soundService);
     }
 
     @GetMapping("/api/card/{dictionary}/{index}")
     public CardRecord getCard(@PathVariable String dictionary, @PathVariable Integer index) {
-        return service.getCard(dictionary, index);
+        return cardService.getCard(dictionary, index);
     }
 
-    @GetMapping("/api/sound/{name}")
-    public ResponseEntity<Resource> getSound(@PathVariable String name) {
-        if (name == null) {
+    @GetMapping("/api/sound/{path}")
+    public ResponseEntity<Resource> getSound(@PathVariable String path) {
+        if (path == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        Resource res = new ClassPathResource("/sounds/" + name);
+        Resource res = soundService.getResource(path);
         if (!res.exists()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -50,7 +52,7 @@ public class CardsController {
         }
         HttpHeaders headers = new HttpHeaders();
         headers.setContentDispositionFormData("", UriComponentsBuilder.newInstance()
-                .path(name).encode(StandardCharsets.UTF_8).toUriString());
+                .path(path).encode(StandardCharsets.UTF_8).toUriString());
         headers.setContentLength(length);
         headers.setContentType(new MediaType("audio", "wav"));
         return new ResponseEntity<>(res, headers, HttpStatus.OK);
