@@ -16,9 +16,9 @@ import java.util.Optional;
  * Created by @ssz on 02.05.2021.
  */
 @SpringBootTest
-public class CardsServiceTest {
+public class CardServiceTest {
     @Autowired
-    private CardsService service;
+    private CardService service;
     @MockBean
     private DictionaryRepository repository;
 

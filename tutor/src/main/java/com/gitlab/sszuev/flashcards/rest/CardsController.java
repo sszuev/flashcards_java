@@ -1,7 +1,7 @@
 package com.gitlab.sszuev.flashcards.rest;
 
 import com.gitlab.sszuev.flashcards.dto.CardRecord;
-import com.gitlab.sszuev.flashcards.service.CardsService;
+import com.gitlab.sszuev.flashcards.service.CardService;
 import com.gitlab.sszuev.flashcards.service.SoundService;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -22,10 +22,10 @@ import java.util.Objects;
  */
 @RestController
 public class CardsController {
-    private final CardsService cardService;
+    private final CardService cardService;
     private final SoundService soundService;
 
-    public CardsController(CardsService cardService, SoundService soundService) {
+    public CardsController(CardService cardService, SoundService soundService) {
         this.cardService = Objects.requireNonNull(cardService);
         this.soundService = Objects.requireNonNull(soundService);
     }
