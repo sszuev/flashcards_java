@@ -1,8 +1,6 @@
 package com.gitlab.sszuev.flashcards.service;
 
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -12,12 +10,10 @@ import java.util.Objects;
  */
 @Service
 public class SoundService {
-    private static final String DIR = "sounds";
+    private final SoundProvider provider;
 
-    private final ResourcePatternResolver resolver;
-
-    public SoundService(ResourcePatternResolver resolver) {
-        this.resolver = Objects.requireNonNull(resolver);
+    public SoundService(SoundProvider provider) {
+        this.provider = Objects.requireNonNull(provider);
     }
 
     /**
@@ -27,8 +23,7 @@ public class SoundService {
      * @return {@code String} (name of resource) or {@code null} (if no resource found by the specified word)
      */
     public String getResourceName(String word) {
-        Resource res = resolver.getResource(String.format("classpath:%s/%s.wav", DIR, word.replace(" ", "_")));
-        return res.exists() ? res.getFilename() : null;
+        return provider.getResourceName(word);
     }
 
     /**
@@ -38,6 +33,6 @@ public class SoundService {
      * @return {@link Resource}, never {@code null}
      */
     public Resource getResource(String name) {
-        return new ClassPathResource(DIR + "/" + Objects.requireNonNull(name));
+        return provider.getResource(name);
     }
 }
