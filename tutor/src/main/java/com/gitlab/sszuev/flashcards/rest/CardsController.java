@@ -15,6 +15,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -30,12 +31,17 @@ public class CardsController {
         this.soundService = Objects.requireNonNull(soundService);
     }
 
-    @GetMapping("/api/card/{dictionary}/{index}")
+    @GetMapping("/api/dictionaries")
+    public List<String> getDictionaries() {
+        return List.of("Weather");
+    }
+
+    @GetMapping("/api/cards/{dictionary}/{index}")
     public CardRecord getCard(@PathVariable String dictionary, @PathVariable Integer index) {
         return cardService.getCard(dictionary, index);
     }
 
-    @GetMapping("/api/sound/{path}")
+    @GetMapping("/api/sounds/{path}")
     public ResponseEntity<Resource> getSound(@PathVariable String path) {
         if (path == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

@@ -8,7 +8,21 @@
     <script src="/app.js"></script>
 </head>
 <body onload="renderPage()">
-<div class="card container container-table">
+<div id="dictionaries" class="card container container-table">
+    <br/>
+    <div class="row">
+        <h1><label for="selector">flashcards</label></h1>
+    </div>
+    <br/>
+    <div class="row">
+        <div class="column">
+            <select id="selector">
+                <option value="#">... select a dictionary ...</option>
+            </select>
+        </div>
+    </div>
+</div>
+<div id="card" class="card container container-table">
     <br/>
     <div class="row">
         <div class="d-flex align-items-center justify-content-between">
