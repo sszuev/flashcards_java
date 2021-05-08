@@ -7,7 +7,7 @@ import org.springframework.core.io.Resource;
  */
 public interface SoundService {
     /**
-     * Returns an resource identifier (name) that corresponds the given {@code word}.
+     * Returns a resource identifier (name) that corresponds the given {@code word}.
      *
      * @param word {@code String} the word, not {@code null}
      * @return {@code String} (name of resource) or {@code null} (if no resource found by the specified word)

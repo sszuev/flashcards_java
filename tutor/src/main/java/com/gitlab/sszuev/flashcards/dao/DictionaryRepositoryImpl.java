@@ -1,6 +1,7 @@
 package com.gitlab.sszuev.flashcards.dao;
 
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
+import com.gitlab.sszuev.flashcards.domain.User;
 import com.gitlab.sszuev.flashcards.parser.LingvoParser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -9,9 +10,11 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * This impl just loads data from resource dir (as a temporary solution).
@@ -31,8 +34,24 @@ public class DictionaryRepositoryImpl implements DictionaryRepository {
                 }));
     }
 
+
     @Override
-    public Optional<Dictionary> findByName(String name) {
+    public Optional<Dictionary> findByUserIdAndName(long userId, String name) {
+        checkUser(userId);
         return Optional.ofNullable(data.get(name));
+    }
+
+    @Override
+    public Stream<Dictionary> streamAllByUserId(long userId) {
+        checkUser(userId);
+        return data.values().stream();
+    }
+
+    private void checkUser(long id) {
+        if (Objects.equals(id, User.DEFAULT.getId())) {
+            return;
+        }
+        // TODO: only default user right now
+        throw new UnsupportedOperationException("TODO");
     }
 }

@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Created by @ssz on 02.05.2021.
@@ -33,7 +34,7 @@ public class CardsController {
 
     @GetMapping("/api/dictionaries")
     public List<String> getDictionaries() {
-        return List.of("Weather");
+        return cardService.dictionaries().collect(Collectors.toUnmodifiableList());
     }
 
     @GetMapping("/api/cards/{dictionary}/{index}")

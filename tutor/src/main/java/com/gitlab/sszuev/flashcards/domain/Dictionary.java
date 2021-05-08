@@ -11,12 +11,14 @@ import java.util.stream.Stream;
  */
 public class Dictionary {
     private final String name;
+    private final User user;
     private final Language srcLanguage;
     private final Language dstLanguage;
     private final List<Card> cards;
 
-    public Dictionary(String name, Language srcLanguage, Language dstLanguage, List<Card> cards) {
+    public Dictionary(User user, String name, Language srcLanguage, Language dstLanguage, List<Card> cards) {
         this.name = Objects.requireNonNull(name);
+        this.user = Objects.requireNonNull(user);
         this.srcLanguage = Objects.requireNonNull(srcLanguage);
         this.dstLanguage = Objects.requireNonNull(dstLanguage);
         this.cards = Objects.requireNonNull(cards);
@@ -44,5 +46,9 @@ public class Dictionary {
 
     public long getCardsCount() {
         return cards.size();
+    }
+
+    public User getUser() {
+        return user;
     }
 }

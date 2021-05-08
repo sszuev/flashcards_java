@@ -86,7 +86,7 @@ public class LingvoParser {
         Element root = doc.getDocumentElement();
         Language src = parseLanguage(root, "sourceLanguageId");
         Language dst = parseLanguage(root, "destinationLanguageId");
-        return new Dictionary(root.getAttribute("title"), src, dst, parseCardList(root));
+        return new Dictionary(User.DEFAULT, root.getAttribute("title"), src, dst, parseCardList(root));
     }
 
     private static Language parseLanguage(Element root, String id) {
