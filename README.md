@@ -15,5 +15,5 @@ Right now it is under development.
 $ git clone git@gitlab.com:sszuev/flashcards.git
 $ cd flashcards
 $ mvn clean package
-$ java -jar target/flashcards.jar
+$ java -jar tutor/target/flashcards.jar
 ```
