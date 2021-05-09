@@ -1,7 +1,6 @@
 package com.gitlab.sszuev.flashcards.domain;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
@@ -10,22 +9,42 @@ import java.util.stream.Stream;
  * Created by @ssz on 29.04.2021.
  */
 public class Dictionary {
-    private final String name;
-    private final User user;
-    private final Language srcLanguage;
-    private final Language dstLanguage;
-    private final List<Card> cards;
+    private String name;
+    private User user;
+    private Language srcLanguage;
+    private Language dstLanguage;
+    private List<Card> cards;
 
-    public Dictionary(User user, String name, Language srcLanguage, Language dstLanguage, List<Card> cards) {
-        this.name = Objects.requireNonNull(name);
-        this.user = Objects.requireNonNull(user);
-        this.srcLanguage = Objects.requireNonNull(srcLanguage);
-        this.dstLanguage = Objects.requireNonNull(dstLanguage);
-        this.cards = Objects.requireNonNull(cards);
+    public Language getSrcLanguage() {
+        return srcLanguage;
+    }
+
+    public void setSrcLanguage(Language srcLanguage) {
+        this.srcLanguage = srcLanguage;
+    }
+
+    public Language getDstLanguage() {
+        return dstLanguage;
+    }
+
+    public void setDstLanguage(Language dstLanguage) {
+        this.dstLanguage = dstLanguage;
+    }
+
+    public List<Card> getCards() {
+        return cards;
+    }
+
+    public void setCards(List<Card> cards) {
+        this.cards = cards;
     }
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Language getSourceLanguage() {
@@ -50,5 +69,9 @@ public class Dictionary {
 
     public User getUser() {
         return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

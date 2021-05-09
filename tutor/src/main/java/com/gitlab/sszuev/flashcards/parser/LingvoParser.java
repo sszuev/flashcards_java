@@ -90,7 +90,7 @@ public class LingvoParser {
         Element root = doc.getDocumentElement();
         Language src = parseLanguage(root, "sourceLanguageId");
         Language dst = parseLanguage(root, "destinationLanguageId");
-        return new Dictionary(User.DEFAULT, root.getAttribute("title"), src, dst, parseCardList(root));
+        return EntityFactory.newDictionary(User.DEFAULT, root.getAttribute("title"), src, dst, parseCardList(root));
     }
 
     private static Language parseLanguage(Element root, String id) {
@@ -119,15 +119,15 @@ public class LingvoParser {
         List<Example> examples = DOMUtils.findElement(node, "examples")
                 .map(x -> DOMUtils.elements(x, "example")).orElseGet(Stream::empty)
                 .map(LingvoParser::parseExample).collect(Collectors.toUnmodifiableList());
-        return new Card(word, transcription, pos, translations, examples, status, "parsed from xml");
+        return EntityFactory.newCard(word, transcription, pos, translations, examples, status, "parsed from xml");
     }
 
     private static Translation parseTranslation(Element node) {
-        return new Translation(node.getTextContent());
+        return EntityFactory.newTranslation(node.getTextContent());
     }
 
     private static Example parseExample(Element node) {
-        return new Example(node.getTextContent());
+        return EntityFactory.newExample(node.getTextContent());
     }
 
 }

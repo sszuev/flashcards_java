@@ -1,7 +1,6 @@
 package com.gitlab.sszuev.flashcards.domain;
 
 import java.util.Collection;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
@@ -10,43 +9,51 @@ import java.util.stream.Stream;
  * Created by @ssz on 01.05.2021.
  */
 public class Card extends WithText {
-    private final String transcription;
-    private final PartOfSpeech partOfSpeech;
-    private final Collection<Translation> translations;
-    private final Collection<Example> examples;
-    private final Status status;
-    private final String details;
+    private String transcription;
+    private PartOfSpeech partOfSpeech;
+    private Collection<Translation> translations;
+    private Collection<Example> examples;
+    private Status status;
+    private String details;
 
-    public Card(String word,
-                String transcription,
-                PartOfSpeech partOfSpeech,
-                Collection<Translation> translations,
-                Collection<Example> examples,
-                Status status,
-                String details) {
-        super(word);
-        this.transcription = transcription;
-        this.partOfSpeech = partOfSpeech;
-        this.translations = Objects.requireNonNull(translations);
-        this.examples = Objects.requireNonNull(examples);
-        this.status = status;
-        this.details = details;
+    public void setTranslations(Collection<Translation> translations) {
+        this.translations = translations;
+    }
+
+    public void setExamples(Collection<Example> examples) {
+        this.examples = examples;
     }
 
     public Status getStatus() {
         return status;
     }
 
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
     public String getDetails() {
         return details;
+    }
+
+    public void setDetails(String details) {
+        this.details = details;
     }
 
     public String getTranscription() {
         return transcription;
     }
 
+    public void setTranscription(String transcription) {
+        this.transcription = transcription;
+    }
+
     public PartOfSpeech getPartOfSpeech() {
         return partOfSpeech;
+    }
+
+    public void setPartOfSpeech(PartOfSpeech partOfSpeech) {
+        this.partOfSpeech = partOfSpeech;
     }
 
     public Stream<Translation> translations() {
