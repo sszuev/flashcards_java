@@ -1,5 +1,6 @@
 package com.gitlab.sszuev.flashcards.domain;
 
+import javax.persistence.*;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -8,27 +9,51 @@ import java.util.stream.Stream;
  * <p>
  * Created by @ssz on 29.04.2021.
  */
-public class Dictionary {
+@Entity
+@Table(name = "dictionaries")
+public class Dictionary implements HasID {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(nullable = false)
     private String name;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
-    private Language srcLanguage;
-    private Language dstLanguage;
+    @Column(name = "source_lang", nullable = false)
+    private String srcLang;
+    @Column(name = "target_lang", nullable = false)
+    private String dstLang;
+    @OneToMany(targetEntity = Card.class
+            , mappedBy = "dictionary"
+            , orphanRemoval = true
+            , cascade = CascadeType.ALL)
     private List<Card> cards;
 
-    public Language getSrcLanguage() {
-        return srcLanguage;
+    @Override
+    public Long getID() {
+        return id;
     }
 
-    public void setSrcLanguage(Language srcLanguage) {
-        this.srcLanguage = srcLanguage;
+    @Override
+    public void setID(Long id) {
+        this.id = id;
     }
 
-    public Language getDstLanguage() {
-        return dstLanguage;
+    public Language getSourceLanguage() {
+        return Language.fromString(srcLang);
     }
 
-    public void setDstLanguage(Language dstLanguage) {
-        this.dstLanguage = dstLanguage;
+    public void setSourceLanguage(Language srcLang) {
+        this.srcLang = Language.toString(srcLang);
+    }
+
+    public Language getTargetLanguage() {
+        return Language.fromString(dstLang);
+    }
+
+    public void setTargetLanguage(Language dstLang) {
+        this.dstLang = Language.toString(dstLang);
     }
 
     public List<Card> getCards() {
@@ -45,14 +70,6 @@ public class Dictionary {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Language getSourceLanguage() {
-        return srcLanguage;
-    }
-
-    public Language getTargetLanguage() {
-        return dstLanguage;
     }
 
     public Stream<Card> cards() {

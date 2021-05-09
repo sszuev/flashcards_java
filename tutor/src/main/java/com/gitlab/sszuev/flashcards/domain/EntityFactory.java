@@ -8,16 +8,17 @@ import java.util.List;
  */
 public class EntityFactory {
 
-    public static Dictionary newDictionary(User user,
+    public static Dictionary newDictionary(long userId,
                                            String name,
                                            Language srcLanguage,
                                            Language dstLanguage,
                                            List<Card> cards) {
         Dictionary res = new Dictionary();
-        res.setUser(user);
+        res.setUser(new User());
+        res.getUser().setID(userId);
         res.setName(name);
-        res.setSrcLanguage(srcLanguage);
-        res.setDstLanguage(dstLanguage);
+        res.setSourceLanguage(srcLanguage);
+        res.setTargetLanguage(dstLanguage);
         res.setCards(cards);
         return res;
     }

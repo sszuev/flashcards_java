@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    initialization-mode: always
+  h2: # just in case -- no console in app
+    console:
+      path: /h2-console
+      settings:
+        web-allow-others: false
+  jpa: # temporary generate schema
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create

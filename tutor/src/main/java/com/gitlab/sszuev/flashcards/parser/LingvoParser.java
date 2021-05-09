@@ -90,7 +90,7 @@ public class LingvoParser {
         Element root = doc.getDocumentElement();
         Language src = parseLanguage(root, "sourceLanguageId");
         Language dst = parseLanguage(root, "destinationLanguageId");
-        return EntityFactory.newDictionary(User.DEFAULT, root.getAttribute("title"), src, dst, parseCardList(root));
+        return EntityFactory.newDictionary(User.DEFAULT_USER_ID, root.getAttribute("title"), src, dst, parseCardList(root));
     }
 
     private static Language parseLanguage(Element root, String id) {

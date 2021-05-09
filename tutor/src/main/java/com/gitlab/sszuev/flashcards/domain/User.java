@@ -1,17 +1,25 @@
 package com.gitlab.sszuev.flashcards.domain;
 
+import javax.persistence.*;
+
 /**
  * Created by @ssz on 08.05.2021.
  */
-public final class User {
-    public static final User DEFAULT = new User(42L);
-    private final Long id;
+@Entity
+@Table(name = "users")
+public class User implements HasID {
+    public static final long DEFAULT_USER_ID = 42;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    public User(Long id) {
-        this.id = id;
+    @Override
+    public Long getID() {
+        return id;
     }
 
-    public Long getId() {
-        return id;
+    @Override
+    public void setID(Long id) {
+        this.id = id;
     }
 }

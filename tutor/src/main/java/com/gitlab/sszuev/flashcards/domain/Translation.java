@@ -1,7 +1,12 @@
 package com.gitlab.sszuev.flashcards.domain;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
 /**
  * Created by @ssz on 01.05.2021.
  */
-public class Translation extends WithText {
+@Entity
+@Table(name = "translations")
+public class Translation extends CardPart {
 }

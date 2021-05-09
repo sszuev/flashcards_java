@@ -26,7 +26,7 @@ public class DictionaryRepositoryTest {
 
     @Test
     public void testFindByUserAndName() {
-        Dictionary dic = repository.findByUserIdAndName(User.DEFAULT.getId(), "Weather")
+        Dictionary dic = repository.findByUserIdAndName(User.DEFAULT_USER_ID, "Weather")
                 .orElseThrow(AssertionError::new);
         LOGGER.info("Dictionary: {}", TestUtils.format(dic));
         Assertions.assertEquals(65, dic.cards().count());
@@ -38,7 +38,7 @@ public class DictionaryRepositoryTest {
 
     @Test
     public void testListByUser() {
-        List<Dictionary> list = repository.streamAllByUserId(User.DEFAULT.getId()).collect(Collectors.toList());
+        List<Dictionary> list = repository.streamAllByUserId(User.DEFAULT_USER_ID).collect(Collectors.toList());
         Assertions.assertEquals(1, list.size());
         Assertions.assertEquals("Weather", list.get(0).getName());
     }

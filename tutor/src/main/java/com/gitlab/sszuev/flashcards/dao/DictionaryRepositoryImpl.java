@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -34,7 +33,6 @@ public class DictionaryRepositoryImpl implements DictionaryRepository {
                 }));
     }
 
-
     @Override
     public Optional<Dictionary> findByUserIdAndName(long userId, String name) {
         checkUser(userId);
@@ -48,7 +46,7 @@ public class DictionaryRepositoryImpl implements DictionaryRepository {
     }
 
     private void checkUser(long id) {
-        if (Objects.equals(id, User.DEFAULT.getId())) {
+        if (id == User.DEFAULT_USER_ID) {
             return;
         }
         // TODO: only default user right now

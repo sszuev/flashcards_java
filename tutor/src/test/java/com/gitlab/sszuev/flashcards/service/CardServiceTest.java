@@ -42,7 +42,7 @@ public class CardServiceTest {
         Dictionary dic = mockDictionary(dicName, lang);
         Mockito.when(dic.getCard(Mockito.eq(index))).thenReturn(card);
         Mockito.when(dic.getCardsCount()).thenReturn(4200L);
-        Mockito.when(repository.findByUserIdAndName(Mockito.eq(User.DEFAULT.getId()), Mockito.eq(dicName)))
+        Mockito.when(repository.findByUserIdAndName(Mockito.eq(User.DEFAULT_USER_ID), Mockito.eq(dicName)))
                 .thenReturn(Optional.of(dic));
         Mockito.when(soundService.getResourceName(Mockito.eq(word), Mockito.eq(lang.name()))).thenReturn(sound);
 
@@ -55,7 +55,7 @@ public class CardServiceTest {
     @Test
     public void testListDictionaries() {
         List<String> given = List.of("A", "B");
-        Mockito.when(repository.streamAllByUserId(Mockito.eq(User.DEFAULT.getId())))
+        Mockito.when(repository.streamAllByUserId(Mockito.eq(User.DEFAULT_USER_ID)))
                 .thenReturn(given.stream().map(CardServiceTest::mockDictionary));
 
         Assertions.assertEquals(given, service.dictionaries().collect(Collectors.toList()));
