@@ -34,6 +34,10 @@ public class LingvoParser {
             "1", StandardPartOfSpeech.NOUN,
             "2", StandardPartOfSpeech.ADJECTIVE,
             "3", StandardPartOfSpeech.VERB);
+    private static final Map<String, Status> STATUS_MAP = Map.of(
+            "2", Status.NEW,
+            "3", Status.IN_PROCESS,
+            "4", Status.LEARNED);
 
     /**
      * Performs parsing XML.
@@ -107,12 +111,15 @@ public class LingvoParser {
         String transcription = node.getAttribute("transcription");
         String id = node.getAttribute("partOfSpeech");
         PartOfSpeech pos = id == null ? null : PART_OF_SPEECH_MAP.get(id);
+        Status status = WrongDataException.requireNonNull(STATUS_MAP.get(WrongDataException
+                .requireNonNull(DOMUtils.getElement(node, "statistics")
+                        .getAttribute("status"), "no status")), "unknown status");
         List<Translation> translations = DOMUtils.elements(DOMUtils.getElement(node, "translations"), "word")
                 .map(LingvoParser::parseTranslation).collect(Collectors.toUnmodifiableList());
         List<Example> examples = DOMUtils.findElement(node, "examples")
                 .map(x -> DOMUtils.elements(x, "example")).orElseGet(Stream::empty)
                 .map(LingvoParser::parseExample).collect(Collectors.toUnmodifiableList());
-        return new Card(word, transcription, pos, translations, examples);
+        return new Card(word, transcription, pos, translations, examples, status, "parsed from xml");
     }
 
     private static Translation parseTranslation(Element node) {

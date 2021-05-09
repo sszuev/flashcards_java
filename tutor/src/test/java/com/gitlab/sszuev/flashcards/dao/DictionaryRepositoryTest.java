@@ -2,6 +2,7 @@ package com.gitlab.sszuev.flashcards.dao;
 
 import com.gitlab.sszuev.flashcards.TestUtils;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
+import com.gitlab.sszuev.flashcards.domain.Status;
 import com.gitlab.sszuev.flashcards.domain.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -29,7 +30,10 @@ public class DictionaryRepositoryTest {
                 .orElseThrow(AssertionError::new);
         LOGGER.info("Dictionary: {}", TestUtils.format(dic));
         Assertions.assertEquals(65, dic.cards().count());
-        dic.cards().forEach(card -> LOGGER.info("{}", TestUtils.format(card)));
+        dic.cards().forEach(card -> {
+            LOGGER.info("{}", TestUtils.format(card));
+            Assertions.assertEquals(Status.NEW, card.getStatus());
+        });
     }
 
     @Test

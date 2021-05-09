@@ -9,6 +9,8 @@ import com.gitlab.sszuev.flashcards.service.CardService;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.function.IntConsumer;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -38,5 +40,17 @@ public class CardServiceImpl implements CardService {
     @Override
     public Stream<String> dictionaries() {
         return repository.streamAllByUserId(User.DEFAULT.getId()).map(Dictionary::getName);
+    }
+
+    public static class XXXY {
+        public static void main(String... xxx) {
+            IntStream.of(183764, 171324, 172115, 185122, 173605, 178353, 180670, 176923, 170432).forEach(new IntConsumer() {
+                @Override
+                public void accept(int k) {
+                    String v = Integer.toBinaryString(k);
+                    System.out.println(k + " => " + v + " " + v.codePoints().filter(x -> '1' == x).count());
+                }
+            });
+        }
     }
 }
