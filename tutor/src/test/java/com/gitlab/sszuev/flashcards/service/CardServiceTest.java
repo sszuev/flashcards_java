@@ -1,5 +1,6 @@
 package com.gitlab.sszuev.flashcards.service;
 
+import com.gitlab.sszuev.flashcards.TestUtils;
 import com.gitlab.sszuev.flashcards.dao.DictionaryRepository;
 import com.gitlab.sszuev.flashcards.domain.Card;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
@@ -38,7 +39,7 @@ public class CardServiceTest {
         int index = 42;
         Card card = Mockito.mock(Card.class);
         Mockito.when(card.getText()).thenReturn(word);
-        Dictionary dic = mockDictionary(dicName, lang);
+        Dictionary dic = TestUtils.mockDictionary(dicName, lang);
         Mockito.when(dic.getCard(Mockito.eq(index))).thenReturn(card);
         Mockito.when(dic.getCardsCount()).thenReturn(4200L);
         Mockito.when(repository.findByUserIdAndName(Mockito.eq(User.DEFAULT_USER_ID), Mockito.eq(dicName)))
@@ -55,20 +56,9 @@ public class CardServiceTest {
     public void testListDictionaries() {
         List<String> given = List.of("A", "B");
         Mockito.when(repository.streamAllByUserId(Mockito.eq(User.DEFAULT_USER_ID)))
-                .thenReturn(given.stream().map(CardServiceTest::mockDictionary));
+                .thenReturn(given.stream().map(TestUtils::mockDictionary));
 
         Assertions.assertEquals(given, service.getDictionaryNames());
     }
 
-    public static Dictionary mockDictionary(String name) {
-        Dictionary res = Mockito.mock(Dictionary.class);
-        Mockito.when(res.getName()).thenReturn(name);
-        return res;
-    }
-
-    public static Dictionary mockDictionary(String name, Language lang) {
-        Dictionary res = mockDictionary(name);
-        Mockito.when(res.getSourceLanguage()).thenReturn(lang);
-        return res;
-    }
 }
