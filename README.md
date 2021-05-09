@@ -2,7 +2,11 @@
 
 A simple opensource application that provides flashcards to learn foreign words.    
 It is supposed to be similar to Lingvo Tutor.  
-Right now it is under development.
+Right now it is under development.  
+
+Consists of two modules:
+- [speaker](speaker) - a tts service-wrapper
+- [tutor](tutor) - a body of open-tutor, logic with flashcards
 
 ##### Requirements:
 
