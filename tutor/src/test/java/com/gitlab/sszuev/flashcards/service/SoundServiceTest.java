@@ -16,16 +16,18 @@ public class SoundServiceTest {
     @Autowired
     private SoundService service;
     @MockBean
-    private SoundProvider provider;
+    private TextToSpeechService provider;
 
     @Test
     public void testGetResourceName() {
-        String given = "x";
+        String lang = "en";
+        String text = "x";
         String expected = "y";
-        Mockito.when(provider.getResourceName(Mockito.eq(given))).thenReturn(expected);
+        Mockito.when(provider.getResourceID(Mockito.eq(text), Mockito.eq(lang))).thenReturn(expected);
 
-        Assertions.assertEquals(expected, service.getResourceName(given));
-        Assertions.assertNull(service.getResourceName("XXX"));
+        Assertions.assertEquals(expected, service.getResourceName(text, lang));
+        Assertions.assertNull(service.getResourceName("XXX", lang));
+        Assertions.assertNull(service.getResourceName(text, "xx"));
     }
 
     @Test

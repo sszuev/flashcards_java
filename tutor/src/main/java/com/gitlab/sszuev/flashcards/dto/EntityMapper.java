@@ -1,6 +1,7 @@
 package com.gitlab.sszuev.flashcards.dto;
 
 import com.gitlab.sszuev.flashcards.domain.Card;
+import com.gitlab.sszuev.flashcards.domain.Language;
 import com.gitlab.sszuev.flashcards.service.SoundService;
 import org.springframework.stereotype.Component;
 
@@ -12,16 +13,16 @@ import java.util.stream.Collectors;
  */
 @Component
 public class EntityMapper {
-    private final SoundService soundService;
+    private final SoundService service;
 
     public EntityMapper(SoundService service) {
-        this.soundService = Objects.requireNonNull(service);
+        this.service = Objects.requireNonNull(service);
     }
 
-    public CardRecord toRecord(Card card) {
+    public CardRecord toRecord(Card card, Language lang) {
         String word = card.getText();
         String translations = card.translations()
                 .map(x -> x.getText()).collect(Collectors.joining(", "));
-        return new CardRecord(word, translations, soundService.getResourceName(word));
+        return new CardRecord(word, translations, service.getResourceName(word, lang.name()));
     }
 }

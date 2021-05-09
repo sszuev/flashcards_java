@@ -34,7 +34,7 @@ public class CardServiceImpl implements CardService {
         if (count == 0 || i >= count) {
             return null;
         }
-        return mapper.toRecord(dic.getCard(i));
+        return mapper.toRecord(dic.getCard(i), dic.getSourceLanguage());
     }
 
     @Override

@@ -3,7 +3,9 @@ package com.gitlab.sszuev.flashcards.service;
 import com.gitlab.sszuev.flashcards.dao.DictionaryRepository;
 import com.gitlab.sszuev.flashcards.domain.Card;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
+import com.gitlab.sszuev.flashcards.domain.Language;
 import com.gitlab.sszuev.flashcards.domain.User;
+import com.gitlab.sszuev.flashcards.dto.CardRecord;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -24,21 +26,30 @@ public class CardServiceTest {
     private CardService service;
     @MockBean
     private DictionaryRepository repository;
+    @MockBean
+    private SoundService soundService;
 
     @Test
     public void testGetCard() {
-        String wordName = "TheWord";
+        Language lang = () -> "ue";
+        String word = "TheWord";
         String dicName = "xxx";
+        String sound = "yyy";
+
         int index = 42;
         Card card = Mockito.mock(Card.class);
-        Mockito.when(card.getText()).thenReturn(wordName);
-        Dictionary dic = Mockito.mock(Dictionary.class);
+        Mockito.when(card.getText()).thenReturn(word);
+        Dictionary dic = mockDictionary(dicName, lang);
         Mockito.when(dic.getCard(Mockito.eq(index))).thenReturn(card);
         Mockito.when(dic.getCardsCount()).thenReturn(4200L);
         Mockito.when(repository.findByUserIdAndName(Mockito.eq(User.DEFAULT.getId()), Mockito.eq(dicName)))
                 .thenReturn(Optional.of(dic));
+        Mockito.when(soundService.getResourceName(Mockito.eq(word), Mockito.eq(lang.name()))).thenReturn(sound);
 
-        Assertions.assertEquals(wordName, service.getCard(dicName, index).getWord());
+        CardRecord res = service.getCard(dicName, index);
+        Assertions.assertNotNull(res);
+        Assertions.assertEquals(word, res.getWord());
+        Assertions.assertEquals(sound, res.getSound());
     }
 
     @Test
@@ -50,9 +61,15 @@ public class CardServiceTest {
         Assertions.assertEquals(given, service.dictionaries().collect(Collectors.toList()));
     }
 
-    private static Dictionary mockDictionary(String name) {
+    public static Dictionary mockDictionary(String name) {
         Dictionary res = Mockito.mock(Dictionary.class);
         Mockito.when(res.getName()).thenReturn(name);
+        return res;
+    }
+
+    public static Dictionary mockDictionary(String name, Language lang) {
+        Dictionary res = mockDictionary(name);
+        Mockito.when(res.getSourceLanguage()).thenReturn(lang);
         return res;
     }
 }

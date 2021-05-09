@@ -1,7 +1,7 @@
 package com.gitlab.sszuev.flashcards.service.impl;
 
-import com.gitlab.sszuev.flashcards.service.SoundProvider;
 import com.gitlab.sszuev.flashcards.service.SoundService;
+import com.gitlab.sszuev.flashcards.service.TextToSpeechService;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
@@ -12,15 +12,15 @@ import java.util.Objects;
  */
 @Service
 public class SoundServiceImpl implements SoundService {
-    private final SoundProvider provider;
+    private final TextToSpeechService provider;
 
-    public SoundServiceImpl(SoundProvider provider) {
+    public SoundServiceImpl(TextToSpeechService provider) {
         this.provider = Objects.requireNonNull(provider);
     }
 
     @Override
-    public String getResourceName(String word) {
-        return provider.getResourceName(word);
+    public String getResourceName(String word, String lang) {
+        return provider.getResourceID(word, lang);
     }
 
     @Override
