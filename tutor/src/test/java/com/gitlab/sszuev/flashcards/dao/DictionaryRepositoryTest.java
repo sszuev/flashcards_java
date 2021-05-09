@@ -10,13 +10,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * Integration acceptance test.
  * Created by @ssz on 02.05.2021.
  */
+@Transactional
 @SpringBootTest
 public class DictionaryRepositoryTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(DictionaryRepositoryTest.class);

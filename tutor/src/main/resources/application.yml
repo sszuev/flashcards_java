@@ -7,7 +7,7 @@ spring:
       path: /h2-console
       settings:
         web-allow-others: false
-  jpa: # temporary generate schema
+  jpa: # temporary generate schema from JPA markup
     generate-ddl: true
     hibernate:
       ddl-auto: create

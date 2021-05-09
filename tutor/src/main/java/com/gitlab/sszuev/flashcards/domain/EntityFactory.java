@@ -20,6 +20,7 @@ public class EntityFactory {
         res.setSourceLanguage(srcLanguage);
         res.setTargetLanguage(dstLanguage);
         res.setCards(cards);
+        cards.forEach(c -> c.setDictionary(res));
         return res;
     }
 
@@ -38,6 +39,8 @@ public class EntityFactory {
         res.setStatus(status);
         res.setDetails(details);
         res.setTranslations(translations);
+        examples.forEach(x -> x.setCard(res));
+        translations.forEach(x -> x.setCard(res));
         return res;
     }
 

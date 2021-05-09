@@ -2,7 +2,7 @@ package com.gitlab.sszuev.flashcards.service;
 
 import com.gitlab.sszuev.flashcards.dto.CardRecord;
 
-import java.util.stream.Stream;
+import java.util.List;
 
 /**
  * Created by @ssz on 02.05.2021.
@@ -20,7 +20,7 @@ public interface CardService {
     /**
      * List all dictionary names.
      *
-     * @return {@code Stream}
+     * @return a {@code List} of names
      */
-    Stream<String> dictionaries();
+    List<String> getDictionaryNames();
 }

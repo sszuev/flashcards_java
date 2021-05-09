@@ -1,6 +1,8 @@
 package com.gitlab.sszuev.flashcards.domain;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * Created by @ssz on 08.05.2021.
@@ -10,7 +12,6 @@ import javax.persistence.*;
 public class User implements HasID {
     public static final long DEFAULT_USER_ID = 42;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Override

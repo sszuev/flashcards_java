@@ -15,7 +15,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Created by @ssz on 02.05.2021.
@@ -58,7 +57,7 @@ public class CardServiceTest {
         Mockito.when(repository.streamAllByUserId(Mockito.eq(User.DEFAULT_USER_ID)))
                 .thenReturn(given.stream().map(CardServiceTest::mockDictionary));
 
-        Assertions.assertEquals(given, service.dictionaries().collect(Collectors.toList()));
+        Assertions.assertEquals(given, service.getDictionaryNames());
     }
 
     public static Dictionary mockDictionary(String name) {

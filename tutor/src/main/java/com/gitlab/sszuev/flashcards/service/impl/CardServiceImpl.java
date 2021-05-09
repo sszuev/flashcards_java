@@ -7,9 +7,11 @@ import com.gitlab.sszuev.flashcards.dto.CardRecord;
 import com.gitlab.sszuev.flashcards.dto.EntityMapper;
 import com.gitlab.sszuev.flashcards.service.CardService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 /**
  * Created by @ssz on 08.05.2021.
@@ -24,6 +26,7 @@ public class CardServiceImpl implements CardService {
         this.mapper = Objects.requireNonNull(mapper);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public CardRecord getCard(String dictionaryName, Integer cardIndex) {
         int i = cardIndex == null ? 0 : cardIndex;
@@ -35,8 +38,11 @@ public class CardServiceImpl implements CardService {
         return mapper.toRecord(dic.getCard(i), dic.getSourceLanguage());
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public Stream<String> dictionaries() {
-        return repository.streamAllByUserId(User.DEFAULT_USER_ID).map(Dictionary::getName);
+    public List<String> getDictionaryNames() {
+        return repository.streamAllByUserId(User.DEFAULT_USER_ID)
+                .map(Dictionary::getName)
+                .collect(Collectors.toUnmodifiableList());
     }
 }
