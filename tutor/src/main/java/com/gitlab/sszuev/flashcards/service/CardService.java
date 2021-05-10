@@ -10,6 +10,7 @@ import java.util.List;
 public interface CardService {
     /**
      * Gets card by dictionary name and index within that dictionary.
+     * TODO: unused now: either remove method or this warning
      *
      * @param dictionary {@code String}, not {@code null}
      * @param index      {@code Integer}
@@ -23,4 +24,12 @@ public interface CardService {
      * @return a {@code List} of names
      */
     List<String> getDictionaryNames();
+
+    /**
+     * Returns a {@code List} of cards to proceed.
+     *
+     * @param dictionary {@code String}, not {@code null}
+     * @return a {@code List} of {@link CardRecord}s
+     */
+    List<CardRecord> getCardDeck(String dictionary);
 }

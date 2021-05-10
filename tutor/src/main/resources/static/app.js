@@ -2,6 +2,8 @@ function renderPage() {
     drawDictionariesPage();
 }
 
+let data;
+
 function drawDictionariesPage() {
     $.get('/api/dictionaries').done(function (response) {
         $('#card').hide();
@@ -20,27 +22,26 @@ function drawDictionariesPage() {
             let dic = response[v];
             $('#dictionaries').hide();
             $('#card').show();
-            toNextCard(dic, null);
+            $.get('/api/dictionaries/' + dic + '/deck').done(function(response) {
+                data = response;
+                drawCardPage(0);
+            });
         });
     });
 }
 
-function toNextCard(dic, index) {
-    if (index == null || !isInteger(index) || index < 0) {
-        index = 1;
+function drawCardPage(index) {
+    if (index >= data.length) {
+        console.log("No more data")
+        return;
     }
-    $.get('/api/cards/' + dic + '/' + index).done(function(response) {
-        drawCardPage(response, dic, index);
-    });
-}
-
-function drawCardPage(data, dic, index) {
-    const txt = data.word;
-    const translations = data.translations;
-    const sound = data.sound;
+    const d = data[index];
+    const txt = d.word;
+    const translations = d.translations;
+    const sound = d.sound;
     $('.word').html(txt);
     $('.translations').html(translations);
-    $('.next').attr('onclick', `toNextCard('${dic}', ${index + 1})`);
+    $('.next').attr('onclick', `drawCardPage(${++index})`);
     if (sound != null) {
         let path = '/api/sounds/' + sound;
         $('.sound').html(`<audio controls><source src='${path}' type='audio/wav'/></audio>`);
@@ -48,8 +49,4 @@ function drawCardPage(data, dic, index) {
     } else {
         $('.sound').html('');
     }
-}
-
-function isInteger(val) {
-    return $.isNumeric(val) && Math.floor(val) === val;
 }

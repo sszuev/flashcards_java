@@ -32,4 +32,10 @@ public class TestUtils {
         Mockito.when(res.getSourceLanguage()).thenReturn(lang);
         return res;
     }
+
+    public static Card mockCard(String word) {
+        Card res = Mockito.mock(Card.class);
+        Mockito.when(res.getText()).thenReturn(word);
+        return res;
+    }
 }

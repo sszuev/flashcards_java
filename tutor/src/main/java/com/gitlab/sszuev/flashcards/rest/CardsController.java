@@ -36,6 +36,11 @@ public class CardsController {
         return cardService.getDictionaryNames();
     }
 
+    @GetMapping("/api/dictionaries/{dictionary}/deck")
+    public List<CardRecord> getRandomIndexes(@PathVariable String dictionary) {
+        return cardService.getCardDeck(dictionary);
+    }
+
     @GetMapping("/api/cards/{dictionary}/{index}")
     public CardRecord getCard(@PathVariable String dictionary, @PathVariable Integer index) {
         return cardService.getCard(dictionary, index);
