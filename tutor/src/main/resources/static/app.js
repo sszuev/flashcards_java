@@ -6,8 +6,8 @@ let data;
 
 function drawDictionariesPage() {
     $.get('/api/dictionaries').done(function (response) {
-        $('#card').hide();
-        $('#dictionaries').show();
+        displayCard('dictionaries');
+
         let selector = $('#selector');
         $.each(response, function (key, value) {
             selector.append($("<option></option>")
@@ -20,8 +20,7 @@ function drawDictionariesPage() {
                 return;
             }
             let dic = response[v];
-            $('#dictionaries').hide();
-            $('#card').show();
+            displayCard('familiarization');
             $.get('/api/dictionaries/' + dic + '/deck').done(function(response) {
                 data = response;
                 drawCardPage(0);
@@ -45,8 +44,19 @@ function drawCardPage(index) {
     if (sound != null) {
         let path = '/api/sounds/' + sound;
         $('.sound').html(`<audio controls><source src='${path}' type='audio/wav'/></audio>`);
-        new Audio(path).play();
+        new Audio(path).play().then(() => {});
     } else {
         $('.sound').html('');
     }
+}
+
+function displayCard(id) {
+    $.each($('.card'), function(k, v) {
+        let x = $(v);
+        if (x.attr('id') === id) {
+            return;
+        }
+        $(x).hide();
+    });
+    $('#' + id).show()
 }
