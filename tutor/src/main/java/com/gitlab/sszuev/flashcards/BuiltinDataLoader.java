@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,10 +50,17 @@ public class BuiltinDataLoader implements ApplicationListener<ApplicationReadyEv
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
         try {
-            Arrays.stream(resolver.getResources(dataDir)).map(parser::parse).forEach(this::save);
+            Arrays.stream(resolver.getResources(dataDir)).filter(Resource::isReadable).map(this::parse).forEach(this::save);
         } catch (IOException e) {
             throw new IllegalStateException("Unable to load data", e);
         }
+    }
+
+    private Dictionary parse(Resource resource) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Parse resource: {}", resource);
+        }
+        return parser.parse(resource);
     }
 
     private void save(Dictionary dictionary) {
