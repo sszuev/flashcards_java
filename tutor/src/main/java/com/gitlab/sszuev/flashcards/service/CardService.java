@@ -2,6 +2,7 @@ package com.gitlab.sszuev.flashcards.service;
 
 import com.gitlab.sszuev.flashcards.dto.CardRequest;
 import com.gitlab.sszuev.flashcards.dto.CardResource;
+import com.gitlab.sszuev.flashcards.dto.DictionaryResource;
 
 import java.util.List;
 
@@ -20,11 +21,11 @@ public interface CardService {
     CardResource getCard(String dictionary, Integer index);
 
     /**
-     * List all dictionary names.
+     * Returns dictionaries common info.
      *
-     * @return a {@code List} of names
+     * @return a {@code List} of {@link DictionaryResource}s
      */
-    List<String> getDictionaryNames();
+    List<DictionaryResource> getDictionaries();
 
     /**
      * Returns a {@code List} of cards to proceed.

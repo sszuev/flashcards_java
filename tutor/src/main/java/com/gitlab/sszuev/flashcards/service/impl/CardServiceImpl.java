@@ -4,10 +4,7 @@ import com.gitlab.sszuev.flashcards.dao.CardRepository;
 import com.gitlab.sszuev.flashcards.dao.DictionaryRepository;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
 import com.gitlab.sszuev.flashcards.domain.*;
-import com.gitlab.sszuev.flashcards.dto.CardRequest;
-import com.gitlab.sszuev.flashcards.dto.CardResource;
-import com.gitlab.sszuev.flashcards.dto.EntityMapper;
-import com.gitlab.sszuev.flashcards.dto.Stage;
+import com.gitlab.sszuev.flashcards.dto.*;
 import com.gitlab.sszuev.flashcards.service.CardService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,9 +45,9 @@ public class CardServiceImpl implements CardService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<String> getDictionaryNames() {
+    public List<DictionaryResource> getDictionaries() {
         return dictionaryRepository.streamAllByUserId(User.DEFAULT_USER_ID)
-                .map(Dictionary::getName)
+                .map(mapper::createResource)
                 .collect(Collectors.toUnmodifiableList());
     }
 

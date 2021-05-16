@@ -3,28 +3,30 @@ function renderPage() {
 }
 
 let data;
-let dic;
+let dictionaryName;
 
 function drawDictionariesPage() {
     $.get('/api/dictionaries').done(function (response) {
         displayPageCard('dictionaries');
 
-        let selector = $('#selector');
+        const tbody = $('#dictionaries tbody');
+        tbody.html('');
         $.each(response, function (key, value) {
-            selector.append($("<option></option>")
-                .attr("value", key)
-                .text(value));
-        });
-        selector.on('change', function () {
-            let v = this.value;
-            if ('#' === v) {
-                return;
-            }
-            dic = response[v];
-            displayPageCard('show');
-            $.get('/api/dictionaries/' + dic + '/deck').done(function (response) {
-                data = response;
-                drawShowCardPage(0);
+            tbody
+                .append(`<tr id="${value.id}">
+                            <td>${value.sourceLang}</td>
+                            <td>${value.targetLang}</td>
+                            <td>${value.name}</td>
+                            <td>${value.total}</td>
+                            <td>${value.learned}</td>
+                          </tr>`)
+                .unbind('click').on('click', function () {
+                dictionaryName = value.name;
+                displayPageCard('show');
+                $.get('/api/dictionaries/' + dictionaryName + '/deck').done(function (response) {
+                    data = response;
+                    drawShowCardPage(0);
+                });
             });
         });
     });
@@ -41,6 +43,7 @@ function drawShowCardPage(index) {
     const next = index + 1;
 
     drawAndPlaySound(page, current.sound);
+    $('.card-title', page).html(dictionaryName);
     $('.word', page).html(current.word);
     $('.translations', page).html(current.translations);
     $('#show-next').unbind('click').on('click', function () {
@@ -82,6 +85,7 @@ function drawSelfTestCardPage(index) {
     const next = index + 1;
 
     drawAndPlaySound(page, current.sound);
+    $('.card-title', page).html(dictionaryName);
     $('.word', page).html(current.word);
     translation.html(current.translations);
     correct.prop('disabled', true);
@@ -109,6 +113,7 @@ function drawSelfTestCardPage(index) {
 }
 
 function drawResultPage() {
+    const page = $('#result');
     const stage = 'self-test';
     const right = data
         .filter(function (d) {
@@ -128,6 +133,8 @@ function drawResultPage() {
         })
         .sort()
         .join(', ');
+
+    $('.card-title', page).html(dictionaryName);
     $('#result-correct').html(right);
     $('#result-wrong').html(wrong);
 }

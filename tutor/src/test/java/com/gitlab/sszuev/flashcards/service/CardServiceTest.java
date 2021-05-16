@@ -7,6 +7,7 @@ import com.gitlab.sszuev.flashcards.domain.Dictionary;
 import com.gitlab.sszuev.flashcards.domain.*;
 import com.gitlab.sszuev.flashcards.dto.CardRequest;
 import com.gitlab.sszuev.flashcards.dto.CardResource;
+import com.gitlab.sszuev.flashcards.dto.DictionaryResource;
 import com.gitlab.sszuev.flashcards.dto.Stage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -85,11 +86,37 @@ public class CardServiceTest {
 
     @Test
     public void testListDictionaries() {
-        List<String> given = List.of("A", "B");
-        Mockito.when(dictionaryRepository.streamAllByUserId(Mockito.eq(User.DEFAULT_USER_ID)))
-                .thenReturn(given.stream().map(TestUtils::mockDictionary));
+        long id1 = -1;
+        long id2 = -2;
+        String name1 = "A";
+        String name2 = "B";
+        String lang1 = "ee";
+        String lang2 = "rr";
+        String lang3 = "xx";
+        Map<Status, Integer> cards1 = Map.of(Status.IN_PROCESS, 2, Status.LEARNED, 3);
+        Map<Status, Integer> cards2 = Map.of(Status.NEW, 1, Status.LEARNED, 42);
 
-        Assertions.assertEquals(given, service.getDictionaryNames());
+        Dictionary dic1 = TestUtils.mockDictionary(id1, name1, () -> lang1, () -> lang2, cards1);
+        Dictionary dic2 = TestUtils.mockDictionary(id2, name2, () -> lang2, () -> lang3, cards2);
+
+        Mockito.when(dictionaryRepository.streamAllByUserId(Mockito.eq(User.DEFAULT_USER_ID)))
+                .thenReturn(Stream.of(dic1, dic2));
+
+        List<DictionaryResource> res = service.getDictionaries();
+        Assertions.assertNotNull(res);
+        Assertions.assertEquals(2, res.size());
+        assertDictionaryResource(res.get(0), id1, name1, lang1, lang2, cards1);
+        assertDictionaryResource(res.get(1), id2, name2, lang2, lang3, cards2);
+    }
+
+    private void assertDictionaryResource(DictionaryResource res,
+                                          long id, String name, String src, String dst, Map<Status, Integer> data) {
+        Assertions.assertEquals(name, res.getName());
+        Assertions.assertEquals(id, res.getId());
+        Assertions.assertEquals(src, res.getSourceLang());
+        Assertions.assertEquals(dst, res.getTargetLang());
+        Assertions.assertEquals(data.get(Status.LEARNED).longValue(), res.getLearned());
+        Assertions.assertEquals(data.values().stream().mapToLong(x -> x).sum(), res.getTotal());
     }
 
     @Test

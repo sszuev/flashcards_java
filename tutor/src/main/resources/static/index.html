@@ -9,71 +9,79 @@
 </head>
 <body onload="renderPage()">
 <div id="dictionaries" class="page card container container-table" style="display: none;">
-    <br/>
-    <div class="row">
-        <h1><label for="selector">flashcards</label></h1>
-    </div>
-    <br/>
-    <div class="row">
-        <div class="column">
-            <select id="selector">
-                <option value="#">... select a dictionary ...</option>
-            </select>
+    <div class="card-body">
+        <h1 class="card-title">flashcards</h1>
+        <div class="row">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Source language</th>
+                        <th scope="col">Target language</th>
+                        <th scope="col">Dictionary name</th>
+                        <th scope="col">Total number of words</th>
+                        <th scope="col">Number of learned words</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
     </div>
 </div>
 <div id="show" class="page card container container-table" style="display: none;">
-    <br/>
-    <div class="row">
-        <div class="d-flex align-items-center justify-content-between">
-            <div><h1 class="word">word</h1></div>
-            <div class="sound"></div>
+    <div class="card-body">
+        <h6 class="card-title">flashcards:</h6>
+        <div class="row">
+            <div class="d-flex align-items-center justify-content-between">
+                <div><h1 class="word">word</h1></div>
+                <div class="sound"></div>
+            </div>
         </div>
-    </div>
-    <br/>
-    <div class="row">
-        <h6 class="translations">translations</h6>
-    </div>
-    <br/>
-    <br/>
-    <div class="row">
-        <button id='show-next' class="d-flex align-items-end flex-column"><h4>next</h4></button>
+        <div class="row">
+            <h6 class="translations">translations</h6>
+        </div>
+        <div class="row">
+            <button id='show-next' class="d-flex align-items-end flex-column"><h4>next</h4></button>
+        </div>
     </div>
 </div>
 <div id="self-test" class="page card container container-table" style="display: none;">
-    <br/>
-    <div class="row">
-        <div class="d-flex align-items-center justify-content-between">
-            <div><h1 class="word">word</h1></div>
-            <div class="sound"></div>
+    <div class="card-body">
+        <h6 class="card-title">flashcards:</h6>
+        <div class="row">
+            <div class="d-flex align-items-center justify-content-between">
+                <div><h1 class="word">word</h1></div>
+                <div class="sound"></div>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div id="self-test-display-translation">
-            <button class="d-flex align-items-center p-5 w-100"><h6>display translation</h6></button>
+        <div class="row">
+            <div id="self-test-display-translation">
+                <button class="d-flex align-items-center p-5 w-100"><h6>display translation</h6></button>
+            </div>
+            <h6 class="translations p-5 w-100" style="display: none;">translations</h6>
         </div>
-        <h6 class="translations p-5 w-100" style="display: none;">translations</h6>
-    </div>
-    <div class="row">
-        <div class="d-flex justify-content-between">
-            <button id="self-test-correct" class="d-flex w-100 justify-content-start"><h4>correct</h4></button>
-            <button id="self-test-wrong" class="d-flex w-100 justify-content-end"><h4>wrong</h4></button>
+        <div class="row">
+            <div class="d-flex justify-content-between">
+                <button id="self-test-correct" class="d-flex w-100 justify-content-start"><h4>correct</h4></button>
+                <button id="self-test-wrong" class="d-flex w-100 justify-content-end"><h4>wrong</h4></button>
+            </div>
         </div>
     </div>
 </div>
 <div id="result" class="page card container container-table" style="display: none;">
-    <br/>
-    <div class="row card">
-        <h4>correct:</h4>
-        <h6 id="result-correct" class="p-5 w-100"></h6>
-    </div>
-    <div class="row card">
-        <h4>wrong:</h4>
-        <h6 id="result-wrong" class="p-5 w-100"></h6>
-    </div>
-    <div class="row card">
-        <h4>learned:</h4>
-        <h6 id="result-learned" class="p-5 w-100"></h6>
+    <div class="card-body">
+        <h6 class="card-title">flashcards:</h6>
+        <div class="row card">
+            <h4>correct:</h4>
+            <h6 id="result-correct" class="p-5 w-100"></h6>
+        </div>
+        <div class="row card">
+            <h4>wrong:</h4>
+            <h6 id="result-wrong" class="p-5 w-100"></h6>
+        </div>
+        <div class="row card">
+            <h4>learned:</h4>
+            <h6 id="result-learned" class="p-5 w-100"></h6>
+        </div>
     </div>
 </div>
 </body>

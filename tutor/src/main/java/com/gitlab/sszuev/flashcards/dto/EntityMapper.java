@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gitlab.sszuev.flashcards.domain.Card;
+import com.gitlab.sszuev.flashcards.domain.Dictionary;
 import com.gitlab.sszuev.flashcards.domain.Language;
 import com.gitlab.sszuev.flashcards.domain.Status;
 import com.gitlab.sszuev.flashcards.service.SoundService;
@@ -34,6 +35,14 @@ public class EntityMapper {
         int answered = card.getStatus() == Status.LEARNED ? 0 : Optional.ofNullable(card.getAnswered()).orElse(0);
         return new CardResource(card.getID(),
                 word, translations, speaker.getResourceName(word, lang.name()), answered, Map.of());
+    }
+
+    public DictionaryResource createResource(Dictionary dictionary) {
+        long total = dictionary.cards().count();
+        long learned = dictionary.cards().filter(x -> Status.LEARNED == x.getStatus()).count();
+        String src = dictionary.getSourceLanguage().name();
+        String dst = dictionary.getTargetLanguage().name();
+        return new DictionaryResource(dictionary.getID(), dictionary.getName(), src, dst, total, learned);
     }
 
     public Map<Stage, List<Boolean>> readDetailsAsMap(Card card) {

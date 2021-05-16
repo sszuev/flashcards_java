@@ -2,6 +2,7 @@ package com.gitlab.sszuev.flashcards.rest;
 
 import com.gitlab.sszuev.flashcards.dto.CardRequest;
 import com.gitlab.sszuev.flashcards.dto.CardResource;
+import com.gitlab.sszuev.flashcards.dto.DictionaryResource;
 import com.gitlab.sszuev.flashcards.service.CardService;
 import com.gitlab.sszuev.flashcards.service.SoundService;
 import org.springframework.core.io.Resource;
@@ -31,8 +32,8 @@ public class CardsController {
     }
 
     @GetMapping("/api/dictionaries")
-    public List<String> getDictionaries() {
-        return cardService.getDictionaryNames();
+    public List<DictionaryResource> getDictionaries() {
+        return cardService.getDictionaries();
     }
 
     @GetMapping("/api/dictionaries/{dictionary}/deck")
