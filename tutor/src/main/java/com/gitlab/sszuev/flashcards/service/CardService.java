@@ -10,15 +10,6 @@ import java.util.List;
  * Created by @ssz on 02.05.2021.
  */
 public interface CardService {
-    /**
-     * Gets card by dictionary name and index within that dictionary.
-     * TODO: unused now: either remove method or this warning
-     *
-     * @param dictionary {@code String}, not {@code null}
-     * @param index      {@code Integer}
-     * @return {@link CardResource} (can be {@code null})
-     */
-    CardResource getCard(String dictionary, Integer index);
 
     /**
      * Returns dictionaries common info.

@@ -41,11 +41,6 @@ public class CardsController {
         return cardService.getCardDeck(dictionary);
     }
 
-    @GetMapping("/api/cards/{dictionary}/{index}") // TODO: unused.
-    public CardResource getCard(@PathVariable String dictionary, @PathVariable Integer index) {
-        return cardService.getCard(dictionary, index);
-    }
-
     @PatchMapping(value = "/api/cards", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void update(@RequestBody List<CardRequest> request) {
         cardService.update(request);

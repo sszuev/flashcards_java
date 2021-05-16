@@ -53,18 +53,6 @@ public class CardServiceImpl implements CardService {
 
     @Transactional(readOnly = true)
     @Override
-    public CardResource getCard(String dictionaryName, Integer cardIndex) {
-        int i = cardIndex == null ? 0 : cardIndex;
-        Dictionary dic = getDictionary(dictionaryName);
-        long count = dic.getCardsCount();
-        if (count == 0 || i >= count) {
-            return null;
-        }
-        return mapper.createResource(dic.getCard(i), dic.getSourceLanguage());
-    }
-
-    @Transactional(readOnly = true)
-    @Override
     public List<CardResource> getCardDeck(String dictionary) {
         Dictionary dic = getDictionary(dictionary);
         Language lang = dic.getSourceLanguage();

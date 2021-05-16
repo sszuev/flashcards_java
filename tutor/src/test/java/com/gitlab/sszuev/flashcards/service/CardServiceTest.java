@@ -41,38 +41,22 @@ public class CardServiceTest {
     private SoundService soundService;
 
     @Test
-    public void testGetCard() {
-        Language lang = () -> "ue";
-        String word = "TheWord";
-        String dicName = "xxx";
-        String sound = "yyy";
-
-        int index = 42;
-        Card card = TestUtils.mockCard(42L, word);
-        Dictionary dic = TestUtils.mockDictionary(42L, dicName, lang);
-        Mockito.when(dic.getCard(Mockito.eq(index))).thenReturn(card);
-        Mockito.when(dic.getCardsCount()).thenReturn(4200L);
-        Mockito.when(dictionaryRepository.findByUserIdAndName(Mockito.eq(User.DEFAULT_USER_ID), Mockito.eq(dicName)))
-                .thenReturn(Optional.of(dic));
-        Mockito.when(soundService.getResourceName(Mockito.eq(word), Mockito.eq(lang.name()))).thenReturn(sound);
-
-        CardResource res = service.getCard(dicName, index);
-        Assertions.assertNotNull(res);
-        Assertions.assertEquals(word, res.getWord());
-        Assertions.assertEquals(sound, res.getSound());
-    }
-
-    @Test
     public void testGetCardDeck() {
         Language lang = () -> "ue";
         long dicId = 42;
         String dicName = "xxx";
-        List<String> words = List.of("A", "B", "C", "D", "E", "W");
+
+        Map<Long, String> words = Map.of(-1L, "A", -2L, "B", -3L, "C", -4L, "D", -5L, "E", -6L, "W");
 
         Dictionary dic = TestUtils.mockDictionary(dicId, dicName, lang);
         Mockito.when(cardRepository.streamByDictionaryIdAndStatusIn(Mockito.eq(dicId),
                 Mockito.eq(List.of(Status.NEW, Status.IN_PROCESS))))
-                .thenReturn(words.stream().map(word -> TestUtils.mockCard(-1L, word)));
+                .thenReturn(words.entrySet().stream().map(e -> {
+                    String word = e.getValue();
+                    Mockito.when(soundService.getResourceName(Mockito.eq(word), Mockito.eq(lang.name())))
+                            .thenReturn("sound-" + word);
+                    return TestUtils.mockCard(e.getKey(), word);
+                }));
 
         Mockito.when(dictionaryRepository.findByUserIdAndName(Mockito.eq(User.DEFAULT_USER_ID), Mockito.eq(dicName)))
                 .thenReturn(Optional.of(dic));
@@ -81,7 +65,11 @@ public class CardServiceTest {
         Assertions.assertNotNull(res);
         Assertions.assertEquals(NUMBER_OF_WORDS_PER_RUN, res.size());
         Assertions.assertEquals(NUMBER_OF_WORDS_PER_RUN, new HashSet<>(res).size());
-        res.forEach(s -> Assertions.assertTrue(words.contains(s.getWord())));
+        res.forEach(s -> {
+            String w = words.get(s.getId());
+            Assertions.assertEquals(w, s.getWord());
+            Assertions.assertEquals("sound-" + w, s.getSound());
+        });
     }
 
     @Test
