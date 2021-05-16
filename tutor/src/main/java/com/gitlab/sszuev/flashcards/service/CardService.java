@@ -21,10 +21,10 @@ public interface CardService {
     /**
      * Returns a {@code List} of cards to proceed.
      *
-     * @param dictionary {@code String}, not {@code null}
+     * @param dictionaryId {@code long}
      * @return a {@code List} of {@link CardResource}s
      */
-    List<CardResource> getCardDeck(String dictionary);
+    List<CardResource> getCardDeck(long dictionaryId);
 
     /**
      * Updates cards by applying the specifies data.

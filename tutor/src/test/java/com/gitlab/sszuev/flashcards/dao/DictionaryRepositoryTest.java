@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -28,10 +29,13 @@ public class DictionaryRepositoryTest extends RepositoryTestBase {
     @Test
     public void testFindByUserAndName() {
         Statistics statistics = prepareStatistics();
-        Dictionary dic = repository.findByUserIdAndName(User.DEFAULT_USER_ID, TEST_DICTIONARY_NAME)
+        Dictionary dic = repository.findAll().stream()
+                .filter(x -> Objects.equals(User.DEFAULT_USER_ID, x.getUser().getID()))
+                .filter(x -> Objects.equals(TEST_DICTIONARY_NAME, x.getName()))
+                .findFirst()
                 .orElseThrow(AssertionError::new);
         LOGGER.info("Dictionary: {} ({} => {})", dic.getName(), dic.getSourceLanguage(), dic.getTargetLanguage());
-        Assertions.assertEquals(1, statistics.getPrepareStatementCount());
+        Assertions.assertEquals(2, statistics.getPrepareStatementCount());
         Assertions.assertEquals(65, dic.cards().count());
         dic.cards().forEach(c -> {
             LOGGER.info("{} => {}({})", c.getText(),
@@ -39,7 +43,7 @@ public class DictionaryRepositoryTest extends RepositoryTestBase {
                     c.examples().map(x -> x.getText()).collect(Collectors.joining(", ")));
             Assertions.assertEquals(Status.NEW, c.getStatus());
         });
-        Assertions.assertEquals(4, statistics.getPrepareStatementCount());
+        Assertions.assertEquals(5, statistics.getPrepareStatementCount());
     }
 
     @Test

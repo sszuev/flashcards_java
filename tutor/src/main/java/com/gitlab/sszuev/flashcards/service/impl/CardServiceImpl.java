@@ -53,8 +53,9 @@ public class CardServiceImpl implements CardService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<CardResource> getCardDeck(String dictionary) {
-        Dictionary dic = getDictionary(dictionary);
+    public List<CardResource> getCardDeck(long dicId) {
+        Dictionary dic = dictionaryRepository.findById(dicId)
+                .orElseThrow(() -> new IllegalStateException("Can't find dictionary by id=" + dicId));
         Language lang = dic.getSourceLanguage();
         List<Card> toLearn = cardRepository.streamByDictionaryIdAndStatusIn(dic.getID(),
                 List.of(Status.NEW, Status.IN_PROCESS)).collect(Collectors.toList());
@@ -107,9 +108,5 @@ public class CardServiceImpl implements CardService {
 
     private static <K, V> void addAll(Map<K, List<V>> base, Map<K, V> add) {
         add.forEach((k, v) -> base.computeIfAbsent(k, x -> new ArrayList<>()).add(v));
-    }
-
-    private Dictionary getDictionary(String name) {
-        return dictionaryRepository.findByUserIdAndName(User.DEFAULT_USER_ID, name).orElseThrow(IllegalArgumentException::new);
     }
 }

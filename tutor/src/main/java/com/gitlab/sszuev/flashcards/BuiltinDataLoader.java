@@ -56,7 +56,7 @@ public class BuiltinDataLoader implements ApplicationListener<ApplicationReadyEv
     }
 
     private void save(Dictionary dictionary) {
-        LOGGER.info("Save to db: '{}'", dictionary.getName());
+        LOGGER.info("Upload: '{}'", dictionary.getName());
         userRepository.save(dictionary.getUser());
         dictionaryRepository.save(dictionary);
     }

@@ -58,10 +58,9 @@ public class CardServiceTest {
                     return TestUtils.mockCard(e.getKey(), word);
                 }));
 
-        Mockito.when(dictionaryRepository.findByUserIdAndName(Mockito.eq(User.DEFAULT_USER_ID), Mockito.eq(dicName)))
-                .thenReturn(Optional.of(dic));
+        Mockito.when(dictionaryRepository.findById(Mockito.eq(dicId))).thenReturn(Optional.of(dic));
 
-        List<CardResource> res = service.getCardDeck(dicName);
+        List<CardResource> res = service.getCardDeck(dicId);
         Assertions.assertNotNull(res);
         Assertions.assertEquals(NUMBER_OF_WORDS_PER_RUN, res.size());
         Assertions.assertEquals(NUMBER_OF_WORDS_PER_RUN, new HashSet<>(res).size());
