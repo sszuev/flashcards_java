@@ -4,8 +4,8 @@ import com.gitlab.sszuev.flashcards.dao.CardRepository;
 import com.gitlab.sszuev.flashcards.dao.DictionaryRepository;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
 import com.gitlab.sszuev.flashcards.domain.*;
-import com.gitlab.sszuev.flashcards.dto.CardRecord;
 import com.gitlab.sszuev.flashcards.dto.CardRequest;
+import com.gitlab.sszuev.flashcards.dto.CardResource;
 import com.gitlab.sszuev.flashcards.dto.EntityMapper;
 import com.gitlab.sszuev.flashcards.dto.Stage;
 import com.gitlab.sszuev.flashcards.service.CardService;
@@ -56,7 +56,7 @@ public class CardServiceImpl implements CardService {
 
     @Transactional(readOnly = true)
     @Override
-    public CardRecord getCard(String dictionaryName, Integer cardIndex) {
+    public CardResource getCard(String dictionaryName, Integer cardIndex) {
         int i = cardIndex == null ? 0 : cardIndex;
         Dictionary dic = getDictionary(dictionaryName);
         long count = dic.getCardsCount();
@@ -68,7 +68,7 @@ public class CardServiceImpl implements CardService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<CardRecord> getCardDeck(String dictionary) {
+    public List<CardResource> getCardDeck(String dictionary) {
         Dictionary dic = getDictionary(dictionary);
         Language lang = dic.getSourceLanguage();
         List<Card> toLearn = dic.cards().filter(x -> x.getStatus() != Status.LEARNED).collect(Collectors.toList());

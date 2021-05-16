@@ -19,8 +19,10 @@ public class TestUtils {
     }
 
     public static String format(Card c) {
-        return String.format("%s => %s", c.getText(),
-                c.translations().map(x -> x.getText()).collect(Collectors.joining(", ")));
+        return String.format("%s => %s (%s)", c.getText(),
+                c.translations().map(x -> x.getText()).collect(Collectors.joining(", ")),
+                c.examples().map(x -> x.getText()).collect(Collectors.joining(", "))
+        );
     }
 
     public static Dictionary mockDictionary(String name) {

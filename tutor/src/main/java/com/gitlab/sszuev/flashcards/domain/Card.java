@@ -15,28 +15,38 @@ public class Card extends WithText implements HasID {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @org.hibernate.annotations.Fetch(org.hibernate.annotations.FetchMode.SUBSELECT)
     @OneToMany(targetEntity = Translation.class
             , mappedBy = "card"
             , orphanRemoval = true
             , cascade = CascadeType.ALL)
     private Collection<Translation> translations;
+
+    @org.hibernate.annotations.Fetch(org.hibernate.annotations.FetchMode.SUBSELECT)
     @OneToMany(targetEntity = Example.class
             , mappedBy = "card"
             , orphanRemoval = true
             , cascade = CascadeType.ALL)
     private Collection<Example> examples;
+
     @Column
     private String transcription;
+
     @Column(name = "part_of_speech")
     private String partOfSpeech;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "dictionary_id", nullable = false)
     private Dictionary dictionary;
+
     @Column
     @Enumerated(EnumType.STRING)
     private Status status;
+
     @Column
     private String details;
+
     @Column
     private Integer answered;
 

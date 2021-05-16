@@ -27,6 +27,7 @@ public class Dictionary implements HasID {
     @OneToMany(targetEntity = Card.class
             , mappedBy = "dictionary"
             , orphanRemoval = true
+            , fetch = FetchType.LAZY
             , cascade = CascadeType.ALL)
     private List<Card> cards;
 

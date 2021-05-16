@@ -1,7 +1,7 @@
 package com.gitlab.sszuev.flashcards.rest;
 
-import com.gitlab.sszuev.flashcards.dto.CardRecord;
 import com.gitlab.sszuev.flashcards.dto.CardRequest;
+import com.gitlab.sszuev.flashcards.dto.CardResource;
 import com.gitlab.sszuev.flashcards.service.CardService;
 import com.gitlab.sszuev.flashcards.service.SoundService;
 import org.springframework.core.io.Resource;
@@ -36,12 +36,12 @@ public class CardsController {
     }
 
     @GetMapping("/api/dictionaries/{dictionary}/deck")
-    public List<CardRecord> getRandomIndexes(@PathVariable String dictionary) {
+    public List<CardResource> getRandomIndexes(@PathVariable String dictionary) {
         return cardService.getCardDeck(dictionary);
     }
 
     @GetMapping("/api/cards/{dictionary}/{index}") // TODO: unused.
-    public CardRecord getCard(@PathVariable String dictionary, @PathVariable Integer index) {
+    public CardResource getCard(@PathVariable String dictionary, @PathVariable Integer index) {
         return cardService.getCard(dictionary, index);
     }
 

@@ -5,8 +5,8 @@ import com.gitlab.sszuev.flashcards.dao.CardRepository;
 import com.gitlab.sszuev.flashcards.dao.DictionaryRepository;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
 import com.gitlab.sszuev.flashcards.domain.*;
-import com.gitlab.sszuev.flashcards.dto.CardRecord;
 import com.gitlab.sszuev.flashcards.dto.CardRequest;
+import com.gitlab.sszuev.flashcards.dto.CardResource;
 import com.gitlab.sszuev.flashcards.dto.Stage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -55,7 +55,7 @@ public class CardServiceTest {
                 .thenReturn(Optional.of(dic));
         Mockito.when(soundService.getResourceName(Mockito.eq(word), Mockito.eq(lang.name()))).thenReturn(sound);
 
-        CardRecord res = service.getCard(dicName, index);
+        CardResource res = service.getCard(dicName, index);
         Assertions.assertNotNull(res);
         Assertions.assertEquals(word, res.getWord());
         Assertions.assertEquals(sound, res.getSound());
@@ -73,7 +73,7 @@ public class CardServiceTest {
         Mockito.when(dictionaryRepository.findByUserIdAndName(Mockito.eq(User.DEFAULT_USER_ID), Mockito.eq(dicName)))
                 .thenReturn(Optional.of(dic));
 
-        List<CardRecord> res = service.getCardDeck(dicName);
+        List<CardResource> res = service.getCardDeck(dicName);
         Assertions.assertNotNull(res);
         Assertions.assertEquals(NUMBER_OF_WORDS_PER_RUN, res.size());
         Assertions.assertEquals(NUMBER_OF_WORDS_PER_RUN, new HashSet<>(res).size());

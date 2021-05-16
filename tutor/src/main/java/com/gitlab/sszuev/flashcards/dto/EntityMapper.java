@@ -28,11 +28,11 @@ public class EntityMapper {
         this.mapper = Objects.requireNonNull(mapper);
     }
 
-    public CardRecord createResource(Card card, Language lang) {
+    public CardResource createResource(Card card, Language lang) {
         String word = card.getText();
         String translations = card.translations().map(x -> x.getText()).collect(Collectors.joining(", "));
         int answered = card.getStatus() == Status.LEARNED ? 0 : Optional.ofNullable(card.getAnswered()).orElse(0);
-        return new CardRecord(card.getID(),
+        return new CardResource(card.getID(),
                 word, translations, speaker.getResourceName(word, lang.name()), answered, Map.of());
     }
 
