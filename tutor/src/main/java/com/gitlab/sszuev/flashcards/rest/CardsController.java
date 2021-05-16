@@ -1,6 +1,7 @@
 package com.gitlab.sszuev.flashcards.rest;
 
 import com.gitlab.sszuev.flashcards.dto.CardRecord;
+import com.gitlab.sszuev.flashcards.dto.CardRequest;
 import com.gitlab.sszuev.flashcards.service.CardService;
 import com.gitlab.sszuev.flashcards.service.SoundService;
 import org.springframework.core.io.Resource;
@@ -8,9 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
@@ -41,9 +40,14 @@ public class CardsController {
         return cardService.getCardDeck(dictionary);
     }
 
-    @GetMapping("/api/cards/{dictionary}/{index}")
+    @GetMapping("/api/cards/{dictionary}/{index}") // TODO: unused.
     public CardRecord getCard(@PathVariable String dictionary, @PathVariable Integer index) {
         return cardService.getCard(dictionary, index);
+    }
+
+    @PatchMapping(value = "/api/cards", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void update(@RequestBody List<CardRequest> request) {
+        cardService.update(request);
     }
 
     @GetMapping("/api/sounds/{path}")

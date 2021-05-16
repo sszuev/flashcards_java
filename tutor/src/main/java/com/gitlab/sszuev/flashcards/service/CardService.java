@@ -1,6 +1,7 @@
 package com.gitlab.sszuev.flashcards.service;
 
 import com.gitlab.sszuev.flashcards.dto.CardRecord;
+import com.gitlab.sszuev.flashcards.dto.CardRequest;
 
 import java.util.List;
 
@@ -32,4 +33,11 @@ public interface CardService {
      * @return a {@code List} of {@link CardRecord}s
      */
     List<CardRecord> getCardDeck(String dictionary);
+
+    /**
+     * Updates cards by applying the specifies data.
+     *
+     * @param data a {@code List} of {@link CardRequest}s
+     */
+    void update(List<CardRequest> data);
 }

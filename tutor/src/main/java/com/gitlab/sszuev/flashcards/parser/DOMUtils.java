@@ -14,6 +14,14 @@ import java.util.stream.StreamSupport;
  */
 public class DOMUtils {
 
+    /**
+     * Gets element by the specified tag or throws an error.
+     *
+     * @param parent {@link Element}
+     * @param tag    {@code String}
+     * @return {@link Element}
+     * @throws WrongDataException if no element found
+     */
     public static Element getElement(Element parent, String tag) {
         List<Element> list = getElements(parent, tag);
         if (list.size() != 1) {
@@ -22,6 +30,14 @@ public class DOMUtils {
         return list.get(0);
     }
 
+    /**
+     * Finds element by the specified tag or throws an error.
+     *
+     * @param parent {@link Element}
+     * @param tag    {@code String}
+     * @return an {@code Optional} with {@link Element}
+     * @throws WrongDataException if there is more than one element found
+     */
     public static Optional<Element> findElement(Element parent, String tag) {
         List<Element> list = getElements(parent, tag);
         if (list.size() == 1) {
@@ -32,20 +48,47 @@ public class DOMUtils {
         throw new WrongDataException("Expected not more than one member for tag='" + tag + "'");
     }
 
+    /**
+     * Returns elements by tag.
+     *
+     * @param parent {@link Element}
+     * @param tag    {@code String}
+     * @return a {@code List} of {@link Element}s
+     */
     public static List<Element> getElements(Element parent, String tag) {
         return elements(parent, tag).collect(Collectors.toList());
     }
 
+    /**
+     * Lists elements by tag.
+     *
+     * @param parent {@link Element}
+     * @param tag    {@code String}
+     * @return a {@code Stream} of {@link Element}s
+     */
     public static Stream<Element> elements(Element parent, String tag) {
         return children(parent)
                 .filter(x -> x instanceof Element).map(x -> (Element) x)
                 .filter(x -> Objects.equals(x.getTagName(), tag));
     }
 
+    /**
+     * Lists all direct children of the given element.
+     *
+     * @param parent {@link Element}
+     * @return a {@code Stream} of {@link Element}s
+     */
     public static <X extends Node> Stream<X> children(Element parent) {
         return StreamSupport.stream(Spliterators.spliteratorUnknownSize(listChildren(parent), Spliterator.ORDERED), false);
     }
 
+    /**
+     * Creates an iterator of {@link Node}s.
+     *
+     * @param parent {@link Element}
+     * @param <X>    subtype of {@link Node}
+     * @return an {@code Iterator} over {@link X}
+     */
     public static <X extends Node> Iterator<X> listChildren(Element parent) {
         NodeList list = parent.getChildNodes();
         int length = list.getLength();

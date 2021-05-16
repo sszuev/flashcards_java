@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.List;
 
 /**
+ * A helper (factory) to produce entities.
+ * <p>
  * Created by @ssz on 09.05.2021.
  */
 public class EntityFactory {
@@ -30,6 +32,7 @@ public class EntityFactory {
                                Collection<Translation> translations,
                                Collection<Example> examples,
                                Status status,
+                               Integer answered,
                                String details) {
         Card res = new Card();
         res.setText(word);
@@ -37,6 +40,7 @@ public class EntityFactory {
         res.setPartOfSpeech(partOfSpeech);
         res.setExamples(examples);
         res.setStatus(status);
+        res.setAnswered(answered);
         res.setDetails(details);
         res.setTranslations(translations);
         examples.forEach(x -> x.setCard(res));

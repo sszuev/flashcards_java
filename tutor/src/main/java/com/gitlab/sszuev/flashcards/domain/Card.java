@@ -27,16 +27,18 @@ public class Card extends WithText implements HasID {
     private Collection<Example> examples;
     @Column
     private String transcription;
-    @Column
-    @Enumerated(EnumType.STRING)
-    private Status status;
-    @Column
-    private String details;
     @Column(name = "part_of_speech")
     private String partOfSpeech;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "dictionary_id", nullable = false)
     private Dictionary dictionary;
+    @Column
+    @Enumerated(EnumType.STRING)
+    private Status status;
+    @Column
+    private String details;
+    @Column
+    private Integer answered;
 
     @Override
     public Long getID() {
@@ -54,22 +56,6 @@ public class Card extends WithText implements HasID {
 
     public void setExamples(Collection<Example> examples) {
         this.examples = examples;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    public String getDetails() {
-        return details;
-    }
-
-    public void setDetails(String details) {
-        this.details = details;
     }
 
     public String getTranscription() {
@@ -103,4 +89,29 @@ public class Card extends WithText implements HasID {
     public Stream<Example> examples() {
         return examples.stream();
     }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public String getDetails() {
+        return details;
+    }
+
+    public void setDetails(String details) {
+        this.details = details;
+    }
+
+    public Integer getAnswered() {
+        return answered;
+    }
+
+    public void setAnswered(Integer answered) {
+        this.answered = answered;
+    }
+
 }

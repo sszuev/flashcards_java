@@ -1,12 +1,13 @@
 package com.gitlab.sszuev.flashcards.service;
 
 import com.gitlab.sszuev.flashcards.TestUtils;
+import com.gitlab.sszuev.flashcards.dao.CardRepository;
 import com.gitlab.sszuev.flashcards.dao.DictionaryRepository;
-import com.gitlab.sszuev.flashcards.domain.Card;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
-import com.gitlab.sszuev.flashcards.domain.Language;
-import com.gitlab.sszuev.flashcards.domain.User;
+import com.gitlab.sszuev.flashcards.domain.*;
 import com.gitlab.sszuev.flashcards.dto.CardRecord;
+import com.gitlab.sszuev.flashcards.dto.CardRequest;
+import com.gitlab.sszuev.flashcards.dto.Stage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -15,22 +16,26 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by @ssz on 02.05.2021.
  */
 @SpringBootTest
-@TestPropertySource(properties = {"app.behaviour.words=" + CardServiceTest.NUMBER_OF_WORDS_PER_RUN})
+@TestPropertySource(properties = {"app.behaviour.words=" + CardServiceTest.NUMBER_OF_WORDS_PER_RUN
+        , "app.behaviour.answers=" + CardServiceTest.NUMBER_OF_ANSWERS_TO_LEARN})
 public class CardServiceTest {
     static final int NUMBER_OF_WORDS_PER_RUN = 5;
+    static final int NUMBER_OF_ANSWERS_TO_LEARN = 3;
 
     @Autowired
     private CardService service;
     @MockBean
-    private DictionaryRepository repository;
+    private DictionaryRepository dictionaryRepository;
+    @MockBean
+    private CardRepository cardRepository;
     @MockBean
     private SoundService soundService;
 
@@ -42,11 +47,11 @@ public class CardServiceTest {
         String sound = "yyy";
 
         int index = 42;
-        Card card = TestUtils.mockCard(word);
+        Card card = TestUtils.mockCard(42L, word);
         Dictionary dic = TestUtils.mockDictionary(dicName, lang);
         Mockito.when(dic.getCard(Mockito.eq(index))).thenReturn(card);
         Mockito.when(dic.getCardsCount()).thenReturn(4200L);
-        Mockito.when(repository.findByUserIdAndName(Mockito.eq(User.DEFAULT_USER_ID), Mockito.eq(dicName)))
+        Mockito.when(dictionaryRepository.findByUserIdAndName(Mockito.eq(User.DEFAULT_USER_ID), Mockito.eq(dicName)))
                 .thenReturn(Optional.of(dic));
         Mockito.when(soundService.getResourceName(Mockito.eq(word), Mockito.eq(lang.name()))).thenReturn(sound);
 
@@ -63,9 +68,9 @@ public class CardServiceTest {
         List<String> words = List.of("A", "B", "C", "D", "E", "W");
 
         Dictionary dic = TestUtils.mockDictionary(dicName, lang);
-        Mockito.when(dic.cards()).thenReturn(words.stream().map(TestUtils::mockCard));
+        Mockito.when(dic.cards()).thenReturn(words.stream().map(word -> TestUtils.mockCard(-1L, word)));
 
-        Mockito.when(repository.findByUserIdAndName(Mockito.eq(User.DEFAULT_USER_ID), Mockito.eq(dicName)))
+        Mockito.when(dictionaryRepository.findByUserIdAndName(Mockito.eq(User.DEFAULT_USER_ID), Mockito.eq(dicName)))
                 .thenReturn(Optional.of(dic));
 
         List<CardRecord> res = service.getCardDeck(dicName);
@@ -78,10 +83,42 @@ public class CardServiceTest {
     @Test
     public void testListDictionaries() {
         List<String> given = List.of("A", "B");
-        Mockito.when(repository.streamAllByUserId(Mockito.eq(User.DEFAULT_USER_ID)))
+        Mockito.when(dictionaryRepository.streamAllByUserId(Mockito.eq(User.DEFAULT_USER_ID)))
                 .thenReturn(given.stream().map(TestUtils::mockDictionary));
 
         Assertions.assertEquals(given, service.getDictionaryNames());
+    }
+
+    @Test
+    public void testUpdate() {
+        long id1 = -1;
+        long id2 = -2;
+        List<CardRequest> requests = List.of(new CardRequest(id1, Map.of(Stage.SELF_TEST, true)),
+                new CardRequest(id2, Map.of(Stage.OPTIONS, false)));
+        Collection<Long> ids = requests.stream().map(CardRequest::getId).collect(Collectors.toSet());
+        Card card1 = TestUtils.createCard(id1, "x", 2, "{\"writing\":[true,true],\"self-test\":[false]}");
+        Card card2 = TestUtils.createCard(id2, "y", 1, "{\"mosaic\":[true],\"self-test\":[false]}");
+
+        Mockito.when(cardRepository.streamAllByIdIn(Mockito.eq(ids))).thenReturn(Stream.of(card1, card2));
+        List<Card> res = new ArrayList<>();
+        Mockito.when(cardRepository.save(Mockito.any())).thenAnswer(i -> {
+            Card card = i.getArgument(0);
+            res.add(card);
+            return card;
+        });
+
+        service.update(requests);
+        Assertions.assertEquals(2, res.size());
+        Assertions.assertSame(card1, res.get(0));
+        Assertions.assertSame(card2, res.get(1));
+
+        Assertions.assertEquals(id1, card1.getID());
+        Assertions.assertEquals(id2, card2.getID());
+        Assertions.assertEquals(Status.LEARNED, card1.getStatus());
+        Assertions.assertEquals(Status.IN_PROCESS, card2.getStatus());
+
+        Assertions.assertEquals(3, card1.getAnswered());
+        Assertions.assertEquals(1, card2.getAnswered());
     }
 
 }

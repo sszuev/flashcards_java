@@ -17,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -111,15 +112,23 @@ public class LingvoParser {
         String transcription = node.getAttribute("transcription");
         String id = node.getAttribute("partOfSpeech");
         PartOfSpeech pos = id == null ? null : PART_OF_SPEECH_MAP.get(id);
+        Element statistics = DOMUtils.getElement(node, "statistics");
         Status status = WrongDataException.requireNonNull(STATUS_MAP.get(WrongDataException
-                .requireNonNull(DOMUtils.getElement(node, "statistics")
-                        .getAttribute("status"), "no status")), "unknown status");
+                .requireNonNull(statistics.getAttribute("status"), "no status")), "unknown status");
+        Integer answered;
+        if (status != Status.LEARNED) {
+            answered = Optional.ofNullable(statistics.getAttribute("answered"))
+                    .filter(x -> x.matches("\\d+")).map(Integer::parseInt).orElse(0);
+        } else { // in case of status=4 there is some big number
+            answered = null;
+        }
         List<Translation> translations = DOMUtils.elements(DOMUtils.getElement(node, "translations"), "word")
                 .map(LingvoParser::parseTranslation).collect(Collectors.toUnmodifiableList());
         List<Example> examples = DOMUtils.findElement(node, "examples")
                 .map(x -> DOMUtils.elements(x, "example")).orElseGet(Stream::empty)
                 .map(LingvoParser::parseExample).collect(Collectors.toUnmodifiableList());
-        return EntityFactory.newCard(word, transcription, pos, translations, examples, status, "parsed from xml");
+        return EntityFactory.newCard(word,
+                transcription, pos, translations, examples, status, answered, "parsed from lingvo xml");
     }
 
     private static Translation parseTranslation(Element node) {
