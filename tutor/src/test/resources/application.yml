@@ -1,5 +1,11 @@
 spring:
-  jpa:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    initialization-mode: always
+  jpa: # temporary generate schema from JPA markup
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create
     show-sql: true
     properties:
       hibernate:

@@ -11,6 +11,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,12 +49,18 @@ public class BuiltinDataLoader implements ApplicationListener<ApplicationReadyEv
 
     @Transactional
     @Override
-    public void onApplicationEvent(ApplicationReadyEvent event) {
+    public void onApplicationEvent(@NonNull ApplicationReadyEvent event) {
         try {
-            Arrays.stream(resolver.getResources(dataDir)).filter(Resource::isReadable).map(this::parse).forEach(this::save);
+            Resource[] resources = resolver.getResources(dataDir);
+            if (resources.length == 0) {
+                LOGGER.info("No data found to upload.");
+                return;
+            }
+            Arrays.stream(resources).filter(Resource::isReadable).map(this::parse).forEach(this::save);
         } catch (IOException e) {
             throw new IllegalStateException("Unable to load data", e);
         }
+        LOGGER.info("Uploading is completed.");
     }
 
     private Dictionary parse(Resource resource) {
