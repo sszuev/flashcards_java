@@ -7,23 +7,11 @@ import com.gitlab.sszuev.flashcards.domain.Language;
 import org.mockito.Mockito;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by @ssz on 02.05.2021.
  */
 public class TestUtils {
-
-    public static String format(Dictionary d) {
-        return String.format("%s[%s => %s]", d.getName(), d.getSourceLanguage(), d.getTargetLanguage());
-    }
-
-    public static String format(Card c) {
-        return String.format("%s => %s (%s)", c.getText(),
-                c.translations().map(x -> x.getText()).collect(Collectors.joining(", ")),
-                c.examples().map(x -> x.getText()).collect(Collectors.joining(", "))
-        );
-    }
 
     public static Dictionary mockDictionary(String name) {
         Dictionary res = Mockito.mock(Dictionary.class);
@@ -31,9 +19,10 @@ public class TestUtils {
         return res;
     }
 
-    public static Dictionary mockDictionary(String name, Language lang) {
+    public static Dictionary mockDictionary(Long id, String name, Language lang) {
         Dictionary res = mockDictionary(name);
         Mockito.when(res.getSourceLanguage()).thenReturn(lang);
+        Mockito.when(res.getID()).thenReturn(id);
         return res;
     }
 

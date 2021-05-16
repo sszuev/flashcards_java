@@ -48,7 +48,7 @@ public class CardServiceTest {
 
         int index = 42;
         Card card = TestUtils.mockCard(42L, word);
-        Dictionary dic = TestUtils.mockDictionary(dicName, lang);
+        Dictionary dic = TestUtils.mockDictionary(42L, dicName, lang);
         Mockito.when(dic.getCard(Mockito.eq(index))).thenReturn(card);
         Mockito.when(dic.getCardsCount()).thenReturn(4200L);
         Mockito.when(dictionaryRepository.findByUserIdAndName(Mockito.eq(User.DEFAULT_USER_ID), Mockito.eq(dicName)))
@@ -64,11 +64,14 @@ public class CardServiceTest {
     @Test
     public void testGetCardDeck() {
         Language lang = () -> "ue";
+        long dicId = 42;
         String dicName = "xxx";
         List<String> words = List.of("A", "B", "C", "D", "E", "W");
 
-        Dictionary dic = TestUtils.mockDictionary(dicName, lang);
-        Mockito.when(dic.cards()).thenReturn(words.stream().map(word -> TestUtils.mockCard(-1L, word)));
+        Dictionary dic = TestUtils.mockDictionary(dicId, dicName, lang);
+        Mockito.when(cardRepository.streamByDictionaryIdAndStatusIn(Mockito.eq(dicId),
+                Mockito.eq(List.of(Status.NEW, Status.IN_PROCESS))))
+                .thenReturn(words.stream().map(word -> TestUtils.mockCard(-1L, word)));
 
         Mockito.when(dictionaryRepository.findByUserIdAndName(Mockito.eq(User.DEFAULT_USER_ID), Mockito.eq(dicName)))
                 .thenReturn(Optional.of(dic));
@@ -99,7 +102,7 @@ public class CardServiceTest {
         Card card1 = TestUtils.createCard(id1, "x", 2, "{\"writing\":[true,true],\"self-test\":[false]}");
         Card card2 = TestUtils.createCard(id2, "y", 1, "{\"mosaic\":[true],\"self-test\":[false]}");
 
-        Mockito.when(cardRepository.streamAllByIdIn(Mockito.eq(ids))).thenReturn(Stream.of(card1, card2));
+        Mockito.when(cardRepository.streamByIdIn(Mockito.eq(ids))).thenReturn(Stream.of(card1, card2));
         List<Card> res = new ArrayList<>();
         Mockito.when(cardRepository.save(Mockito.any())).thenAnswer(i -> {
             Card card = i.getArgument(0);

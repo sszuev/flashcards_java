@@ -71,7 +71,8 @@ public class CardServiceImpl implements CardService {
     public List<CardResource> getCardDeck(String dictionary) {
         Dictionary dic = getDictionary(dictionary);
         Language lang = dic.getSourceLanguage();
-        List<Card> toLearn = dic.cards().filter(x -> x.getStatus() != Status.LEARNED).collect(Collectors.toList());
+        List<Card> toLearn = cardRepository.streamByDictionaryIdAndStatusIn(dic.getID(),
+                List.of(Status.NEW, Status.IN_PROCESS)).collect(Collectors.toList());
         Collections.shuffle(toLearn, new Random());
         return toLearn.stream().limit(numberOfWordsInRun).map(c -> mapper.createResource(c, lang))
                 .collect(Collectors.toUnmodifiableList());
@@ -84,7 +85,7 @@ public class CardServiceImpl implements CardService {
     }
 
     private void update(Map<Long, Map<Stage, Boolean>> data) {
-        Map<Long, Card> cards = cardRepository.streamAllByIdIn(data.keySet())
+        Map<Long, Card> cards = cardRepository.streamByIdIn(data.keySet())
                 .collect(Collectors.toMap(Card::getID, Function.identity()));
         if (cards.size() != data.size()) {
             Set<Long> ids = new HashSet<>(data.keySet());

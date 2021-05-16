@@ -2,6 +2,8 @@ package com.gitlab.sszuev.flashcards.domain;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Stream;
 
 /**
@@ -21,14 +23,14 @@ public class Card extends WithText implements HasID {
             , mappedBy = "card"
             , orphanRemoval = true
             , cascade = CascadeType.ALL)
-    private Collection<Translation> translations;
+    private Set<Translation> translations;
 
     @org.hibernate.annotations.Fetch(org.hibernate.annotations.FetchMode.SUBSELECT)
     @OneToMany(targetEntity = Example.class
             , mappedBy = "card"
             , orphanRemoval = true
             , cascade = CascadeType.ALL)
-    private Collection<Example> examples;
+    private Set<Example> examples;
 
     @Column
     private String transcription;
@@ -61,11 +63,15 @@ public class Card extends WithText implements HasID {
     }
 
     public void setTranslations(Collection<Translation> translations) {
-        this.translations = translations;
+        this.translations = asSet(translations);
     }
 
     public void setExamples(Collection<Example> examples) {
-        this.examples = examples;
+        this.examples = asSet(examples);
+    }
+
+    private <X> Set<X> asSet(Collection<X> collection) {
+        return collection instanceof Set ? (Set<X>) collection : new HashSet<>(collection);
     }
 
     public String getTranscription() {
