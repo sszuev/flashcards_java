@@ -12,15 +12,14 @@ function drawDictionariesPage() {
         const tbody = $('#dictionaries tbody');
         tbody.html('');
         $.each(response, function (key, value) {
-            tbody
-                .append(`<tr id="${value.id}">
+            let row = $(`<tr id="${value.id}">
                             <td>${value.sourceLang}</td>
                             <td>${value.targetLang}</td>
                             <td>${value.name}</td>
                             <td>${value.total}</td>
                             <td>${value.learned}</td>
-                          </tr>`)
-                .unbind('click').on('click', function () {
+                          </tr>`);
+            row.unbind('click').on('click', function () {
                 dictionary = value;
                 displayPageCard('show');
                 $.get('/api/dictionaries/' + dictionary.id + '/deck').done(function (response) {
@@ -28,6 +27,7 @@ function drawDictionariesPage() {
                     drawShowCardPage(0);
                 });
             });
+            tbody.append(row);
         });
     });
 }
