@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -27,7 +28,7 @@ public class DictionaryRepositoryTest extends RepositoryTestBase {
     private DictionaryRepository repository;
 
     @Test
-    public void testFindByUserAndName() {
+    public void testListCards() {
         Statistics statistics = prepareStatistics();
         Dictionary dic = repository.findAll().stream()
                 .filter(x -> Objects.equals(User.DEFAULT_USER_ID, x.getUser().getID()))
@@ -50,8 +51,10 @@ public class DictionaryRepositoryTest extends RepositoryTestBase {
     public void testListByUser() {
         Statistics statistics = prepareStatistics();
         List<Dictionary> list = repository.streamAllByUserId(User.DEFAULT_USER_ID).collect(Collectors.toList());
-        Assertions.assertEquals(1, list.size());
-        Assertions.assertEquals(TEST_DICTIONARY_NAME, list.get(0).getName());
+        Assertions.assertEquals(2, list.size());
+        Set<String> names = list.stream().map(Dictionary::getName).collect(Collectors.toSet());
+        Assertions.assertEquals(2, names.size());
+        Assertions.assertTrue(names.contains(TEST_DICTIONARY_NAME));
         Assertions.assertEquals(1, statistics.getPrepareStatementCount());
     }
 }

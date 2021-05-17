@@ -107,4 +107,14 @@ public class DOMUtils {
             }
         };
     }
+
+    /**
+     * Returns a text without leading and trailing spaces and new-line symbols.
+     *
+     * @param node {@link Element}
+     * @return {@code String}
+     */
+    public static String getNormalizedContent(Element node) {
+        return node.getTextContent().trim().replaceAll("\\n+$", "").replaceAll("^\\n+", "");
+    }
 }

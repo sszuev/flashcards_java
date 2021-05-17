@@ -103,7 +103,7 @@ public class LingvoParser {
     }
 
     private static Stream<Card> parseMeanings(Element node) {
-        String word = DOMUtils.getElement(node, "word").getTextContent();
+        String word = DOMUtils.getNormalizedContent(DOMUtils.getElement(node, "word"));
         return DOMUtils.elements(DOMUtils.getElement(node, "meanings"), "meaning")
                 .map(n -> parseMeaning(word, n));
     }
@@ -132,11 +132,11 @@ public class LingvoParser {
     }
 
     private static Translation parseTranslation(Element node) {
-        return EntityFactory.newTranslation(node.getTextContent());
+        return EntityFactory.newTranslation(DOMUtils.getNormalizedContent(node));
     }
 
     private static Example parseExample(Element node) {
-        return EntityFactory.newExample(node.getTextContent());
+        return EntityFactory.newExample(DOMUtils.getNormalizedContent(node));
     }
 
 }
