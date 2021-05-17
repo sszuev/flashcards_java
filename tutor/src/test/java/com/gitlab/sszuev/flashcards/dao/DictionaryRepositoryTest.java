@@ -42,7 +42,7 @@ public class DictionaryRepositoryTest extends RepositoryTestBase {
             LOGGER.info("{} => {}({})", c.getText(),
                     c.translations().map(x -> x.getText()).collect(Collectors.joining(", ")),
                     c.examples().map(x -> x.getText()).collect(Collectors.joining(", ")));
-            Assertions.assertEquals(Status.NEW, c.getStatus());
+            Assertions.assertEquals(Status.UNKNOWN, c.getStatus());
         });
         Assertions.assertEquals(5, statistics.getPrepareStatementCount());
     }

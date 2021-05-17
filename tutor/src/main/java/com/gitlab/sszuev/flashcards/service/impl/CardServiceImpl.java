@@ -58,7 +58,7 @@ public class CardServiceImpl implements CardService {
                 .orElseThrow(() -> new IllegalStateException("Can't find dictionary by id=" + dicId));
         Language lang = dic.getSourceLanguage();
         List<Card> toLearn = cardRepository.streamByDictionaryIdAndStatusIn(dic.getID(),
-                List.of(Status.NEW, Status.IN_PROCESS)).collect(Collectors.toList());
+                List.of(Status.UNKNOWN, Status.IN_PROCESS)).collect(Collectors.toList());
         Collections.shuffle(toLearn, new Random());
         return toLearn.stream().limit(numberOfWordsInRun).map(c -> mapper.createResource(c, lang))
                 .collect(Collectors.toUnmodifiableList());

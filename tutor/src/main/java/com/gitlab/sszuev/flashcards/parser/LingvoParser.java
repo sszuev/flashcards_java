@@ -36,7 +36,7 @@ public class LingvoParser {
             "2", StandardPartOfSpeech.ADJECTIVE,
             "3", StandardPartOfSpeech.VERB);
     private static final Map<String, Status> STATUS_MAP = Map.of(
-            "2", Status.NEW,
+            "2", Status.UNKNOWN,
             "3", Status.IN_PROCESS,
             "4", Status.LEARNED);
 

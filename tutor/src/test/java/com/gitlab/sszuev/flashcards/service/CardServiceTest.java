@@ -50,7 +50,7 @@ public class CardServiceTest {
 
         Dictionary dic = TestUtils.mockDictionary(dicId, dicName, lang);
         Mockito.when(cardRepository.streamByDictionaryIdAndStatusIn(Mockito.eq(dicId),
-                Mockito.eq(List.of(Status.NEW, Status.IN_PROCESS))))
+                Mockito.eq(List.of(Status.UNKNOWN, Status.IN_PROCESS))))
                 .thenReturn(words.entrySet().stream().map(e -> {
                     String word = e.getValue();
                     Mockito.when(soundService.getResourceName(Mockito.eq(word), Mockito.eq(lang.name())))
@@ -81,7 +81,7 @@ public class CardServiceTest {
         String lang2 = "rr";
         String lang3 = "xx";
         Map<Status, Integer> cards1 = Map.of(Status.IN_PROCESS, 2, Status.LEARNED, 3);
-        Map<Status, Integer> cards2 = Map.of(Status.NEW, 1, Status.LEARNED, 42);
+        Map<Status, Integer> cards2 = Map.of(Status.UNKNOWN, 1, Status.LEARNED, 42);
 
         Dictionary dic1 = TestUtils.mockDictionary(id1, name1, () -> lang1, () -> lang2, cards1);
         Dictionary dic2 = TestUtils.mockDictionary(id2, name2, () -> lang2, () -> lang3, cards2);

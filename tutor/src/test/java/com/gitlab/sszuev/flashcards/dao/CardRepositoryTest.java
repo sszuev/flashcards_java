@@ -28,7 +28,7 @@ public class CardRepositoryTest extends RepositoryTestBase {
     public void testFindByDictionaryAndStatusIn() {
         Statistics statistics = prepareStatistics();
         Set<Long> ids = new HashSet<>();
-        repository.streamByDictionaryIdAndStatusIn(TEST_DICTIONARY_ID, List.of(Status.NEW, Status.IN_PROCESS))
+        repository.streamByDictionaryIdAndStatusIn(TEST_DICTIONARY_ID, List.of(Status.UNKNOWN, Status.IN_PROCESS))
                 .forEach(card -> {
                     long id = card.getID();
                     Status st = card.getStatus();
