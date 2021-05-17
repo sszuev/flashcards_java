@@ -30,7 +30,7 @@ COPY public.users (id) FROM stdin;
 --
 
 COPY public.dictionaries (id, target_lang, name, source_lang, user_id) FROM stdin;
-3	RU	Weather	EN	42
+1	RU	Weather	EN	42
 \.
 
 
@@ -39,71 +39,71 @@ COPY public.dictionaries (id, target_lang, name, source_lang, user_id) FROM stdi
 --
 
 COPY public.cards (id, text, answered, details, part_of_speech, status, transcription, dictionary_id) FROM stdin;
-1878	atmospheric	0	parsed from lingvo xml	ADJECTIVE	NEW	ˌætməs'ferik	3
-1879	weather	0	parsed from lingvo xml	NOUN	NEW	'weðə	3
-1880	snow	0	parsed from lingvo xml	NOUN	NEW	snəu	3
-1881	rain	0	parsed from lingvo xml	NOUN	NEW	rein	3
-1882	wind	0	parsed from lingvo xml	NOUN	NEW	wind	3
-1883	hail	0	parsed from lingvo xml	NOUN	NEW	heil	3
-1884	thunderstorm	0	parsed from lingvo xml	NOUN	NEW	'θʌndəstɔːm	3
-1885	precipitation	0	parsed from lingvo xml	NOUN	NEW	priˌsipi'teiʃ(ə)n	3
-1886	thunder	0	parsed from lingvo xml	NOUN	NEW	'θʌndə	3
-1887	lightning	0	parsed from lingvo xml	NOUN	NEW	'laitniŋ	3
-1888	anticyclone	0	parsed from lingvo xml	NOUN	NEW	'ænti'saikləun	3
-1889	atmosphere	0	parsed from lingvo xml	NOUN	NEW	'ætməsfiə	3
-1890	barometer	0	parsed from lingvo xml	NOUN	NEW	bə'rɔmitə	3
-1891	windy	0	parsed from lingvo xml	ADJECTIVE	NEW	'windi	3
-1892	humidity	0	parsed from lingvo xml	NOUN	NEW	hjuː'midəti	3
-1893	humid	0	parsed from lingvo xml	ADJECTIVE	NEW	'hjuːmid	3
-1894	moist	0	parsed from lingvo xml	ADJECTIVE	NEW	mɔist	3
-1895	damp	0	parsed from lingvo xml	ADJECTIVE	NEW	dæmp	3
-1896	sunrise	0	parsed from lingvo xml	NOUN	NEW	'sʌnraiz	3
-1897	degree	0	parsed from lingvo xml	NOUN	NEW	di'griː	3
-1898	pressure	0	parsed from lingvo xml	NOUN	NEW	'preʃə	3
-1899	stuffy	0	parsed from lingvo xml	ADJECTIVE	NEW	'stʌfi	3
-1900	heat	0	parsed from lingvo xml	NOUN	NEW	hiːt	3
-1901	hot	0	parsed from lingvo xml	ADJECTIVE	NEW	hɔt	3
-1902	sunset	0	parsed from lingvo xml	NOUN	NEW	'sʌnset	3
-1903	frost	0	parsed from lingvo xml	NOUN	NEW	frɔst	3
-1904	drizzle	0	parsed from lingvo xml	NOUN	NEW	'drizl	3
-1905	haze	0	parsed from lingvo xml	NOUN	NEW	heiz	3
-1906	ice	0	parsed from lingvo xml	NOUN	NEW	ais	3
-1907	shower	0	parsed from lingvo xml	NOUN	NEW	'ʃəuə	3
-1908	puddle	0	parsed from lingvo xml	NOUN	NEW	'pʌdl	3
-1909	meteorology	0	parsed from lingvo xml	NOUN	NEW	ˌmiːti(ə)'rɔləʤi	3
-1910	cloudy	0	parsed from lingvo xml	ADJECTIVE	NEW	'klaudi	3
-1911	thaw	0	parsed from lingvo xml	NOUN	NEW	θɔː	3
-1912	cool	0	parsed from lingvo xml	ADJECTIVE	NEW	kuːl	3
-1913	dusty	0	parsed from lingvo xml	ADJECTIVE	NEW	'dʌsti	3
-1914	rainbow	0	parsed from lingvo xml	NOUN	NEW	'reinbəu	3
-1915	fresh	0	parsed from lingvo xml	ADJECTIVE	NEW	freʃ	3
-1916	slippery	0	parsed from lingvo xml	ADJECTIVE	NEW	'slipəri	3
-1917	slush	0	parsed from lingvo xml	NOUN	NEW	slʌʃ	3
-1918	smog	0	parsed from lingvo xml	NOUN	NEW	smɔg	3
-1919	snowfall	0	parsed from lingvo xml	NOUN	NEW		3
-1920	sunny	0	parsed from lingvo xml	ADJECTIVE	NEW	'sʌni	3
-1921	dry	0	parsed from lingvo xml	ADJECTIVE	NEW	drai	3
-1922	wet	0	parsed from lingvo xml	ADJECTIVE	NEW	wet	3
-1923	temperature	0	parsed from lingvo xml	NOUN	NEW	'tempriʧə	3
-1924	warm	0	parsed from lingvo xml	ADJECTIVE	NEW	wɔːm	3
-1925	thermometer	0	parsed from lingvo xml	NOUN	NEW	θə'mɔmitə	3
-1926	fog	0	parsed from lingvo xml	NOUN	NEW	fɔg	3
-1927	mist	0	parsed from lingvo xml	NOUN	NEW	mist	3
-1928	foggy	0	parsed from lingvo xml	ADJECTIVE	NEW	'fɔgi	3
-1929	water	0	parsed from lingvo xml	NOUN	NEW	'wɔːtə	3
-1930	cold	0	parsed from lingvo xml	ADJECTIVE	NEW	kəuld	3
-1931	cyclone	0	parsed from lingvo xml	NOUN	NEW	'saikləun	3
-1932	storm	0	parsed from lingvo xml	NOUN	NEW	stɔːm	3
-1933	clear	0	parsed from lingvo xml	ADJECTIVE	NEW	kliə	3
-1934	sleet	0	parsed from lingvo xml	NOUN	NEW	sliːt	3
-1935	cloud	0	parsed from lingvo xml	NOUN	NEW	klaud	3
-1936	chilly	0	parsed from lingvo xml	ADJECTIVE	NEW	'ʧili	3
-1937	downpour	0	parsed from lingvo xml	NOUN	NEW	'daunpɔː	3
-1938	gale	0	parsed from lingvo xml	NOUN	NEW	geil	3
-1939	scorching	0	parsed from lingvo xml	ADJECTIVE	NEW	'skɔːʧiŋ	3
-1940	dust	0	parsed from lingvo xml	NOUN	NEW	dʌst	3
-1941	blustery	0	parsed from lingvo xml	ADJECTIVE	NEW	'blʌstəri	3
-1942	overcast	0	parsed from lingvo xml	ADJECTIVE	NEW	'əuvəkɑːst	3
+1	atmospheric	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	ˌætməs'ferik	1
+2	weather	0	parsed from lingvo xml	NOUN	UNKNOWN	'weðə	1
+3	snow	0	parsed from lingvo xml	NOUN	UNKNOWN	snəu	1
+4	rain	0	parsed from lingvo xml	NOUN	UNKNOWN	rein	1
+5	wind	0	parsed from lingvo xml	NOUN	UNKNOWN	wind	1
+6	hail	0	parsed from lingvo xml	NOUN	UNKNOWN	heil	1
+7	thunderstorm	0	parsed from lingvo xml	NOUN	UNKNOWN	'θʌndəstɔːm	1
+8	precipitation	0	parsed from lingvo xml	NOUN	UNKNOWN	priˌsipi'teiʃ(ə)n	1
+9	thunder	0	parsed from lingvo xml	NOUN	UNKNOWN	'θʌndə	1
+10	lightning	0	parsed from lingvo xml	NOUN	UNKNOWN	'laitniŋ	1
+11	anticyclone	0	parsed from lingvo xml	NOUN	UNKNOWN	'ænti'saikləun	1
+12	atmosphere	0	parsed from lingvo xml	NOUN	UNKNOWN	'ætməsfiə	1
+13	barometer	0	parsed from lingvo xml	NOUN	UNKNOWN	bə'rɔmitə	1
+14	windy	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	'windi	1
+15	humidity	0	parsed from lingvo xml	NOUN	UNKNOWN	hjuː'midəti	1
+16	humid	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	'hjuːmid	1
+17	moist	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	mɔist	1
+18	damp	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	dæmp	1
+19	sunrise	0	parsed from lingvo xml	NOUN	UNKNOWN	'sʌnraiz	1
+20	degree	0	parsed from lingvo xml	NOUN	UNKNOWN	di'griː	1
+21	pressure	0	parsed from lingvo xml	NOUN	UNKNOWN	'preʃə	1
+22	stuffy	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	'stʌfi	1
+23	heat	0	parsed from lingvo xml	NOUN	UNKNOWN	hiːt	1
+24	hot	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	hɔt	1
+25	sunset	0	parsed from lingvo xml	NOUN	UNKNOWN	'sʌnset	1
+26	frost	0	parsed from lingvo xml	NOUN	UNKNOWN	frɔst	1
+27	drizzle	0	parsed from lingvo xml	NOUN	UNKNOWN	'drizl	1
+28	haze	0	parsed from lingvo xml	NOUN	UNKNOWN	heiz	1
+29	ice	0	parsed from lingvo xml	NOUN	UNKNOWN	ais	1
+30	shower	0	parsed from lingvo xml	NOUN	UNKNOWN	'ʃəuə	1
+31	puddle	0	parsed from lingvo xml	NOUN	UNKNOWN	'pʌdl	1
+32	meteorology	0	parsed from lingvo xml	NOUN	UNKNOWN	ˌmiːti(ə)'rɔləʤi	1
+33	cloudy	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	'klaudi	1
+34	thaw	0	parsed from lingvo xml	NOUN	UNKNOWN	θɔː	1
+35	cool	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	kuːl	1
+36	dusty	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	'dʌsti	1
+37	rainbow	0	parsed from lingvo xml	NOUN	UNKNOWN	'reinbəu	1
+38	fresh	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	freʃ	1
+39	slippery	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	'slipəri	1
+40	slush	0	parsed from lingvo xml	NOUN	UNKNOWN	slʌʃ	1
+41	smog	0	parsed from lingvo xml	NOUN	UNKNOWN	smɔg	1
+42	snowfall	0	parsed from lingvo xml	NOUN	UNKNOWN		1
+43	sunny	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	'sʌni	1
+44	dry	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	drai	1
+45	wet	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	wet	1
+46	temperature	0	parsed from lingvo xml	NOUN	UNKNOWN	'tempriʧə	1
+47	warm	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	wɔːm	1
+48	thermometer	0	parsed from lingvo xml	NOUN	UNKNOWN	θə'mɔmitə	1
+49	fog	0	parsed from lingvo xml	NOUN	UNKNOWN	fɔg	1
+50	mist	0	parsed from lingvo xml	NOUN	UNKNOWN	mist	1
+51	foggy	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	'fɔgi	1
+52	water	0	parsed from lingvo xml	NOUN	UNKNOWN	'wɔːtə	1
+53	cold	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	kəuld	1
+54	cyclone	0	parsed from lingvo xml	NOUN	UNKNOWN	'saikləun	1
+55	storm	0	parsed from lingvo xml	NOUN	UNKNOWN	stɔːm	1
+56	clear	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	kliə	1
+57	sleet	0	parsed from lingvo xml	NOUN	UNKNOWN	sliːt	1
+58	cloud	0	parsed from lingvo xml	NOUN	UNKNOWN	klaud	1
+59	chilly	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	'ʧili	1
+60	downpour	0	parsed from lingvo xml	NOUN	UNKNOWN	'daunpɔː	1
+61	gale	0	parsed from lingvo xml	NOUN	UNKNOWN	geil	1
+62	scorching	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	'skɔːʧiŋ	1
+63	dust	0	parsed from lingvo xml	NOUN	UNKNOWN	dʌst	1
+64	blustery	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	'blʌstəri	1
+65	overcast	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	'əuvəkɑːst	1
 \.
 
 
@@ -112,61 +112,61 @@ COPY public.cards (id, text, answered, details, part_of_speech, status, transcri
 --
 
 COPY public.examples (id, text, card_id) FROM stdin;
-1290	atmospheric instability -- атмосферная нестабильность	1878
-1291	atmospheric front -- атмосферный фронт	1878
-1292	atmospheric layer -- слой атмосферы	1878
-1293	spell of cold weather -- похолодание	1879
-1294	weather forecast -- прогноз погоды	1879
-1295	nasty weather -- ненастная погода	1879
-1296	weather bureau -- бюро погоды	1879
-1297	snow depth -- высота снежного покрова	1880
-1298	It snows. -- Идет снег.	1880
-1299	a flake of snow -- снежинка	1880
-1300	It rains. -- Идет дождь.	1881
-1301	drizzling rain -- изморось	1881
-1302	heavy rain -- проливной дождь, ливень	1881
-1303	torrential rain -- проливной дождь	1881
-1304	a sudden gust of wind — внезапный порыв ветра	1882
-1305	It hails. -- Идет град.	1883
-1306	It was thundering all night long. -- Всю ночь гремел гром.	1886
-1307	a flash of lightning -- вспышка молнии	1887
-1308	The barometer is falling. -- Барометр падает.	1890
-1309	windy weather -- ветреная погода	1891
-1310	It is windy. -- Ветрено.	1891
-1311	relative humidity -- относительная влажность	1892
-1312	damp air -- влажный воздух	1895
-1313	5 degrees above (below) zero -- 5 градусов выше (ниже) нуля	1897
-1314	atmospheric pressure -- атмосферное давление	1898
-1315	low pressure area -- область пониженного давления	1898
-1316	hot weather -- жаркая погода	1901
-1317	It is hot. -- Жарко.	1901
-1318	hoar-frost -- иней, изморозь	1903
-1319	It drizzles. -- Идёт мелкий дождь.	1904
-1320	heat haze -- марево	1905
-1321	thin ice -- тонкий лед	1906
-1322	scattered showers — местами проливные дожди	1907
-1323	It is cloudy. -- Облачно.	1910
-1324	The snow started to thaw. -- Снег начал таять.	1911
-1325	cool breeze -- прохладный ветерок	1912
-1326	dusty road -- пыльная дорога	1913
-1327	fresh air -- свежий воздух	1915
-1328	slippery road -- скользкая дорога	1916
-1329	sunny day -- солнечный день	1920
-1330	dry air -- сухой воздух	1921
-1331	What’s the temperature today? -- Какая сегодня температура?	1923
-1332	Celsius / Centigrade thermometer -- термометр Цельсия / со шкалой Цельсия	1925
-1333	Fahrenheit thermometer -- термометр Фаренгейта / со шкалой Фаренгейта	1925
-1334	thick fog -- густой туман	1926
-1335	morning mist -- утренний туман, утренняя дымка	1927
-1336	cold weather -- холодная погода	1930
-1337	dust storm -- пыльная буря	1932
-1338	The sky was clear. -- Небо было безоблачным.	1933
-1339	gale warning -- штормовое предупреждение	1938
-1340	scorching day -- знойный день	1939
-1341	scorching sun -- палящее солнце	1939
-1342	blustery wind -- порывистый ветер	1941
-1343	blustery weather -- ветреная погода	1941
-1344	The sky is overcast. -- Небо затянуто облаками.	1942
+1	atmospheric front -- атмосферный фронт	1
+2	atmospheric layer -- слой атмосферы	1
+3	atmospheric instability -- атмосферная нестабильность	1
+4	weather bureau -- бюро погоды	2
+5	nasty weather -- ненастная погода	2
+6	weather forecast -- прогноз погоды	2
+7	spell of cold weather -- похолодание	2
+8	It snows. -- Идет снег.	3
+9	snow depth -- высота снежного покрова	3
+10	a flake of snow -- снежинка	3
+11	torrential rain -- проливной дождь	4
+12	heavy rain -- проливной дождь, ливень	4
+13	It rains. -- Идет дождь.	4
+14	drizzling rain -- изморось	4
+15	a sudden gust of wind — внезапный порыв ветра	5
+16	It hails. -- Идет град.	6
+17	It was thundering all night long. -- Всю ночь гремел гром.	9
+18	a flash of lightning -- вспышка молнии	10
+19	The barometer is falling. -- Барометр падает.	13
+20	It is windy. -- Ветрено.	14
+21	windy weather -- ветреная погода	14
+22	relative humidity -- относительная влажность	15
+23	damp air -- влажный воздух	18
+24	5 degrees above (below) zero -- 5 градусов выше (ниже) нуля	20
+25	low pressure area -- область пониженного давления	21
+26	atmospheric pressure -- атмосферное давление	21
+27	hot weather -- жаркая погода	24
+28	It is hot. -- Жарко.	24
+29	hoar-frost -- иней, изморозь	26
+30	It drizzles. -- Идёт мелкий дождь.	27
+31	heat haze -- марево	28
+32	thin ice -- тонкий лед	29
+33	scattered showers — местами проливные дожди	30
+34	It is cloudy. -- Облачно.	33
+35	The snow started to thaw. -- Снег начал таять.	34
+36	cool breeze -- прохладный ветерок	35
+37	dusty road -- пыльная дорога	36
+38	fresh air -- свежий воздух	38
+39	slippery road -- скользкая дорога	39
+40	sunny day -- солнечный день	43
+41	dry air -- сухой воздух	44
+42	What’s the temperature today? -- Какая сегодня температура?	46
+43	Fahrenheit thermometer -- термометр Фаренгейта / со шкалой Фаренгейта	48
+44	Celsius / Centigrade thermometer -- термометр Цельсия / со шкалой Цельсия	48
+45	thick fog -- густой туман	49
+46	morning mist -- утренний туман, утренняя дымка	50
+47	cold weather -- холодная погода	53
+48	dust storm -- пыльная буря	55
+49	The sky was clear. -- Небо было безоблачным.	56
+50	gale warning -- штормовое предупреждение	61
+51	scorching sun -- палящее солнце	62
+52	scorching day -- знойный день	62
+53	blustery wind -- порывистый ветер	64
+54	blustery weather -- ветреная погода	64
+55	The sky is overcast. -- Небо затянуто облаками.	65
 \.
 
 
@@ -175,94 +175,94 @@ COPY public.examples (id, text, card_id) FROM stdin;
 --
 
 COPY public.translations (id, text, card_id) FROM stdin;
-3342	атмосферный	1878
-3343	погода	1879
-3344	снег	1880
-3345	дождь	1881
-3346	ветер	1882
-3347	град	1883
-3348	гроза	1884
-3349	осадки	1885
-3350	гром	1886
-3351	молния	1887
-3352	антициклон	1888
-3353	атмосфера	1889
-3354	барометр	1890
-3355	ветреный	1891
-3356	влажность	1892
-3357	мокрый	1893
-3358	сырой	1893
-3359	влажный	1893
-3360	сырой	1894
-3361	мокрый	1894
-3362	влажный	1894
-3363	влажный	1895
-3364	сырой	1895
-3365	восход солнца	1896
-3366	градус	1897
-3367	давление	1898
-3368	душный	1899
-3369	жара	1900
-3370	жаркий	1901
-3371	закат	1902
-3372	мороз	1903
-3373	заморозки	1903
-3374	изморось	1904
-3375	мелкий дождь	1904
-3376	лёгкий туман	1905
-3377	дымка	1905
-3378	мгла	1905
-3379	лед	1906
-3380	ливень	1907
-3381	лужа	1908
-3382	метеорология	1909
-3383	облачный	1910
-3384	оттепель	1911
-3385	прохладный	1912
-3386	пыльный	1913
-3387	радуга	1914
-3388	свежий	1915
-3389	чистый	1915
-3390	скользкий	1916
-3391	слякоть	1917
-3392	смог	1918
-3393	густой туман с копотью	1918
-3394	снегопад	1919
-3395	солнечный	1920
-3396	сухой	1921
-3397	сырой	1922
-3398	влажный	1922
-3399	температура	1923
-3400	теплый	1924
-3401	термометр	1925
-3402	градусник	1925
-3403	туман	1926
-3404	пасмурность	1927
-3405	туман	1927
-3406	дымка	1927
-3407	туманный	1928
-3408	вода	1929
-3409	холодный	1930
-3410	циклон	1931
-3411	шторм	1932
-3412	гроза	1932
-3413	ураган	1932
-3414	буря	1932
-3415	безоблачный	1933
-3416	ясный	1933
-3417	дождь со снегом	1934
-3418	туча	1935
-3419	облако	1935
-3420	промозглый	1936
-3421	ливень	1937
-3422	шторм	1938
-3423	сильный ветер	1938
-3424	знойный	1939
-3425	палящий	1939
-3426	пыль	1940
-3427	ветреный	1941
-3428	порывистый	1941
-3429	покрытый облаками	1942
+1	атмосферный	1
+2	погода	2
+3	снег	3
+4	дождь	4
+5	ветер	5
+6	град	6
+7	гроза	7
+8	осадки	8
+9	гром	9
+10	молния	10
+11	антициклон	11
+12	атмосфера	12
+13	барометр	13
+14	ветреный	14
+15	влажность	15
+16	влажный	16
+17	мокрый	16
+18	сырой	16
+19	влажный	17
+20	сырой	17
+21	мокрый	17
+22	влажный	18
+23	сырой	18
+24	восход солнца	19
+25	градус	20
+26	давление	21
+27	душный	22
+28	жара	23
+29	жаркий	24
+30	закат	25
+31	мороз	26
+32	заморозки	26
+33	изморось	27
+34	мелкий дождь	27
+35	мгла	28
+36	дымка	28
+37	лёгкий туман	28
+38	лед	29
+39	ливень	30
+40	лужа	31
+41	метеорология	32
+42	облачный	33
+43	оттепель	34
+44	прохладный	35
+45	пыльный	36
+46	радуга	37
+47	чистый	38
+48	свежий	38
+49	скользкий	39
+50	слякоть	40
+51	смог	41
+52	густой туман с копотью	41
+53	снегопад	42
+54	солнечный	43
+55	сухой	44
+56	влажный	45
+57	сырой	45
+58	температура	46
+59	теплый	47
+60	термометр	48
+61	градусник	48
+62	туман	49
+63	дымка	50
+64	пасмурность	50
+65	туман	50
+66	туманный	51
+67	вода	52
+68	холодный	53
+69	циклон	54
+70	шторм	55
+71	ураган	55
+72	буря	55
+73	гроза	55
+74	безоблачный	56
+75	ясный	56
+76	дождь со снегом	57
+77	туча	58
+78	облако	58
+79	промозглый	59
+80	ливень	60
+81	шторм	61
+82	сильный ветер	61
+83	палящий	62
+84	знойный	62
+85	пыль	63
+86	порывистый	64
+87	ветреный	64
+88	покрытый облаками	65
 \.
 
 
@@ -270,28 +270,28 @@ COPY public.translations (id, text, card_id) FROM stdin;
 -- Name: cards_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dev
 --
 
-SELECT pg_catalog.setval('public.cards_id_seq', 1942, true);
+SELECT pg_catalog.setval('public.cards_id_seq', 65, true);
 
 
 --
 -- Name: dictionaries_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dev
 --
 
-SELECT pg_catalog.setval('public.dictionaries_id_seq', 3, true);
+SELECT pg_catalog.setval('public.dictionaries_id_seq', 1, true);
 
 
 --
 -- Name: examples_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dev
 --
 
-SELECT pg_catalog.setval('public.examples_id_seq', 1344, true);
+SELECT pg_catalog.setval('public.examples_id_seq', 55, true);
 
 
 --
 -- Name: translations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dev
 --
 
-SELECT pg_catalog.setval('public.translations_id_seq', 3429, true);
+SELECT pg_catalog.setval('public.translations_id_seq', 88, true);
 
 
 --
