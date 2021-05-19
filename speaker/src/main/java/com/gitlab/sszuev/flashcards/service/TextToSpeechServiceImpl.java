@@ -25,7 +25,7 @@ public class TextToSpeechServiceImpl implements TextToSpeechService {
     }
 
     @Override
-    public String getResourceID(String text, String lang) {
+    public String getResourceID(String text, String lang, String ... options) {
         if (!"en".equalsIgnoreCase(lang)) {
             // TODO: handle lang
             throw new UnsupportedOperationException("TODO");
