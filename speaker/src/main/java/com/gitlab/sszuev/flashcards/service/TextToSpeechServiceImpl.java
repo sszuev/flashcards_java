@@ -11,7 +11,7 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.net.URI;
+import java.net.URL;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -25,8 +25,8 @@ import java.util.stream.Collectors;
 public class TextToSpeechServiceImpl implements TextToSpeechService {
     private static final Logger LOGGER = LoggerFactory.getLogger(TextToSpeechServiceImpl.class);
 
-    private static final String RESOURCE_DIR = "audio";
-    private static final String LIB_PATTERN = "classpath:%s/*/*.tar";
+    private static final String RESOURCE_DIR = "";
+    private static final String LIB_PATTERN = "classpath*:%s/*/*.tar";
     private final Map<String, AudioLibrary> libraries;
 
     @Autowired
@@ -69,8 +69,9 @@ public class TextToSpeechServiceImpl implements TextToSpeechService {
 
     private static String getParentDir(Resource resource) {
         try {
-            URI uri = Objects.requireNonNull(resource.getURI(), "Null URI for <" + resource + ">.");
-            return uri.toString().replaceAll(".+/([^/]+)/[^/]+$", "$1");
+            // URI and File accessors do not work in general case.
+            URL url = Objects.requireNonNull(resource.getURL(), "Null URL for <" + resource + ">.");
+            return url.toString().replaceAll(".+/([^/]+)/[^/]+$", "$1");
         } catch (Exception ex) {
             throw new IllegalStateException("Unable to parse parent for <" + resource + ">.", ex);
         }
