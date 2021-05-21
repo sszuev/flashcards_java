@@ -150,7 +150,7 @@ function drawAndPlaySound(parent, sound) {
     let item = $('.sound', parent);
     if (sound != null) {
         let path = '/api/sounds/' + sound;
-        item.html(`<audio controls><source src='${path}' type='audio/wav'/></audio>`);
+        item.html(`<audio controls><source src='${path}' type='audio/flac'/></audio>`);
         new Audio(path).play().then(() => {
         });
     } else {

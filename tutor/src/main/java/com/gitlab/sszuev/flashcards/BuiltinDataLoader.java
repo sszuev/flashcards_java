@@ -15,6 +15,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
@@ -28,9 +29,8 @@ import java.util.Objects;
 public class BuiltinDataLoader implements ApplicationListener<ApplicationReadyEvent> {
     private static final Logger LOGGER = LoggerFactory.getLogger(BuiltinDataLoader.class);
 
-    private final ResourcePatternResolver resolver;
+    private final Resource[] resources;
     private final LingvoParser parser;
-    private final String dataDir;
 
     private final DictionaryRepository dictionaryRepository;
     private final UserRepository userRepository;
@@ -40,26 +40,31 @@ public class BuiltinDataLoader implements ApplicationListener<ApplicationReadyEv
                              LingvoParser parser,
                              DictionaryRepository dictionaryRepository,
                              UserRepository userRepository) {
-        this.resolver = Objects.requireNonNull(resolver);
+        this.resources = readResources(Objects.requireNonNull(resolver), Objects.requireNonNull(dir));
         this.parser = Objects.requireNonNull(parser);
-        this.dataDir = Objects.requireNonNull(dir);
         this.dictionaryRepository = Objects.requireNonNull(dictionaryRepository);
         this.userRepository = Objects.requireNonNull(userRepository);
+    }
+
+    private static Resource[] readResources(ResourcePatternResolver resolver, String dir) {
+        try {
+            return resolver.getResources(dir);
+        } catch (FileNotFoundException ex) {
+            LOGGER.warn("Directory <" + dir + "> does not exist");
+            return new Resource[0];
+        } catch (IOException e) {
+            throw new IllegalStateException("Unable to read resources from <" + dir + ">.", e);
+        }
     }
 
     @Transactional
     @Override
     public void onApplicationEvent(@NonNull ApplicationReadyEvent event) {
-        try {
-            Resource[] resources = resolver.getResources(dataDir);
-            if (resources.length == 0) {
-                LOGGER.info("No data found to upload.");
-                return;
-            }
-            Arrays.stream(resources).filter(Resource::isReadable).map(this::parse).forEach(this::save);
-        } catch (IOException e) {
-            throw new IllegalStateException("Unable to load data", e);
+        if (resources.length == 0) {
+            LOGGER.info("No data found to upload.");
+            return;
         }
+        Arrays.stream(resources).filter(Resource::isReadable).map(this::parse).forEach(this::save);
         LOGGER.info("Uploading is completed.");
     }
 

@@ -4,7 +4,10 @@ import com.gitlab.sszuev.flashcards.service.SoundService;
 import com.gitlab.sszuev.flashcards.service.TextToSpeechService;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriUtils;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 /**
@@ -13,6 +16,7 @@ import java.util.Objects;
 @Service
 public class SoundServiceImpl implements SoundService {
     private final TextToSpeechService provider;
+    private final Charset charset = StandardCharsets.UTF_8;
 
     public SoundServiceImpl(TextToSpeechService provider) {
         this.provider = Objects.requireNonNull(provider);
@@ -20,12 +24,13 @@ public class SoundServiceImpl implements SoundService {
 
     @Override
     public String getResourceName(String word, String lang) {
-        return provider.getResourceID(word, lang);
+        String res = provider.getResourceID(word, lang);
+        return res == null ? null : UriUtils.encodePathSegment(res, charset);
     }
 
     @Override
     public Resource getResource(String name) {
-        return provider.getResource(name);
+        return provider.getResource(UriUtils.decode(name, charset));
     }
 
 }

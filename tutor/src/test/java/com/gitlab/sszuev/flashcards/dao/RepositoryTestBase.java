@@ -1,5 +1,6 @@
 package com.gitlab.sszuev.flashcards.dao;
 
+import com.gitlab.sszuev.flashcards.App;
 import org.hibernate.SessionFactory;
 import org.hibernate.stat.Statistics;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Created by @ssz on 16.05.2021.
  */
 @Transactional
-@SpringBootTest
+@SpringBootTest(classes = {App.class})
 @AutoConfigureTestEntityManager
 abstract class RepositoryTestBase {
     @Autowired

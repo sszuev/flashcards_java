@@ -65,7 +65,7 @@ public class CardsController {
         headers.setContentDispositionFormData("", UriComponentsBuilder.newInstance()
                 .path(path).encode(StandardCharsets.UTF_8).toUriString());
         headers.setContentLength(length);
-        headers.setContentType(new MediaType("audio", "wav"));
+        headers.setContentType(new MediaType("audio", "flac"));
         return new ResponseEntity<>(res, headers, HttpStatus.OK);
     }
 }
