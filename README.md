@@ -29,3 +29,7 @@ $ docker network create flashcards-net
 $ docker run --network flashcards-net --name flashcards-db -d -p 5432:5432 flashcards-db
 $ docker run --network flashcards-net -e JAVA_OPTS="-Dspring.profiles.active=docker -Dspring.datasource.url=jdbc:postgresql://flashcards-db:5432/flashcards" -d -p 8080:8080 flashcards-app
 ```
+##### Build and run using docker-compose:
+```
+$ docker-compose -f docker-compose.yml up -d
+```

@@ -1,0 +1,26 @@
+version: '3.9'
+
+networks:
+  flashcards-net:
+
+services:
+  db:
+    networks:
+      - flashcards-net
+    build:
+      context: .
+      dockerfile: db.Dockerfile
+    ports:
+      - "5432:5432"
+  app:
+    depends_on:
+      - db
+    networks:
+      - flashcards-net
+    build:
+      context: .
+      dockerfile: app.Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - "JAVA_OPTS=-Dspring.profiles.active=docker -Dspring.datasource.url=jdbc:postgresql://db:5432/flashcards"
