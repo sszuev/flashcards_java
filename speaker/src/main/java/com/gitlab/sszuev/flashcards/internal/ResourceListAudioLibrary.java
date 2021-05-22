@@ -1,5 +1,6 @@
 package com.gitlab.sszuev.flashcards.internal;
 
+import com.gitlab.sszuev.flashcards.Compounder;
 import org.springframework.core.io.Resource;
 
 import java.util.Collection;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
  * Created by @ssz on 19.05.2021.
  */
 public class ResourceListAudioLibrary implements AudioLibrary {
+    private static final Compounder HELPER = new Compounder(":");
     private final List<AudioLibrary> resources;
 
     public ResourceListAudioLibrary(Collection<Resource> resources,
@@ -50,7 +52,7 @@ public class ResourceListAudioLibrary implements AudioLibrary {
         for (int i = 0; i < resources.size(); i++) {
             String id = resources.get(i).getResourceID(text, options);
             if (id != null) {
-                return i + ":" + id;
+                return HELPER.compound(String.valueOf(i), id);
             }
         }
         return null;
@@ -61,11 +63,7 @@ public class ResourceListAudioLibrary implements AudioLibrary {
         if (resources.size() == 1) {
             return resources.get(0).getResource(id);
         }
-        if (!id.contains(":")) {
-            throw new IllegalArgumentException("Wrong identifier: " + id);
-        }
-        int k = Integer.parseInt(id.replaceFirst("^([^:]+):.+$", "$1"));
-        String v = id.replaceFirst("^[^:]+:(.+)$", "$1");
-        return resources.get(k).getResource(v);
+        int index = Integer.parseInt(HELPER.getFirst(id));
+        return resources.get(index).getResource(HELPER.getRest(id));
     }
 }

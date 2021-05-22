@@ -1,5 +1,7 @@
 package com.gitlab.sszuev.flashcards.service;
 
+import com.gitlab.sszuev.flashcards.Compounder;
+import com.gitlab.sszuev.flashcards.TextToSpeechService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -79,15 +81,18 @@ public class VoiceRSSClientTTSImpl implements TextToSpeechService {
             , Map.entry("vi-vn", "Vietnamese"));
 
     private final RestTemplate restTemplate;
+    private final Compounder compounder;
 
     private final String api;
     private final String format;
     private final String key;
 
     public VoiceRSSClientTTSImpl(RestTemplate template,
+                                 Compounder compounder,
                                  @Value("${app.speaker.voicerss.api:api.voicerss.org}") String url,
                                  @Value("${app.speaker.voicerss.format:16khz_16bit_stereo}") String format,
                                  @Value("${app.speaker.voicerss.key}") String key) {
+        this.compounder = Objects.requireNonNull(compounder);
         this.api = Objects.requireNonNull(url);
         this.key = Objects.requireNonNull(key);
         this.format = Objects.requireNonNull(format);
@@ -101,16 +106,13 @@ public class VoiceRSSClientTTSImpl implements TextToSpeechService {
                 .filter(x -> x.startsWith(language.toLowerCase()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Unsupported language " + language));
-        return lang + ":" + text;
+        return compounder.compound(lang, text);
     }
 
     @Override
     public Resource getResource(String id) {
-        if (!id.contains(":")) {
-            throw new IllegalArgumentException("Wrong identifier: " + id);
-        }
-        String lang = id.replaceFirst("^([^:]+):.+$", "$1");
-        String text = id.replaceFirst("^[^:]+:(.+)$", "$1");
+        String lang = compounder.getFirst(id);
+        String text = compounder.getRest(id);
 
         @SuppressWarnings("HttpUrlsUsage")
         String uri = UriComponentsBuilder.fromHttpUrl("http://" + api)

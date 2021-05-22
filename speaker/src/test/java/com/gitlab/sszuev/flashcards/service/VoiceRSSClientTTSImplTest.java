@@ -1,5 +1,7 @@
 package com.gitlab.sszuev.flashcards.service;
 
+import com.gitlab.sszuev.flashcards.Compounder;
+import com.gitlab.sszuev.flashcards.TextToSpeechService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +22,7 @@ import org.springframework.web.client.RestTemplate;
 /**
  * Created by @ssz on 22.05.2021.
  */
-@SpringBootTest(classes = VoiceRSSClientTTSImpl.class)
+@SpringBootTest(classes = {VoiceRSSClientTTSImpl.class, Compounder.class})
 @TestPropertySource(properties = {
         "app.speaker.voicerss.api=" + VoiceRSSClientTTSImplTest.TEST_API,
         "app.speaker.voicerss.format=" + VoiceRSSClientTTSImplTest.TEST_FORMAT,

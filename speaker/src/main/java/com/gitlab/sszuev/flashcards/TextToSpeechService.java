@@ -1,6 +1,4 @@
-package com.gitlab.sszuev.flashcards.service;
-
-import com.gitlab.sszuev.flashcards.AudioResourceProvider;
+package com.gitlab.sszuev.flashcards;
 
 /**
  * A gateway that provides audio resource with speech by the specified text.

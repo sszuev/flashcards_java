@@ -1,5 +1,7 @@
 package com.gitlab.sszuev.flashcards.service;
 
+import com.gitlab.sszuev.flashcards.Compounder;
+import com.gitlab.sszuev.flashcards.TextToSpeechService;
 import com.gitlab.sszuev.flashcards.internal.AudioLibrary;
 import com.gitlab.sszuev.flashcards.internal.ResourceListAudioLibrary;
 import com.gitlab.sszuev.flashcards.internal.TarArchiveAudioLibrary;
@@ -30,14 +32,16 @@ public class LocalResourceTTSImpl implements TextToSpeechService {
 
     private static final String RESOURCE_DIR = "";
     private static final String LIB_PATTERN = "classpath*:%s/*/*.tar";
+    private final Compounder compounder;
     private final Map<String, AudioLibrary> libraries;
 
     @Autowired
-    public LocalResourceTTSImpl(ResourcePatternResolver resolver) throws IOException {
-        this(loadLibraries(resolver, RESOURCE_DIR));
+    public LocalResourceTTSImpl(ResourcePatternResolver resolver, Compounder compounder) throws IOException {
+        this(compounder, loadLibraries(resolver, RESOURCE_DIR));
     }
 
-    protected LocalResourceTTSImpl(Map<String, AudioLibrary> libraries) {
+    protected LocalResourceTTSImpl(Compounder compounder, Map<String, AudioLibrary> libraries) {
+        this.compounder = Objects.requireNonNull(compounder);
         this.libraries = Collections.unmodifiableMap(Objects.requireNonNull(libraries));
     }
 
@@ -85,17 +89,12 @@ public class LocalResourceTTSImpl implements TextToSpeechService {
         AudioLibrary lib = getLibrary(lang);
         if (lib == null) return null;
         String res = lib.getResourceID(text, options);
-        return res != null ? String.format("%s:%s", lang, res) : null;
+        return res != null ? compounder.compound(lang, res) : null;
     }
 
     @Override
     public Resource getResource(String id) {
-        if (!id.contains(":")) {
-            throw new IllegalArgumentException("Wrong identifier: " + id);
-        }
-        String k = id.replaceFirst("^([^:]+):.+$", "$1");
-        String v = id.replaceFirst("^[^:]+:(.+)$", "$1");
-        return getLibrary(k).getResource(v);
+        return getLibrary(compounder.getFirst(id)).getResource(compounder.getRest(id));
     }
 
     public AudioLibrary getLibrary(String lang) {

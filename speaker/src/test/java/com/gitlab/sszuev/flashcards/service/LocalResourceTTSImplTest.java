@@ -1,5 +1,7 @@
 package com.gitlab.sszuev.flashcards.service;
 
+import com.gitlab.sszuev.flashcards.Compounder;
+import com.gitlab.sszuev.flashcards.TextToSpeechService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +20,7 @@ import java.security.NoSuchAlgorithmException;
 /**
  * Created by @ssz on 09.05.2021.
  */
-@SpringBootTest(classes = LocalResourceTTSImpl.class)
+@SpringBootTest(classes = {LocalResourceTTSImpl.class, Compounder.class})
 public class LocalResourceTTSImplTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalResourceTTSImplTest.class);
 
