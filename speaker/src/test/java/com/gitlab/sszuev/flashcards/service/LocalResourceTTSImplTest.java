@@ -1,13 +1,15 @@
 package com.gitlab.sszuev.flashcards.service;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import java.io.IOException;
 import java.security.MessageDigest;
@@ -16,9 +18,9 @@ import java.security.NoSuchAlgorithmException;
 /**
  * Created by @ssz on 09.05.2021.
  */
-public class TextToSpeechServiceTest {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TextToSpeechServiceTest.class);
-    private TextToSpeechService service;
+@SpringBootTest(classes = LocalResourceTTSImpl.class)
+public class LocalResourceTTSImplTest {
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocalResourceTTSImplTest.class);
 
     private static final String TEST_LANG = "en";
     private static final String TEST_WORD = "weather";
@@ -26,9 +28,12 @@ public class TextToSpeechServiceTest {
     private static final long TEST_SIZE = 26395;
     private static final byte[] TEST_MD5 = {-125, 77, -109, -54, 100, -9, -127, 121, -2, 58, -108, -15, -97, -106, 87, 46};
 
+    @Autowired
+    private TextToSpeechService service;
+
     @BeforeEach
-    public void init() throws IOException {
-        service = new LocalResourceTTSImpl(new PathMatchingResourcePatternResolver());
+    public void ensureValid() {
+        Assumptions.assumeTrue(service instanceof LocalResourceTTSImpl);
     }
 
     @Test

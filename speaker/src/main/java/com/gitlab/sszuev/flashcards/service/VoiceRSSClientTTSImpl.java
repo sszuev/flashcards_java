@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -26,7 +27,7 @@ import java.util.Objects;
 public class VoiceRSSClientTTSImpl implements TextToSpeechService {
     private static final Logger LOGGER = LoggerFactory.getLogger(VoiceRSSClientTTSImpl.class);
 
-    private static final Map<String, String> LANGUAGES = Map.ofEntries(
+    private static final List<Map.Entry<String, String>> LANGUAGES = List.of(
             Map.entry("ar-eg", "Arabic (Egypt)")
             , Map.entry("ar-sa", "Arabic (Saudi Arabia)")
             , Map.entry("bg-bg", "Bulgarian")
@@ -95,7 +96,8 @@ public class VoiceRSSClientTTSImpl implements TextToSpeechService {
 
     @Override
     public String getResourceID(String text, String language, String... options) {
-        String lang = LANGUAGES.keySet().stream()
+        String lang = LANGUAGES.stream()
+                .map(Map.Entry::getKey)
                 .filter(x -> x.startsWith(language.toLowerCase()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Unsupported language " + language));
