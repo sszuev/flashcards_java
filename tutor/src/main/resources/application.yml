@@ -1,4 +1,6 @@
 app:
+  loader:
+    enabled: false
   tutor:
     run:
       # number of words in run

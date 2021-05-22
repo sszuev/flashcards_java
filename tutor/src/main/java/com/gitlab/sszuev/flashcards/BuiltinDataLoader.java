@@ -7,6 +7,7 @@ import com.gitlab.sszuev.flashcards.parser.LingvoParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.io.Resource;
@@ -25,6 +26,7 @@ import java.util.Objects;
  * <p>
  * Created by @ssz on 09.05.2021.
  */
+@ConditionalOnProperty(name = "app.loader.enabled", havingValue = "true")
 @Component
 public class BuiltinDataLoader implements ApplicationListener<ApplicationReadyEvent> {
     private static final Logger LOGGER = LoggerFactory.getLogger(BuiltinDataLoader.class);
