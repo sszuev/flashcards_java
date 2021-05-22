@@ -28,7 +28,7 @@ public class TextToSpeechServiceTest {
 
     @BeforeEach
     public void init() throws IOException {
-        service = new TextToSpeechServiceImpl(new PathMatchingResourcePatternResolver());
+        service = new LocalResourceTTSImpl(new PathMatchingResourcePatternResolver());
     }
 
     @Test

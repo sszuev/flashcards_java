@@ -6,6 +6,7 @@ import com.gitlab.sszuev.flashcards.internal.TarArchiveAudioLibrary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Service;
@@ -17,24 +18,26 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
+ * To work with local libraries of audio-resources.
  * TODO: include external tts service
  * <p>
  * Created by @ssz on 08.05.2021.
  */
+@Primary
 @Service
-public class TextToSpeechServiceImpl implements TextToSpeechService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TextToSpeechServiceImpl.class);
+public class LocalResourceTTSImpl implements TextToSpeechService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocalResourceTTSImpl.class);
 
     private static final String RESOURCE_DIR = "";
     private static final String LIB_PATTERN = "classpath*:%s/*/*.tar";
     private final Map<String, AudioLibrary> libraries;
 
     @Autowired
-    public TextToSpeechServiceImpl(ResourcePatternResolver resolver) throws IOException {
+    public LocalResourceTTSImpl(ResourcePatternResolver resolver) throws IOException {
         this(loadLibraries(resolver, RESOURCE_DIR));
     }
 
-    protected TextToSpeechServiceImpl(Map<String, AudioLibrary> libraries) {
+    protected LocalResourceTTSImpl(Map<String, AudioLibrary> libraries) {
         this.libraries = Collections.unmodifiableMap(Objects.requireNonNull(libraries));
     }
 
