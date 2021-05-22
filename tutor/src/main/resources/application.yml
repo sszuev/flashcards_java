@@ -1,9 +1,10 @@
 app:
-  behaviour:
-    # number of words in run
-    words: 10
-    # number of right answers per word (after which word changes its status to 'learned')
-    answers: 10
+  tutor:
+    run:
+      # number of words in run
+      words: 10
+      # number of right answers per word (after which word changes its status to 'learned')
+      answers: 10
 
 spring:
   datasource:

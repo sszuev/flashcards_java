@@ -29,8 +29,8 @@ public class CardServiceImpl implements CardService {
     private final int numberOfWordsInRun;
     private final int numberOfRightAnswerToLearn;
 
-    public CardServiceImpl(@Value("${app.behaviour.words:10}") int numberOfWordsInRun,
-                           @Value("${app.behaviour.answers:10}") int numberOfRightAnswerToLearn,
+    public CardServiceImpl(@Value("${app.tutor.run.words:10}") int numberOfWordsInRun,
+                           @Value("${app.tutor.run.answers:10}") int numberOfRightAnswerToLearn,
                            DictionaryRepository dictionaryRepository,
                            CardRepository cardRepository,
                            EntityMapper mapper) {

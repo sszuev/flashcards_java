@@ -25,8 +25,10 @@ import java.util.stream.Stream;
  * Created by @ssz on 02.05.2021.
  */
 @SpringBootTest
-@TestPropertySource(properties = {"app.behaviour.words=" + CardServiceTest.NUMBER_OF_WORDS_PER_RUN
-        , "app.behaviour.answers=" + CardServiceTest.NUMBER_OF_ANSWERS_TO_LEARN})
+@TestPropertySource(properties = {
+        "app.tutor.run.words=" + CardServiceTest.NUMBER_OF_WORDS_PER_RUN,
+        "app.tutor.run.answers=" + CardServiceTest.NUMBER_OF_ANSWERS_TO_LEARN
+})
 public class CardServiceTest {
     static final int NUMBER_OF_WORDS_PER_RUN = 5;
     static final int NUMBER_OF_ANSWERS_TO_LEARN = 3;
