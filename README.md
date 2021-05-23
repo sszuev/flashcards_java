@@ -5,8 +5,8 @@ It is supposed to be similar to Lingvo Tutor.
 Right now it is under development.  
 
 Consists of two modules:
-- [speaker](speaker) - a tts service-wrapper
-- [tutor](tutor) - a body of open-tutor, logic with flashcards
+- [SPEAKER](speaker) - a TTS service
+- [TUTOR](tutor) - a body of open-tutor, logic with flashcards
 
 ##### Requirements:
 
