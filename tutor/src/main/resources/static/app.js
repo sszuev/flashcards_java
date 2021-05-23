@@ -149,9 +149,9 @@ function rememberAnswer(data, stage, answer) {
 function drawAndPlaySound(parent, sound) {
     let item = $('.sound', parent);
     if (sound != null) {
-        let path = '/api/sounds/' + sound;
-        item.html(`<audio controls><source src='${path}' type='audio/flac'/></audio>`);
+        const path = '/api/sounds/' + sound;
         new Audio(path).play().then(() => {
+            item.html(`<audio controls><source src='${path}' type='audio/wav'/></audio>`);
         });
     } else {
         item.html('');

@@ -122,7 +122,9 @@ public class VoiceRSSClientTTSImpl implements TextToSpeechService {
                 .queryParam("src", text)
                 .toUriString();
 
-        LOGGER.info("URL:::<{}>", uri);
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("URL:::<{}>", uri);
+        }
 
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.ACCEPT, new MediaType("audio", "wav").toString());
