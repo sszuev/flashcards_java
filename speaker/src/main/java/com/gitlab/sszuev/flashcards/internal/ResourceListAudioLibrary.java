@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  * Created by @ssz on 19.05.2021.
  */
 public class ResourceListAudioLibrary implements AudioLibrary {
-    private static final Compounder HELPER = new Compounder(":");
+    private static final Compounder ID_COMPOUNDER = new Compounder(":");
     private final List<AudioLibrary> resources;
 
     public ResourceListAudioLibrary(Collection<Resource> resources,
@@ -52,7 +52,7 @@ public class ResourceListAudioLibrary implements AudioLibrary {
         for (int i = 0; i < resources.size(); i++) {
             String id = resources.get(i).getResourceID(text, options);
             if (id != null) {
-                return HELPER.compound(String.valueOf(i), id);
+                return ID_COMPOUNDER.create(String.valueOf(i), id);
             }
         }
         return null;
@@ -63,7 +63,7 @@ public class ResourceListAudioLibrary implements AudioLibrary {
         if (resources.size() == 1) {
             return resources.get(0).getResource(id);
         }
-        int index = Integer.parseInt(HELPER.getFirst(id));
-        return resources.get(index).getResource(HELPER.getRest(id));
+        int index = Integer.parseInt(ID_COMPOUNDER.getFirst(id));
+        return resources.get(index).getResource(ID_COMPOUNDER.getRest(id));
     }
 }

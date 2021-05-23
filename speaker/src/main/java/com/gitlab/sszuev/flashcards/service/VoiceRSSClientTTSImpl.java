@@ -106,7 +106,7 @@ public class VoiceRSSClientTTSImpl implements TextToSpeechService {
                 .filter(x -> x.startsWith(language.toLowerCase()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Unsupported language " + language));
-        return compounder.compound(lang, text);
+        return compounder.create(lang, text);
     }
 
     @Override

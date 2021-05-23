@@ -31,18 +31,22 @@ public class Compounder {
         return validate(id).substring(id.indexOf(separator) + separator.length());
     }
 
-    public String compound(String first, String rest) {
+    public String create(String first, String rest) {
         return String.format("%s%s%s", first, separator, rest);
     }
 
     public String validate(String id) {
         if (!isCompound(id)) {
-            throw new IllegalArgumentException("Wrong identifier: " + id);
+            throw new IllegalArgumentException("Wrong identifier: <" + id + ">.");
         }
         return id;
     }
 
     public boolean isCompound(String id) {
         return id.contains(separator);
+    }
+
+    public boolean hasFirst(String id, String key) {
+        return id.length() > key.length() + separator.length() && id.startsWith(key + separator);
     }
 }

@@ -8,7 +8,6 @@ import com.gitlab.sszuev.flashcards.internal.TarArchiveAudioLibrary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Service;
@@ -25,7 +24,6 @@ import java.util.stream.Collectors;
  * <p>
  * Created by @ssz on 08.05.2021.
  */
-@Primary
 @Service
 public class LocalResourceTTSImpl implements TextToSpeechService {
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalResourceTTSImpl.class);
@@ -89,7 +87,7 @@ public class LocalResourceTTSImpl implements TextToSpeechService {
         AudioLibrary lib = getLibrary(lang);
         if (lib == null) return null;
         String res = lib.getResourceID(text, options);
-        return res != null ? compounder.compound(lang, res) : null;
+        return res != null ? compounder.create(lang, res) : null;
     }
 
     @Override
