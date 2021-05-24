@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 /**
  * A library that combines different sources encapsulated in ordered list.
  * A user receives the first found resource.
- * TODO: add in-memory cache for resources.
  * <p>
  * Created by @ssz on 19.05.2021.
  */

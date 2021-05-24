@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 
 /**
  * To work with local libraries of audio-resources.
- * TODO: include external tts service
  * <p>
  * Created by @ssz on 08.05.2021.
  */
@@ -45,11 +44,14 @@ public class LocalResourceTTSImpl implements TextToSpeechService {
 
     public static Map<String, AudioLibrary> loadLibraries(ResourcePatternResolver resolver, String dir) throws IOException {
         Function<Resource, TarArchiveAudioLibrary> factory = TarArchiveAudioLibrary::new;
-        return loadLibraryResources(resolver, dir).entrySet().stream()
+        return loadLibraryResources(resolver, Comparator.comparing(Resource::getFilename), dir)
+                .entrySet().stream()
                 .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, e -> new ResourceListAudioLibrary(e.getValue(), factory)));
     }
 
-    public static Map<String, Set<Resource>> loadLibraryResources(ResourcePatternResolver resolver, String dir) throws IOException {
+    public static Map<String, Set<Resource>> loadLibraryResources(ResourcePatternResolver resolver,
+                                                                  Comparator<Resource> comparator,
+                                                                  String dir) throws IOException {
         Resource[] resources = resolver.getResources(String.format(LIB_PATTERN, dir));
         if (resources.length == 0) {
             LOGGER.warn("No files [*.tar] are found in the directory [{}]", dir);
@@ -64,7 +66,8 @@ public class LocalResourceTTSImpl implements TextToSpeechService {
             }
             LOGGER.info("Load audio library {}", r);
             String k = getParentDir(r);
-            res.computeIfAbsent(k.toLowerCase(), x -> new HashSet<>()).add(r);
+            res.computeIfAbsent(k.toLowerCase(), x -> comparator == null ? new HashSet<>() : new TreeSet<>(comparator))
+                    .add(r);
         }
         if (res.isEmpty()) {
             throw new IllegalArgumentException("Can't find valid *.tar files in the directory " + dir + ".");

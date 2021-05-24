@@ -54,7 +54,7 @@ public class TarArchiveAudioLibrary implements AudioLibrary {
     }
 
     public static String parseTextIndex(String block) {
-        List<String> res = Arrays.stream(block.split("\n"))
+        List<String> res = Arrays.stream(block.split("\r*\n"))
                 .map(x -> {
                     String[] arr = x.split("=");
                     return arr.length == 2 && TEXT_REF.equals(arr[0]) ? arr[1] : null;
@@ -68,7 +68,7 @@ public class TarArchiveAudioLibrary implements AudioLibrary {
     }
 
     public static String parseFileIndex(String block) {
-        List<String> res = Arrays.stream(block.split("\n"))
+        List<String> res = Arrays.stream(block.split("\r*\n"))
                 .map(x -> x.startsWith("[") && x.endsWith("]") ? x.replaceAll("^\\[(.+)]$", "$1") : null)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
@@ -88,7 +88,7 @@ public class TarArchiveAudioLibrary implements AudioLibrary {
 
     private Map<String, List<Info>> readIndexMap() {
         String map = new String(readEntry(INDEXES), StandardCharsets.UTF_8);
-        return Arrays.stream(map.split("\n\n"))
+        return Arrays.stream(map.split("\r*\n\r*\n"))
                 .filter(x -> x.contains(TEXT_REF))
                 .collect(Collectors.toMap(TarArchiveAudioLibrary::parseTextIndex
                         , s -> List.of(new Info(parseTextIndex(s), parseFileIndex(s)))

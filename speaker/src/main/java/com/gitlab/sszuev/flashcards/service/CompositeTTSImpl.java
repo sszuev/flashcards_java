@@ -12,6 +12,7 @@ import java.util.Objects;
 
 /**
  * An implementation, that combines {@link LocalResourceTTSImpl} and {@link CompositeTTSImpl}.
+ * TODO: add in-memory cache for resources.
  * <p>
  * Created by @ssz on 22.05.2021.
  */
