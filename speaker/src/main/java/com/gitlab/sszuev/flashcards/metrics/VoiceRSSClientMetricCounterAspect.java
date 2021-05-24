@@ -19,15 +19,26 @@ import java.util.Objects;
 public class VoiceRSSClientMetricCounterAspect {
     private static final Logger LOGGER = LoggerFactory.getLogger(VoiceRSSClientMetricCounterAspect.class);
 
-    // http://localhost:8080/actuator/metrics/voice-rss
-    private static final String VOICE_RSS_TTS_NAME = "voice-rss";
+    // http://localhost:8080/actuator/metrics/voice-rss.current
+    // http://localhost:8080/actuator/metrics/voice-rss.total
+    private static final String VOICE_RSS_TTS_PREFIX = "voice-rss.";
 
-    private final Counter counter;
-    private final CountHolder holder;
+    private final Counter currentMeterCounter;
+    private final Counter totalMeterCounter;
+    private final CountHolder systemCounter;
 
-    public VoiceRSSClientMetricCounterAspect(MeterRegistry registry, CountHolder holder) {
-        this.holder = Objects.requireNonNull(holder);
-        this.counter = createCounter(registry, holder);
+    public VoiceRSSClientMetricCounterAspect(MeterRegistry registry, CountHolder counter) {
+        Objects.requireNonNull(registry);
+        this.systemCounter = Objects.requireNonNull(counter);
+        this.currentMeterCounter = Counter.builder(VOICE_RSS_TTS_PREFIX + "current")
+                .description("The number of calls per day to the voice-rss service.")
+                .register(registry);
+        this.totalMeterCounter = Counter.builder(VOICE_RSS_TTS_PREFIX + "total")
+                .description("The total number of calls to the voice-rss service since the beginning of observations.")
+                .register(registry);
+        CountHolder.CountData cdata = counter.getCount();
+        this.currentMeterCounter.increment(cdata.current());
+        this.totalMeterCounter.increment(cdata.total());
     }
 
     @AfterReturning("execution(* com.gitlab.sszuev.flashcards.service.VoiceRSSClientTTSImpl.getResource(String))")
@@ -37,16 +48,11 @@ public class VoiceRSSClientMetricCounterAspect {
         LOGGER.info("{}::::request='{}'", count, res);
     }
 
-    private static Counter createCounter(MeterRegistry registry, CountHolder holder) {
-        Counter res = Objects.requireNonNull(registry).counter(VOICE_RSS_TTS_NAME);
-        res.increment(holder.getCount());
+    private long incrementAndGet() {
+        totalMeterCounter.increment();
+        long res = systemCounter.increment().current();
+        currentMeterCounter.increment(res - currentMeterCounter.count());
         return res;
     }
 
-    private long incrementAndGet() {
-        counter.increment();
-        long res = (long) counter.count();
-        holder.setCount(res);
-        return res;
-    }
 }
