@@ -3,8 +3,10 @@ app:
     enabled: false
   tutor:
     run:
-      # number of words in run
-      words: 10
+      # number of words per run in a show stage
+      words-for-show: 10
+      # number of words per stage
+      words-for-test: 5
       # number of right answers per word (after which word changes its status to 'learned')
       answers: 10
 

@@ -1,9 +1,9 @@
+let data;
+let dictionary;
+
 function renderPage() {
     drawDictionariesPage();
 }
-
-let data;
-let dictionary;
 
 function drawDictionariesPage() {
     $.get('/api/dictionaries').done(function (response) {
@@ -52,7 +52,7 @@ function drawShowCardPage(index) {
 }
 
 function drawSelfTestCardPage(index) {
-    if (index >= data.length) {
+    if (index >= data.length || index >= numberOfWordsPerStage) { // temporary solution
         const update = JSON.stringify(data
             .map(function (d) {
                 const res = {};

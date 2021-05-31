@@ -1,5 +1,6 @@
 package com.gitlab.sszuev.flashcards.service.impl;
 
+import com.gitlab.sszuev.flashcards.RunConfig;
 import com.gitlab.sszuev.flashcards.dao.CardRepository;
 import com.gitlab.sszuev.flashcards.dao.DictionaryRepository;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
@@ -8,7 +9,6 @@ import com.gitlab.sszuev.flashcards.dto.*;
 import com.gitlab.sszuev.flashcards.service.CardService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,18 +26,13 @@ public class CardServiceImpl implements CardService {
     private final DictionaryRepository dictionaryRepository;
     private final CardRepository cardRepository;
     private final EntityMapper mapper;
-    private final int numberOfWordsInRun;
-    private final int numberOfRightAnswerToLearn;
+    private final RunConfig config;
 
-    public CardServiceImpl(@Value("${app.tutor.run.words:10}") int numberOfWordsInRun,
-                           @Value("${app.tutor.run.answers:10}") int numberOfRightAnswerToLearn,
-                           DictionaryRepository dictionaryRepository,
+    public CardServiceImpl(DictionaryRepository dictionaryRepository,
                            CardRepository cardRepository,
-                           EntityMapper mapper) {
-        if (numberOfWordsInRun <= 0 || numberOfRightAnswerToLearn <= 0)
-            throw new IllegalArgumentException();
-        this.numberOfWordsInRun = numberOfWordsInRun;
-        this.numberOfRightAnswerToLearn = numberOfRightAnswerToLearn;
+                           EntityMapper mapper,
+                           RunConfig config) {
+        this.config = Objects.requireNonNull(config);
         this.dictionaryRepository = Objects.requireNonNull(dictionaryRepository);
         this.cardRepository = Objects.requireNonNull(cardRepository);
         this.mapper = Objects.requireNonNull(mapper);
@@ -60,7 +55,7 @@ public class CardServiceImpl implements CardService {
         List<Card> toLearn = cardRepository.streamByDictionaryIdAndStatusIn(dic.getID(),
                 List.of(Status.UNKNOWN, Status.IN_PROCESS)).collect(Collectors.toList());
         Collections.shuffle(toLearn, new Random());
-        return toLearn.stream().limit(numberOfWordsInRun).map(c -> mapper.createResource(c, lang))
+        return toLearn.stream().limit(config.getNumberOfWordsToShow()).map(c -> mapper.createResource(c, lang))
                 .collect(Collectors.toUnmodifiableList());
     }
 
@@ -94,7 +89,7 @@ public class CardServiceImpl implements CardService {
             Status status;
             int answered = Optional.ofNullable(card.getAnswered()).orElse(0);
             int an = (int) map.values().stream().filter(x -> x).count();
-            if (an == map.size() && (answered = answered + an) >= numberOfRightAnswerToLearn) {
+            if (an == map.size() && (answered = answered + an) >= config.getNumberOfRightAnswers()) {
                 status = Status.LEARNED;
             } else {
                 status = Status.IN_PROCESS;
