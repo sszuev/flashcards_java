@@ -1,4 +1,4 @@
-package com.gitlab.sszuev.flashcards.rest;
+package com.gitlab.sszuev.flashcards.controller;
 
 import com.gitlab.sszuev.flashcards.RunConfig;
 import org.springframework.stereotype.Controller;

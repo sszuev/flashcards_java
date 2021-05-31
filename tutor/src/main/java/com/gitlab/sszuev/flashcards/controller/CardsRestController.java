@@ -1,4 +1,4 @@
-package com.gitlab.sszuev.flashcards.rest;
+package com.gitlab.sszuev.flashcards.controller;
 
 import com.gitlab.sszuev.flashcards.dto.CardRequest;
 import com.gitlab.sszuev.flashcards.dto.CardResource;
@@ -22,11 +22,11 @@ import java.util.Objects;
  * Created by @ssz on 02.05.2021.
  */
 @RestController
-public class CardsController {
+public class CardsRestController {
     private final CardService cardService;
     private final SoundService soundService;
 
-    public CardsController(CardService cardService, SoundService soundService) {
+    public CardsRestController(CardService cardService, SoundService soundService) {
         this.cardService = Objects.requireNonNull(cardService);
         this.soundService = Objects.requireNonNull(soundService);
     }
