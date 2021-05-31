@@ -24,7 +24,7 @@ function drawDictionariesPage() {
                 displayPageCard('show');
                 $.get('/api/dictionaries/' + dictionary.id + '/deck').done(function (response) {
                     data = response;
-                    drawShowCardPage(0);
+                    drawShowCardPage(data, 0);
                 });
             });
             tbody.append(row);
@@ -32,14 +32,14 @@ function drawDictionariesPage() {
     });
 }
 
-function drawShowCardPage(index) {
-    if (index >= data.length) {
+function drawShowCardPage(showData, index) {
+    if (index >= showData.length) {
         displayPageCard('self-test');
-        drawSelfTestCardPage(0);
+        drawSelfTestCardPage(randomArray(data, numberOfWordsPerStage), 0);
         return;
     }
     const page = $('#show');
-    const current = data[index];
+    const current = showData[index];
     const next = index + 1;
 
     drawAndPlaySound(page, current.sound);
@@ -47,13 +47,13 @@ function drawShowCardPage(index) {
     $('.word', page).html(current.word);
     $('.translations', page).html(current.translations);
     $('#show-next').unbind('click').on('click', function () {
-        drawShowCardPage(next);
+        drawShowCardPage(showData, next);
     });
 }
 
-function drawSelfTestCardPage(index) {
-    if (index >= data.length || index >= numberOfWordsPerStage) { // temporary solution
-        const update = JSON.stringify(data
+function drawSelfTestCardPage(selfTestData, index) {
+    if (index >= selfTestData.length) {
+        const update = JSON.stringify(selfTestData
             .map(function (d) {
                 const res = {};
                 res.id = d.id;
@@ -81,7 +81,7 @@ function drawSelfTestCardPage(index) {
     const correct = $('#self-test-correct');
     const wrong = $('#self-test-wrong');
 
-    const current = data[index];
+    const current = selfTestData[index];
     const next = index + 1;
 
     drawAndPlaySound(page, current.sound);
@@ -103,12 +103,12 @@ function drawSelfTestCardPage(index) {
     correct.unbind('click').on('click', function () {
         correct.unbind('click');
         rememberAnswer(current, stage, true);
-        drawSelfTestCardPage(next);
+        drawSelfTestCardPage(selfTestData, next);
     });
     wrong.unbind('click').on('click', function () {
         wrong.unbind('click');
         rememberAnswer(current, stage, false);
-        drawSelfTestCardPage(next);
+        drawSelfTestCardPage(selfTestData, next);
     });
 }
 
@@ -167,4 +167,33 @@ function displayPageCard(id) {
         $(x).hide();
     });
     $('#' + id).show()
+}
+
+/**
+ * Creates random array from the given one.
+ * @param data an array
+ * @param length a length of new array
+ * @returns {*[]} a new array
+ */
+function randomArray(data, length) {
+    if (length > data.length) {
+        throw "Wrong input: " + length + " > " + data.length;
+    }
+    const res = [];
+    let i = 0;
+    const max = 42 * data.length;
+    let j = data.length - 1;
+    while (res.length < length) {
+        if (i++ > max) {
+            throw "Can't create random array in " + max + " iterations";
+        }
+        const item = data[Math.floor(Math.random() * (j + 1))];
+        if (jQuery.inArray(item, res) !== -1) {
+            // choose another one
+            continue;
+        }
+        res.push(item);
+        j--;
+    }
+    return res;
 }
