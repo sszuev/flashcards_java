@@ -33,17 +33,16 @@ function drawDictionariesPage() {
 }
 
 function drawShowCardPage(showData, index) {
-    if (index >= showData.length) {
-        displayPageCard('self-test');
-        drawSelfTestCardPage(randomArray(data, numberOfWordsPerStage), 0);
+    if (index >= showData.length) { // no more data => display next stage
+        drawMosaicCardPage();
         return;
     }
     const page = $('#show');
     const current = showData[index];
     const next = index + 1;
 
-    drawAndPlaySound(page, current.sound);
-    $('.card-title', page).html(dictionary.name);
+    drawAndPlayAudio(page, current.sound);
+    displayTitle(page, 'show');
     $('.word', page).html(current.word);
     $('.translations', page).html(current.translations);
     $('#show-next').unbind('click').on('click', function () {
@@ -53,23 +52,11 @@ function drawShowCardPage(showData, index) {
 
 function drawSelfTestCardPage(selfTestData, index) {
     if (index >= selfTestData.length) {
-        const update = JSON.stringify(selfTestData
-            .map(function (d) {
-                const res = {};
-                res.id = d.id;
-                res.details = d.details;
-                return res;
-            }));
-        $.ajax({
-            type: 'PATCH',
-            url: '/api/cards/',
-            contentType: "application/json",
-            data: update
-        }).done(function () {
+        sendPatch(selfTestData, function () {
             // data synchronized
             displayPageCard('result');
             drawResultPage();
-        })
+        });
         return;
     }
     const stage = 'self-test';
@@ -84,8 +71,8 @@ function drawSelfTestCardPage(selfTestData, index) {
     const current = selfTestData[index];
     const next = index + 1;
 
-    drawAndPlaySound(page, current.sound);
-    $('.card-title', page).html(dictionary.name);
+    drawAndPlayAudio(page, current.sound);
+    displayTitle(page, stage);
     $('.word', page).html(current.word);
     translation.html(current.translations);
     correct.prop('disabled', true);
@@ -112,12 +99,84 @@ function drawSelfTestCardPage(selfTestData, index) {
     });
 }
 
+function drawMosaicCardPage() {
+    const stage = 'mosaic';
+
+    displayPageCard('mosaic');
+    displayTitle($('#mosaic'), stage);
+
+    const leftPane = $('#mosaic-left');
+    const rightPane = $('#mosaic-right');
+    const next = $('#mosaic-next');
+
+    const dataLeft = randomArray(data, numberOfWordsPerStage);
+    const dataRight = randomArray(data, data.length);
+
+    next.unbind('click').on('click', function () {
+        sendPatch(dataLeft, function () {
+            displayPageCard('self-test');
+            drawSelfTestCardPage(randomArray(data, numberOfWordsPerStage), 0);
+        });
+    });
+
+    leftPane.html('');
+    dataLeft.forEach(function (value) {
+        let left = $(`<div class="card border-white" id="${value.id}-left">${value.word}</div>`);
+        left.unbind('click').on('click', function () {
+            $.each($('#mosaic .card'), (k, v) => setBorderClass(v, 'border-white'));
+            setBorderClass(left, 'border-primary');
+            const sound = value.sound;
+            if (sound != null) {
+                playAudio(sound);
+            }
+        });
+        leftPane.append(left);
+    });
+
+    rightPane.html('');
+    dataRight.forEach(function (value) {
+        let right = $(`<div class="card border-white" id="${value.id}-right">${value.translations}</div>`);
+        right.unbind('click').on('click', function () {
+            const selected = $('#mosaic-left .border-primary');
+            if (!selected.length || !selected.text().trim()) {
+                // nothing selected or selected already processed item (with empty text)
+                return;
+            }
+            const rightCards = $('#mosaic-right .card');
+            const leftCards = $('#mosaic-left .card');
+            $.each(rightCards, (k, v) => setBorderClass(v, 'border-white'));
+            const left = $(document.getElementById(right.attr('id').replace('-right', '-left')));
+            if (left.length && !left.text().trim()) { // exists but empty
+                return;
+            }
+            const success = left.is(selected);
+            setBorderClass(right, success ? 'border-success' : 'border-danger');
+            if (success) {
+                left.html('&nbsp;').unbind('click');
+                right.html('&nbsp;').unbind('click');
+            }
+            const id = selected.attr('id').replace('-left', '');
+            const data = findById(dataLeft, id);
+            if (!hasStage(data, stage)) { // only for first
+                rememberAnswer(data, stage, success);
+            }
+            if (!leftCards.filter((i, e) => $(e).text().trim()).length) {
+                // no more options
+                $.each(rightCards, (k, v) => setBorderClass(v, 'border-white'));
+                $.each(leftCards, (k, v) => setBorderClass(v, 'border-white'));
+                $('#mosaic-next').parent().show();
+            }
+        });
+        rightPane.append(right);
+    });
+}
+
 function drawResultPage() {
     const page = $('#result');
-    const stage = 'self-test';
+    const selfTestStage = 'self-test';
     const right = data
         .filter(function (d) {
-            return d.details[stage];
+            return d.details[selfTestStage];
         })
         .map(function (d) {
             return d.word;
@@ -126,7 +185,7 @@ function drawResultPage() {
         .join(', ');
     const wrong = data
         .filter(function (d) {
-            return !d.details[stage];
+            return !d.details[selfTestStage];
         })
         .map(function (d) {
             return d.word;
@@ -134,9 +193,37 @@ function drawResultPage() {
         .sort()
         .join(', ');
 
-    $('.card-title', page).html(dictionary.name);
+    displayTitle(page, 'result');
     $('#result-correct').html(right);
     $('#result-wrong').html(wrong);
+}
+
+function sendPatch(data, onDoneCallback) {
+    const update = JSON.stringify(data
+        .map(function (d) {
+            const res = {};
+            res.id = d.id;
+            res.details = d.details;
+            return res;
+        }));
+    $.ajax({
+        type: 'PATCH',
+        url: '/api/cards/',
+        contentType: "application/json",
+        data: update
+    }).done(onDoneCallback);
+}
+
+function displayTitle(page, stage) {
+    $('.card-title', page).html(dictionary.name + ": " + stage);
+}
+
+function setBorderClass(item, border) {
+    return $(item).attr('class', $(item).attr('class').replace(/\bborder-.+\b/g, border));
+}
+
+function findById(data, id) {
+    return data.find(e => e.id.toString() === id.toString());
 }
 
 function rememberAnswer(data, stage, answer) {
@@ -146,15 +233,26 @@ function rememberAnswer(data, stage, answer) {
     data.details[stage] = answer;
 }
 
-function drawAndPlaySound(parent, sound) {
+function hasStage(data, stage) {
+    return data.details != null && data.details[stage] != null;
+}
+
+function drawAndPlayAudio(parent, sound) {
     let item = $('.sound', parent);
     if (sound != null) {
-        const path = '/api/sounds/' + sound;
-        new Audio(path).play().then(() => {
-            item.html(`<audio controls><source src='${path}' type='audio/wav'/></audio>`);
-        });
+        playAudio(sound, p => item.html(`<audio controls><source src='${p}' type='audio/wav'/></audio>`));
     } else {
         item.html('');
+    }
+}
+
+function playAudio(sound, callback) {
+    const path = '/api/sounds/' + sound;
+    const promise = new Audio(path).play();
+    if (callback) {
+        promise.then(() => callback(path));
+    } else {
+        promise.then(() => {});
     }
 }
 
@@ -179,21 +277,17 @@ function randomArray(data, length) {
     if (length > data.length) {
         throw "Wrong input: " + length + " > " + data.length;
     }
-    const res = [];
-    let i = 0;
-    const max = 42 * data.length;
-    let j = data.length - 1;
-    while (res.length < length) {
-        if (i++ > max) {
-            throw "Can't create random array in " + max + " iterations";
-        }
-        const item = data[Math.floor(Math.random() * (j + 1))];
-        if (jQuery.inArray(item, res) !== -1) {
-            // choose another one
-            continue;
-        }
-        res.push(item);
-        j--;
+    const res = data.slice();
+    shuffleArray(res);
+    if (length === data.length) {
+        return res;
     }
-    return res;
+    return res.slice(0, length);
+}
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
 }
