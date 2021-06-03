@@ -52,15 +52,15 @@ function drawShowCardPage(showData, index) {
 }
 
 function drawSelfTestCardPage(selfTestData, index) {
+    const stage = 'self-test';
     if (index >= selfTestData.length) {
-        sendPatch(selfTestData, function () {
+        sendPatch(toResource(selfTestData, stage), function () {
             // data synchronized
             displayPageCard('result');
             drawResultPage();
         });
         return;
     }
-    const stage = 'self-test';
     const page = $('#self-test');
 
     const translation = $('.translations', page);
@@ -114,7 +114,7 @@ function drawMosaicCardPage() {
     const dataRight = randomArray(data, data.length);
 
     next.unbind('click').on('click', function () {
-        sendPatch(dataLeft, function () {
+        sendPatch(toResource(dataLeft, stage), function () {
             displayPageCard('self-test');
             drawSelfTestCardPage(randomArray(data, numberOfWordsPerStage), 0);
         });
@@ -199,14 +199,7 @@ function drawResultPage() {
     $('#result-wrong').html(wrong);
 }
 
-function sendPatch(data, onDoneCallback) {
-    const update = JSON.stringify(data
-        .map(function (d) {
-            const res = {};
-            res.id = d.id;
-            res.details = d.details;
-            return res;
-        }));
+function sendPatch(update, onDoneCallback) {
     $.ajax({
         type: 'PATCH',
         url: '/api/cards/',
