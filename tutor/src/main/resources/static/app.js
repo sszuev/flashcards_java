@@ -1,6 +1,7 @@
 let data;
 let dictionary;
 
+// noinspection JSUnusedLocalSymbols
 function renderPage() {
     drawDictionariesPage();
 }
@@ -222,21 +223,6 @@ function setBorderClass(item, border) {
     return $(item).attr('class', $(item).attr('class').replace(/\bborder-.+\b/g, border));
 }
 
-function findById(data, id) {
-    return data.find(e => e.id.toString() === id.toString());
-}
-
-function rememberAnswer(data, stage, answer) {
-    if (data.details == null) {
-        data.details = {};
-    }
-    data.details[stage] = answer;
-}
-
-function hasStage(data, stage) {
-    return data.details != null && data.details[stage] != null;
-}
-
 function drawAndPlayAudio(parent, sound) {
     let item = $('.sound', parent);
     if (sound != null) {
@@ -265,29 +251,4 @@ function displayPageCard(id) {
         $(x).hide();
     });
     $('#' + id).show()
-}
-
-/**
- * Creates random array from the given one.
- * @param data an array
- * @param length a length of new array
- * @returns {*[]} a new array
- */
-function randomArray(data, length) {
-    if (length > data.length) {
-        throw "Wrong input: " + length + " > " + data.length;
-    }
-    const res = data.slice();
-    shuffleArray(res);
-    if (length === data.length) {
-        return res;
-    }
-    return res.slice(0, length);
-}
-
-function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
 }

@@ -96,7 +96,8 @@ public class CardServiceImpl implements CardService {
             }
             card.setStatus(status);
             card.setAnswered(answered);
-            LOGGER.info("Update card={} (status={}, answered={}), the data={}", id, status, answered, map);
+            LOGGER.info("Update card={} (status={}, answered={}), the data={}, text='{}'",
+                    id, status, answered, map, card.getText());
             cardRepository.save(card);
         }
     }
