@@ -102,6 +102,10 @@ function drawSelfTestCardPage(selfTestData, index) {
 
 function drawMosaicCardPage() {
     const stage = 'mosaic';
+    const borderDefault = 'border-white';
+    const borderSelected = 'border-primary';
+    const borderSuccess = 'border-success';
+    const borderError = 'border-danger';
 
     displayPageCard('mosaic');
     displayTitle($('#mosaic'), stage);
@@ -122,10 +126,10 @@ function drawMosaicCardPage() {
 
     leftPane.html('');
     dataLeft.forEach(function (value) {
-        let left = $(`<div class="card border-white" id="${value.id}-left">${value.word}</div>`);
+        let left = $(`<div class="card ${borderDefault}" id="${value.id}-left">${value.word}</div>`);
         left.unbind('click').on('click', function () {
-            $.each($('#mosaic .card'), (k, v) => setBorderClass(v, 'border-white'));
-            setBorderClass(left, 'border-primary');
+            $.each($('#mosaic .card'), (k, v) => setBorderClass(v, borderDefault));
+            setBorderClass(left, borderSelected);
             const sound = value.sound;
             if (sound != null) {
                 playAudio(sound);
@@ -136,22 +140,22 @@ function drawMosaicCardPage() {
 
     rightPane.html('');
     dataRight.forEach(function (value) {
-        let right = $(`<div class="card border-white" id="${value.id}-right">${value.translations}</div>`);
+        let right = $(`<div class="card ${borderDefault}" id="${value.id}-right">${value.translations}</div>`);
         right.unbind('click').on('click', function () {
-            const selected = $('#mosaic-left .border-primary');
+            const selected = $(`#mosaic-left .${borderSelected}`);
             if (!selected.length || !selected.text().trim()) {
                 // nothing selected or selected already processed item (with empty text)
                 return;
             }
             const rightCards = $('#mosaic-right .card');
             const leftCards = $('#mosaic-left .card');
-            $.each(rightCards, (k, v) => setBorderClass(v, 'border-white'));
+            $.each(rightCards, (k, v) => setBorderClass(v, borderDefault));
             const left = $(document.getElementById(right.attr('id').replace('-right', '-left')));
             if (left.length && !left.text().trim()) { // exists but empty
                 return;
             }
             const success = left.is(selected);
-            setBorderClass(right, success ? 'border-success' : 'border-danger');
+            setBorderClass(right, success ? borderSuccess : borderError);
             if (success) {
                 left.html('&nbsp;').unbind('click');
                 right.html('&nbsp;').unbind('click');
@@ -163,8 +167,8 @@ function drawMosaicCardPage() {
             }
             if (!leftCards.filter((i, e) => $(e).text().trim()).length) {
                 // no more options
-                $.each(rightCards, (k, v) => setBorderClass(v, 'border-white'));
-                $.each(leftCards, (k, v) => setBorderClass(v, 'border-white'));
+                $.each(rightCards, (k, v) => setBorderClass(v, borderDefault));
+                $.each(leftCards, (k, v) => setBorderClass(v, borderDefault));
                 $('#mosaic-next').parent().show();
             }
         });
@@ -174,23 +178,14 @@ function drawMosaicCardPage() {
 
 function drawResultPage() {
     const page = $('#result');
-    const selfTestStage = 'self-test';
     const right = data
-        .filter(function (d) {
-            return d.details[selfTestStage];
-        })
-        .map(function (d) {
-            return d.word;
-        })
+        .filter(d => isAnsweredRight(d))
+        .map(d => d.word)
         .sort()
         .join(', ');
     const wrong = data
-        .filter(function (d) {
-            return !d.details[selfTestStage];
-        })
-        .map(function (d) {
-            return d.word;
-        })
+        .filter(d => !isAnsweredRight(d))
+        .map(d => d.word)
         .sort()
         .join(', ');
 

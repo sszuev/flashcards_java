@@ -14,6 +14,28 @@ function hasStage(item, stage) {
 }
 
 /**
+ * Determines if the card is fully answered.
+ * If there is a wrong answer for any stage, then the method returns false.
+ * @param item a data (card)
+ * @returns {boolean|undefined}
+ */
+function isAnsweredRight(item) {
+    const details = item.details;
+    if (details == null || !Object.keys(details).length) {
+        return undefined;
+    }
+    for (let key in details) {
+        if (!details.hasOwnProperty(key)) {
+            continue;
+        }
+        if (!details[key]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+/**
  * Answers a resource for sending to server.
  * @param array a data array
  * @param stage i.e. 'self-test', 'mosaic'
