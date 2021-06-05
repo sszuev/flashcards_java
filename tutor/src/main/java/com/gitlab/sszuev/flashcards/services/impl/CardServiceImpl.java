@@ -1,12 +1,12 @@
-package com.gitlab.sszuev.flashcards.service.impl;
+package com.gitlab.sszuev.flashcards.services.impl;
 
 import com.gitlab.sszuev.flashcards.RunConfig;
-import com.gitlab.sszuev.flashcards.dao.CardRepository;
-import com.gitlab.sszuev.flashcards.dao.DictionaryRepository;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
 import com.gitlab.sszuev.flashcards.domain.*;
 import com.gitlab.sszuev.flashcards.dto.*;
-import com.gitlab.sszuev.flashcards.service.CardService;
+import com.gitlab.sszuev.flashcards.repositories.CardRepository;
+import com.gitlab.sszuev.flashcards.repositories.DictionaryRepository;
+import com.gitlab.sszuev.flashcards.services.CardService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

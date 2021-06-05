@@ -3,7 +3,7 @@ package com.gitlab.sszuev.flashcards.dto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gitlab.sszuev.flashcards.TestUtils;
 import com.gitlab.sszuev.flashcards.domain.Card;
-import com.gitlab.sszuev.flashcards.service.SoundService;
+import com.gitlab.sszuev.flashcards.services.SoundService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

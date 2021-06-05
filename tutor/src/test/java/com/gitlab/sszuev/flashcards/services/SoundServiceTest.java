@@ -1,7 +1,7 @@
-package com.gitlab.sszuev.flashcards.service;
+package com.gitlab.sszuev.flashcards.services;
 
 import com.gitlab.sszuev.flashcards.TextToSpeechService;
-import com.gitlab.sszuev.flashcards.service.impl.SoundServiceImpl;
+import com.gitlab.sszuev.flashcards.services.impl.SoundServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

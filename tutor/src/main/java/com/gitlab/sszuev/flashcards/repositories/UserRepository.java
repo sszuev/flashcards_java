@@ -1,4 +1,4 @@
-package com.gitlab.sszuev.flashcards.dao;
+package com.gitlab.sszuev.flashcards.repositories;
 
 import com.gitlab.sszuev.flashcards.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -41,7 +41,7 @@ public class VoiceRSSClientMetricCounterAspect {
         this.totalMeterCounter.increment(cdata.total());
     }
 
-    @AfterReturning("execution(* com.gitlab.sszuev.flashcards.service.VoiceRSSClientTTSImpl.getResource(String))")
+    @AfterReturning("execution(* com.gitlab.sszuev.flashcards.services.VoiceRSSClientTTSImpl.getResource(String))")
     public void countGetResource(JoinPoint point) {
         Object res = point.getArgs()[0];
         long count = incrementAndGet();

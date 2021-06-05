@@ -1,4 +1,4 @@
-package com.gitlab.sszuev.flashcards.service;
+package com.gitlab.sszuev.flashcards.services;
 
 import com.gitlab.sszuev.flashcards.dto.CardRequest;
 import com.gitlab.sszuev.flashcards.dto.CardResource;

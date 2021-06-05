@@ -1,10 +1,10 @@
-package com.gitlab.sszuev.flashcards.controller;
+package com.gitlab.sszuev.flashcards.controllers;
 
 import com.gitlab.sszuev.flashcards.dto.CardRequest;
 import com.gitlab.sszuev.flashcards.dto.CardResource;
 import com.gitlab.sszuev.flashcards.dto.DictionaryResource;
-import com.gitlab.sszuev.flashcards.service.CardService;
-import com.gitlab.sszuev.flashcards.service.SoundService;
+import com.gitlab.sszuev.flashcards.services.CardService;
+import com.gitlab.sszuev.flashcards.services.SoundService;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

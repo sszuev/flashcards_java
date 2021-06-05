@@ -1,9 +1,9 @@
 package com.gitlab.sszuev.flashcards;
 
-import com.gitlab.sszuev.flashcards.dao.DictionaryRepository;
-import com.gitlab.sszuev.flashcards.dao.UserRepository;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
 import com.gitlab.sszuev.flashcards.parser.LingvoParser;
+import com.gitlab.sszuev.flashcards.repositories.DictionaryRepository;
+import com.gitlab.sszuev.flashcards.repositories.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

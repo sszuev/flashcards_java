@@ -7,7 +7,7 @@ import com.gitlab.sszuev.flashcards.domain.Card;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
 import com.gitlab.sszuev.flashcards.domain.Language;
 import com.gitlab.sszuev.flashcards.domain.Status;
-import com.gitlab.sszuev.flashcards.service.SoundService;
+import com.gitlab.sszuev.flashcards.services.SoundService;
 import org.springframework.stereotype.Component;
 
 import java.util.*;

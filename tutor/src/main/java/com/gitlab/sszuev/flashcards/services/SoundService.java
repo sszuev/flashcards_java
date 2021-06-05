@@ -1,4 +1,4 @@
-package com.gitlab.sszuev.flashcards.service;
+package com.gitlab.sszuev.flashcards.services;
 
 import org.springframework.core.io.Resource;
 

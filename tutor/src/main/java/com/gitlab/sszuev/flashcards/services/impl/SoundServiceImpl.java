@@ -1,7 +1,7 @@
-package com.gitlab.sszuev.flashcards.service.impl;
+package com.gitlab.sszuev.flashcards.services.impl;
 
 import com.gitlab.sszuev.flashcards.TextToSpeechService;
-import com.gitlab.sszuev.flashcards.service.SoundService;
+import com.gitlab.sszuev.flashcards.services.SoundService;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriUtils;

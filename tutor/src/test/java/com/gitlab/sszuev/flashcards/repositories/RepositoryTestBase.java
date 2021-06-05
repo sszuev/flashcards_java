@@ -1,4 +1,4 @@
-package com.gitlab.sszuev.flashcards.dao;
+package com.gitlab.sszuev.flashcards.repositories;
 
 import com.gitlab.sszuev.flashcards.App;
 import org.hibernate.SessionFactory;
