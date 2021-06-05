@@ -10,7 +10,9 @@
     <script src="/app.js"></script>
 </head>
 <script th:inline="javascript">
+    const numberOfWordsToShow = [[${numberOfWordsToShow}]];
     const numberOfWordsPerStage = [[${numberOfWordsPerStage}]];
+    const numberOfRightAnswers = [[${numberOfRightAnswers}]];
 </script>
 <body onload="renderPage()">
 <div id="dictionaries" class="page card container container-table" style="display: none;">

@@ -7,6 +7,9 @@ function rememberAnswer(item, stage, answer) {
         item.details = {};
     }
     item.details[stage] = answer;
+    if (answer) {
+        item.answered++;
+    }
 }
 
 function hasStage(item, stage) {
@@ -33,6 +36,26 @@ function isAnsweredRight(item) {
         }
     }
     return true;
+}
+
+/**
+ * Answers of array with non-answered items to process.
+ * @param array input array
+ * @param length max length of returned array
+ * @returns {*[]} array of items to process
+ */
+function selectNonAnswered(array, length) {
+    const res = [];
+    for (let i = 0; i < array.length; i++) {
+        let item = array[i];
+        if (item.answered < numberOfRightAnswers) {
+            res.push(item);
+        }
+        if (res.length === length) {
+            return res;
+        }
+    }
+    return res;
 }
 
 /**

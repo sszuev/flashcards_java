@@ -1,5 +1,5 @@
-let data;
 let dictionary;
+let data;
 
 // noinspection JSUnusedLocalSymbols
 function renderPage() {
@@ -22,10 +22,9 @@ function drawDictionariesPage() {
                           </tr>`);
             row.unbind('click').on('click', function () {
                 dictionary = value;
-                displayPageCard('show');
-                $.get('/api/dictionaries/' + dictionary.id + '/deck').done(function (response) {
-                    data = response;
-                    drawShowCardPage(data, 0);
+                $.get('/api/dictionaries/' + dictionary.id + '/deck').done(function (array) {
+                    data = array;
+                    drawStageShow();
                 });
             });
             tbody.append(row);
@@ -33,9 +32,14 @@ function drawDictionariesPage() {
     });
 }
 
+function drawStageShow() {
+    displayPageCard('show');
+    drawShowCardPage(selectNonAnswered(data, numberOfWordsToShow), 0);
+}
+
 function drawShowCardPage(showData, index) {
     if (index >= showData.length) { // no more data => display next stage
-        drawMosaicCardPage();
+        drawStageMosaic();
         return;
     }
     const page = $('#show');
@@ -51,56 +55,7 @@ function drawShowCardPage(showData, index) {
     });
 }
 
-function drawSelfTestCardPage(selfTestData, index) {
-    const stage = 'self-test';
-    if (index >= selfTestData.length) {
-        sendPatch(toResource(selfTestData, stage), function () {
-            // data synchronized
-            displayPageCard('result');
-            drawResultPage();
-        });
-        return;
-    }
-    const page = $('#self-test');
-
-    const translation = $('.translations', page);
-    const curtain = $('#self-test-display-translation');
-    const display = $('#self-test-display-translation button');
-    const correct = $('#self-test-correct');
-    const wrong = $('#self-test-wrong');
-
-    const current = selfTestData[index];
-    const next = index + 1;
-
-    drawAndPlayAudio(page, current.sound);
-    displayTitle(page, stage);
-    $('.word', page).html(current.word);
-    translation.html(current.translations);
-    correct.prop('disabled', true);
-    wrong.prop('disabled', true);
-    translation.hide();
-    curtain.show();
-
-    display.unbind('click').on('click', function () {
-        display.unbind('click');
-        curtain.hide();
-        translation.show();
-        correct.prop('disabled', false);
-        wrong.prop('disabled', false);
-    });
-    correct.unbind('click').on('click', function () {
-        correct.unbind('click');
-        rememberAnswer(current, stage, true);
-        drawSelfTestCardPage(selfTestData, next);
-    });
-    wrong.unbind('click').on('click', function () {
-        wrong.unbind('click');
-        rememberAnswer(current, stage, false);
-        drawSelfTestCardPage(selfTestData, next);
-    });
-}
-
-function drawMosaicCardPage() {
+function drawStageMosaic() {
     const stage = 'mosaic';
     const borderDefault = 'border-white';
     const borderSelected = 'border-primary';
@@ -114,14 +69,12 @@ function drawMosaicCardPage() {
     const rightPane = $('#mosaic-right');
     const next = $('#mosaic-next');
 
-    const dataLeft = randomArray(data, numberOfWordsPerStage);
-    const dataRight = randomArray(data, data.length);
+    const nonAnsweredData = selectNonAnswered(data, numberOfWordsToShow);
+    const dataLeft = randomArray(nonAnsweredData, numberOfWordsPerStage);
+    const dataRight = randomArray(nonAnsweredData, nonAnsweredData.length);
 
     next.unbind('click').on('click', function () {
-        sendPatch(toResource(dataLeft, stage), function () {
-            displayPageCard('self-test');
-            drawSelfTestCardPage(randomArray(data, numberOfWordsPerStage), 0);
-        });
+        sendPatch(toResource(dataLeft, stage), () => drawStageSelfTest());
     });
 
     leftPane.html('');
@@ -176,22 +129,76 @@ function drawMosaicCardPage() {
     });
 }
 
+function drawStageSelfTest() {
+    displayPageCard('self-test');
+    drawSelfTestCardPage(randomArray(selectNonAnswered(data, numberOfWordsToShow), numberOfWordsPerStage), 0);
+}
+
+function drawSelfTestCardPage(selfTestData, index) {
+    const stage = 'self-test';
+    if (index >= selfTestData.length) {
+        sendPatch(toResource(selfTestData, stage), function () {
+            // data synchronized
+            displayPageCard('result');
+            drawResultPage();
+        });
+        return;
+    }
+    const page = $('#self-test');
+
+    const translation = $('.translations', page);
+    const curtain = $('#self-test-display-translation');
+    const display = $('#self-test-display-translation button');
+    const correct = $('#self-test-correct');
+    const wrong = $('#self-test-wrong');
+
+    const current = selfTestData[index];
+    const next = index + 1;
+
+    drawAndPlayAudio(page, current.sound);
+    displayTitle(page, stage);
+    $('.word', page).html(current.word);
+    translation.html(current.translations);
+    correct.prop('disabled', true);
+    wrong.prop('disabled', true);
+    translation.hide();
+    curtain.show();
+
+    display.unbind('click').on('click', function () {
+        display.unbind('click');
+        curtain.hide();
+        translation.show();
+        correct.prop('disabled', false);
+        wrong.prop('disabled', false);
+    });
+    correct.unbind('click').on('click', function () {
+        correct.unbind('click');
+        rememberAnswer(current, stage, true);
+        drawSelfTestCardPage(selfTestData, next);
+    });
+    wrong.unbind('click').on('click', function () {
+        wrong.unbind('click');
+        rememberAnswer(current, stage, false);
+        drawSelfTestCardPage(selfTestData, next);
+    });
+}
+
 function drawResultPage() {
     const page = $('#result');
-    const right = data
-        .filter(d => isAnsweredRight(d))
-        .map(d => d.word)
-        .sort()
-        .join(', ');
-    const wrong = data
-        .filter(d => !isAnsweredRight(d))
-        .map(d => d.word)
-        .sort()
-        .join(', ');
-
+    const right = toString(data.filter(d => isAnsweredRight(d)));
+    const wrong = toString(data.filter(function (d) {
+        const res = isAnsweredRight(d);
+        return res !== undefined && !res;
+    }));
+    const learned = toString(data.filter(d => d.answered >= numberOfRightAnswers));
     displayTitle(page, 'result');
     $('#result-correct').html(right);
     $('#result-wrong').html(wrong);
+    $('#result-learned').html(learned);
+}
+
+function toString(data) {
+    return data.map(d => d.word).sort().join(', ');
 }
 
 function sendPatch(update, onDoneCallback) {
@@ -226,7 +233,8 @@ function playAudio(sound, callback) {
     if (callback) {
         promise.then(() => callback(path));
     } else {
-        promise.then(() => {});
+        promise.then(() => {
+        });
     }
 }
 

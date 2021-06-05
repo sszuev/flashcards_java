@@ -21,7 +21,10 @@ public class SettingsController {
 
     @GetMapping(value = {"/"})
     public ModelAndView getRunSettings() {
-        return new ModelAndView("index",
-                Map.of("numberOfWordsPerStage", config.getNumberOfWordsPerStage()));
+        return new ModelAndView("index", Map.of(
+                "numberOfWordsToShow", config.getNumberOfWordsToShow(),
+                "numberOfWordsPerStage", config.getNumberOfWordsPerStage(),
+                "numberOfRightAnswers", config.getNumberOfRightAnswers())
+        );
     }
 }
