@@ -44,12 +44,13 @@ public class CardServiceTest {
     private SoundService soundService;
 
     @Test
-    public void testGetCardDeck() {
+    public void testNextDeckWithUnknownManyItems() {
         Language lang = () -> "ue";
         long dicId = 42;
         String dicName = "xxx";
 
-        Map<Long, String> words = Map.of(-1L, "A", -2L, "B", -3L, "C", -4L, "D", -5L, "E", -6L, "W");
+        Map<Long, String> words = Map.of(-1L, "A", -2L, "B", -3L, "C", -4L, "D", -5L, "E", -6L,
+                "F", -7L, "G", -8L, "H", -9L, "I", -10L, "K");
 
         Dictionary dic = TestUtils.mockDictionary(dicId, dicName, lang);
         Mockito.when(cardRepository.streamByDictionaryIdAndStatusIn(Mockito.eq(dicId),
@@ -63,7 +64,7 @@ public class CardServiceTest {
 
         Mockito.when(dictionaryRepository.findById(Mockito.eq(dicId))).thenReturn(Optional.of(dic));
 
-        List<CardResource> res = service.getCardDeck(dicId);
+        List<CardResource> res = service.getNextCardDeck(dicId);
         Assertions.assertNotNull(res);
         Assertions.assertEquals(NUMBER_OF_WORDS_PER_RUN, res.size());
         Assertions.assertEquals(NUMBER_OF_WORDS_PER_RUN, new HashSet<>(res).size());
@@ -72,6 +73,26 @@ public class CardServiceTest {
             Assertions.assertEquals(w, s.getWord());
             Assertions.assertEquals("sound-" + w, s.getSound());
         });
+    }
+
+    @Test
+    public void testNextDeckWithAllFewItems() {
+        Language lang = () -> "eq";
+        long dicId = 42;
+        String dicName = "yyy";
+
+        Map<Long, String> words = Map.of(-11L, "a", -12L, "b", -15L, "c");
+
+        Dictionary dic = TestUtils.mockDictionary(dicId, dicName, lang);
+        Mockito.when(cardRepository.streamByDictionaryId(Mockito.eq(dicId)))
+                .thenReturn(words.entrySet().stream().map(e -> TestUtils.mockCard(e.getKey(), e.getValue())));
+
+        Mockito.when(dictionaryRepository.findById(Mockito.eq(dicId))).thenReturn(Optional.of(dic));
+
+        List<CardResource> res = service.getNextCardDeck(dicId, 15, false);
+        Assertions.assertNotNull(res);
+        Assertions.assertEquals(words.size(), res.size());
+        Assertions.assertEquals(words.size(), new HashSet<>(res).size());
     }
 
     @Test

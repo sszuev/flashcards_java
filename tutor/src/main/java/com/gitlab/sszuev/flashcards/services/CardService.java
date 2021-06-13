@@ -24,7 +24,7 @@ public interface CardService {
      * @param dictionaryId {@code long}
      * @return a {@code List} of {@link CardResource}s
      */
-    List<CardResource> getCardDeck(long dictionaryId);
+    List<CardResource> getNextCardDeck(long dictionaryId);
 
     /**
      * Updates cards by applying the specifies data.
