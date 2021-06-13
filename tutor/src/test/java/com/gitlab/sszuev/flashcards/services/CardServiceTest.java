@@ -26,6 +26,7 @@ import java.util.stream.Stream;
  */
 @SpringBootTest
 @TestPropertySource(properties = {
+        "app.loader.enabled=false",
         "app.tutor.run.words-for-show=" + CardServiceTest.NUMBER_OF_WORDS_PER_RUN,
         "app.tutor.run.answers=" + CardServiceTest.NUMBER_OF_ANSWERS_TO_LEARN
 })

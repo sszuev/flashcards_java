@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Transactional
 @SpringBootTest(classes = {App.class})
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS) // to be sure test resource is loaded
 @AutoConfigureTestEntityManager
 abstract class RepositoryTestBase {
     @Autowired
