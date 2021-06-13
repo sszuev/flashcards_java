@@ -79,7 +79,7 @@ function drawStageMosaic() {
 
     leftPane.html('');
     dataLeft.forEach(function (value) {
-        let left = $(`<div class="card ${borderDefault}" id="${value.id}-left">${value.word}</div>`);
+        let left = $(`<div class="card ${borderDefault}" id="${value.id}-left"><h4>${value.word}</h4></div>`);
         left.unbind('click').on('click', function () {
             $.each($('#mosaic .card'), (k, v) => setBorderClass(v, borderDefault));
             setBorderClass(left, borderSelected);
@@ -93,10 +93,10 @@ function drawStageMosaic() {
 
     rightPane.html('');
     dataRight.forEach(function (value) {
-        let right = $(`<div class="card ${borderDefault}" id="${value.id}-right">${value.translations}</div>`);
+        let right = $(`<div class="card ${borderDefault}" id="${value.id}-right"><h4>${value.translations}</h4></div>`);
         right.unbind('click').on('click', function () {
             const selected = $(`#mosaic-left .${borderSelected}`);
-            if (!selected.length || !selected.text().trim()) {
+            if (!selected.length || !$('h4', selected).text().trim()) {
                 // nothing selected or selected already processed item (with empty text)
                 return;
             }
@@ -110,8 +110,8 @@ function drawStageMosaic() {
             const success = left.is(selected);
             setBorderClass(right, success ? borderSuccess : borderError);
             if (success) {
-                left.html('&nbsp;').unbind('click');
-                right.html('&nbsp;').unbind('click');
+                left.html('<h4>&nbsp;</h4>').unbind('click');
+                right.html('<h4>&nbsp;</h4>').unbind('click');
             }
             const id = selected.attr('id').replace('-left', '');
             const data = findById(dataLeft, id);
