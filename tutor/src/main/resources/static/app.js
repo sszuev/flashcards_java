@@ -32,18 +32,64 @@ function drawDictionariesPage() {
     });
 }
 
+/**
+ * First stage: show.
+ */
 function drawStageShow() {
-    displayPageCard('show');
-    drawShowCardPage(selectNonAnswered(data, numberOfWordsToShow), 0);
+    const data = selectData();
+    if (data.length >  0) {
+        displayPageCard('show');
+        drawShowCardPage(data, 0);
+        return;
+    }
+    drawStageResults();
 }
 
-function drawShowCardPage(showData, index) {
-    if (index >= showData.length) { // no more data => display next stage
+/**
+ * Second stage: mosaic.
+ */
+function drawStageMosaic() {
+    const data = selectData();
+    if (data.length > 0) {
+        displayPageCard('mosaic');
+        drawMosaicCardPage(data);
+        return;
+    }
+    drawStageResults();
+}
+
+/**
+ * Third stage: self-test.
+ */
+function drawStageSelfTest() {
+    const data = selectData();
+    if (data.length >  0) {
+        displayPageCard('self-test');
+        drawSelfTestCardPage(randomArray(data, numberOfWordsPerStage), 0);
+        return;
+    }
+    drawStageResults();
+}
+
+/**
+ * Last stage: resutls.
+ */
+function drawStageResults() {
+    displayPageCard('result');
+    drawResultCardPage();
+}
+
+function selectData() {
+    return selectNonAnswered(data);
+}
+
+function drawShowCardPage(data, index) {
+    if (index >= data.length) { // no more data => display next stage
         drawStageMosaic();
         return;
     }
     const page = $('#show');
-    const current = showData[index];
+    const current = data[index];
     const next = index + 1;
 
     drawAndPlayAudio(page, current.sound);
@@ -51,27 +97,25 @@ function drawShowCardPage(showData, index) {
     $('.word', page).html(current.word);
     $('.translations', page).html(current.translations);
     $('#show-next').unbind('click').on('click', function () {
-        drawShowCardPage(showData, next);
+        drawShowCardPage(data, next);
     });
 }
 
-function drawStageMosaic() {
+function drawMosaicCardPage(data) {
     const stage = 'mosaic';
     const borderDefault = 'border-white';
     const borderSelected = 'border-primary';
     const borderSuccess = 'border-success';
     const borderError = 'border-danger';
 
-    displayPageCard('mosaic');
     displayTitle($('#mosaic'), stage);
 
     const leftPane = $('#mosaic-left');
     const rightPane = $('#mosaic-right');
     const next = $('#mosaic-next');
 
-    const nonAnsweredData = selectNonAnswered(data, numberOfWordsToShow);
-    const dataLeft = randomArray(nonAnsweredData, numberOfWordsPerStage);
-    const dataRight = randomArray(nonAnsweredData, nonAnsweredData.length);
+    const dataLeft = randomArray(data, numberOfWordsPerStage);
+    const dataRight = randomArray(data, data.length);
 
     next.unbind('click').on('click', function () {
         sendPatch(toResource(dataLeft, stage), () => drawStageSelfTest());
@@ -129,18 +173,11 @@ function drawStageMosaic() {
     });
 }
 
-function drawStageSelfTest() {
-    displayPageCard('self-test');
-    drawSelfTestCardPage(randomArray(selectNonAnswered(data, numberOfWordsToShow), numberOfWordsPerStage), 0);
-}
-
 function drawSelfTestCardPage(selfTestData, index) {
     const stage = 'self-test';
     if (index >= selfTestData.length) {
         sendPatch(toResource(selfTestData, stage), function () {
-            // data synchronized
-            displayPageCard('result');
-            drawResultPage();
+            drawStageResults();
         });
         return;
     }
@@ -183,7 +220,7 @@ function drawSelfTestCardPage(selfTestData, index) {
     });
 }
 
-function drawResultPage() {
+function drawResultCardPage() {
     const page = $('#result');
     const right = toString(data.filter(d => isAnsweredRight(d)));
     const wrong = toString(data.filter(function (d) {

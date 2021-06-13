@@ -41,17 +41,17 @@ function isAnsweredRight(item) {
 /**
  * Answers of array with non-answered items to process.
  * @param array input array
- * @param length max length of returned array
+ * @param limit max length of returned array
  * @returns {*[]} array of items to process
  */
-function selectNonAnswered(array, length) {
+function selectNonAnswered(array, limit) {
     const res = [];
     for (let i = 0; i < array.length; i++) {
         let item = array[i];
         if (item.answered < numberOfRightAnswers) {
             res.push(item);
         }
-        if (res.length === length) {
+        if (limit && res.length === limit) {
             return res;
         }
     }
