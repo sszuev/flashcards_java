@@ -38,7 +38,7 @@ public class CardsRestController {
 
     @GetMapping("/api/dictionaries/{dictionary}/deck")
     public List<CardResource> getRandomIndexes(@PathVariable long dictionary) {
-        return cardService.getCardDeck(dictionary);
+        return cardService.getNextCardDeck(dictionary);
     }
 
     @PatchMapping(value = "/api/cards", consumes = MediaType.APPLICATION_JSON_VALUE)

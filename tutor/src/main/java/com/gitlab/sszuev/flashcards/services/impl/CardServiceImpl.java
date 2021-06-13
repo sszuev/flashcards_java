@@ -7,6 +7,8 @@ import com.gitlab.sszuev.flashcards.dto.*;
 import com.gitlab.sszuev.flashcards.repositories.CardRepository;
 import com.gitlab.sszuev.flashcards.repositories.DictionaryRepository;
 import com.gitlab.sszuev.flashcards.services.CardService;
+import com.gitlab.sszuev.flashcards.utils.CardUtils;
+import com.gitlab.sszuev.flashcards.utils.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -48,15 +50,42 @@ public class CardServiceImpl implements CardService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<CardResource> getCardDeck(long dicId) {
+    public List<CardResource> getNextCardDeck(long dicId) {
+        return getNextCardDeck(dicId, config.getNumberOfWordsToShow(), true);
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * It tries its best to return cards, that do not overlap in their translations.
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public List<CardResource> getNextCardDeck(long dicId, int length, boolean unknown) {
         Dictionary dic = dictionaryRepository.findById(dicId)
                 .orElseThrow(() -> new IllegalStateException("Can't find dictionary by id=" + dicId));
         Language lang = dic.getSourceLanguage();
-        List<Card> toLearn = cardRepository.streamByDictionaryIdAndStatusIn(dic.getID(),
-                List.of(Status.UNKNOWN, Status.IN_PROCESS)).collect(Collectors.toList());
-        Collections.shuffle(toLearn, new Random());
-        return toLearn.stream().limit(config.getNumberOfWordsToShow()).map(c -> mapper.createResource(c, lang))
+        return getRandomCards(dicId, length, unknown)
+                .stream().map(c -> mapper.createResource(c, lang))
                 .collect(Collectors.toUnmodifiableList());
+    }
+
+    public Collection<Card> getRandomCards(long dicId, int length, boolean unknown) {
+        List<Card> cards;
+        if (unknown) {
+            cards = cardRepository.streamByDictionaryIdAndStatusIn(dicId,
+                    List.of(Status.UNKNOWN, Status.IN_PROCESS)).collect(Collectors.toList());
+        } else {
+            cards = cardRepository.streamByDictionaryId(dicId).collect(Collectors.toList());
+        }
+        if (cards.size() < length * 1.2) {
+            Collections.shuffle(cards, new Random());
+            return cards;
+        }
+        if (cards.size() < length * 2) {
+            length = cards.size() / 2;
+        }
+        return CardUtils.selectRandomNonSimilarCards(cards, length);
     }
 
     @Transactional
@@ -84,7 +113,7 @@ public class CardServiceImpl implements CardService {
 
             Map<Stage, Boolean> map = data.get(id);
             Map<Stage, List<Boolean>> details = mapper.readDetailsAsMap(card);
-            addAll(details, map);
+            CollectionUtils.addAll(details, map);
             card.setDetails(mapper.writeDetailsAsString(details));
             Status status;
             int answered = Optional.ofNullable(card.getAnswered()).orElse(0);
@@ -102,7 +131,4 @@ public class CardServiceImpl implements CardService {
         }
     }
 
-    private static <K, V> void addAll(Map<K, List<V>> base, Map<K, V> add) {
-        add.forEach((k, v) -> base.computeIfAbsent(k, x -> new ArrayList<>()).add(v));
-    }
 }

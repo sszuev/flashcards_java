@@ -24,7 +24,18 @@ public interface CardService {
      * @param dictionaryId {@code long}
      * @return a {@code List} of {@link CardResource}s
      */
-    List<CardResource> getCardDeck(long dictionaryId);
+    List<CardResource> getNextCardDeck(long dictionaryId);
+
+    /**
+     * Returns a {@code List} of (randomized) cards to proceed.
+     * It is non-idempotent method.
+     *
+     * @param length  {@code int} - the desired length of returned {@code List},
+     *                note that actual length may differ from the specified value
+     * @param unknown {@code boolean} - if {@code true} returns only unknown cards
+     * @return a {@code List} of {@link CardResource}s - every time new
+     */
+    List<CardResource> getNextCardDeck(long dictionaryId, int length, boolean unknown);
 
     /**
      * Updates cards by applying the specifies data.

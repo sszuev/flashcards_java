@@ -23,4 +23,8 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     Stream<Card> streamByDictionaryIdAndStatusIn(@Param("dictionaryId") long dictionaryId,
                                                  @Param("statuses") Collection<Status> statuses);
 
+    @Query(value = "SELECT c FROM Card c JOIN FETCH c.translations LEFT JOIN FETCH c.examples " +
+            "WHERE c.dictionary.id = :dictionaryId")
+    Stream<Card> streamByDictionaryId(@Param("dictionaryId") long dictionaryId);
+
 }
