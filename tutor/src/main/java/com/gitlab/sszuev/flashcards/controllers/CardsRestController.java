@@ -31,21 +31,44 @@ public class CardsRestController {
         this.soundService = Objects.requireNonNull(soundService);
     }
 
+    /**
+     * Gets a list of dictionary-resources.
+     *
+     * @return a {@link List} of {@link DictionaryResource}s
+     */
     @GetMapping("/api/dictionaries")
     public List<DictionaryResource> getDictionaries() {
         return cardService.getDictionaries();
     }
 
-    @GetMapping("/api/dictionaries/{dictionary}/deck")
-    public List<CardResource> getRandomIndexes(@PathVariable long dictionary) {
+    /**
+     * Randomly peeks card-resources from the underlying db by the given dictionary id.
+     * Non-idempotent: every time new result.
+     *
+     * @param dictionary {@code long} - id of dictionary
+     * @return a {@code List} of {@link CardResource}s
+     */
+    @GetMapping("/api/cards/{dictionary}")
+    public List<CardResource> getNextCardDeck(@PathVariable long dictionary) {
         return cardService.getNextCardDeck(dictionary);
     }
 
+    /**
+     * Updates cards in underlying db.
+     *
+     * @param request a {@code List} of {@link CardRequest}s
+     */
     @PatchMapping(value = "/api/cards", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void update(@RequestBody List<CardRequest> request) {
         cardService.update(request);
     }
 
+    /**
+     * Gets an audio-resource by its id (as a path).
+     *
+     * @param path {@code String}
+     * @return a {@link ResponseEntity} with {@link Resource}
+     */
     @GetMapping("/api/sounds/{path}")
     public ResponseEntity<Resource> getSound(@PathVariable String path) {
         if (path == null) {

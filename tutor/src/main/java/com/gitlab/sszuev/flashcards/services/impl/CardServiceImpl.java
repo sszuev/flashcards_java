@@ -57,7 +57,7 @@ public class CardServiceImpl implements CardService {
     /**
      * {@inheritDoc}
      * <p>
-     * It tries its best to return cards, that do not overlap in their translations.
+     * It tries its best to return cards that do not overlap in their translations.
      */
     @Transactional(readOnly = true)
     @Override

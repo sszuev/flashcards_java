@@ -22,7 +22,7 @@ function drawDictionariesPage() {
                           </tr>`);
             row.unbind('click').on('click', function () {
                 dictionary = value;
-                $.get('/api/dictionaries/' + dictionary.id + '/deck').done(function (array) {
+                $.get('/api/cards/' + dictionary.id).done(function (array) {
                     data = array;
                     drawStageShow();
                 });
