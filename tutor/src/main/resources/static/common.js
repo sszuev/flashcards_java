@@ -1,3 +1,5 @@
+// A js-script library that contains common function, which are not related to app directly.
+
 /**
  * Creates a random array from the given one.
  * @param data an array
@@ -26,4 +28,18 @@ function shuffleArray(array) {
         const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
     }
+}
+
+/**
+ * Sends PATCH http request.
+ * @param update - data to send
+ * @param onDoneCallback - any function
+ */
+function sendPatch(update, onDoneCallback) {
+    $.ajax({
+        type: 'PATCH',
+        url: '/api/cards/',
+        contentType: "application/json",
+        data: update
+    }).done(onDoneCallback);
 }

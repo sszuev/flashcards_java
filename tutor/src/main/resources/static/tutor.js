@@ -1,36 +1,4 @@
-let dictionary;
-let data;
-
-// noinspection JSUnusedLocalSymbols
-function renderPage() {
-    drawDictionariesPage();
-}
-
-function drawDictionariesPage() {
-    $.get('/api/dictionaries').done(function (response) {
-        displayPageCard('dictionaries');
-
-        const tbody = $('#dictionaries tbody');
-        tbody.html('');
-        $.each(response, function (key, value) {
-            let row = $(`<tr id="${value.id}">
-                            <td>${value.sourceLang}</td>
-                            <td>${value.targetLang}</td>
-                            <td>${value.name}</td>
-                            <td>${value.total}</td>
-                            <td>${value.learned}</td>
-                          </tr>`);
-            row.unbind('click').on('click', function () {
-                dictionary = value;
-                $.get('/api/cards/' + dictionary.id).done(function (array) {
-                    data = array;
-                    drawStageShow();
-                });
-            });
-            tbody.append(row);
-        });
-    });
-}
+// tutor (flashcards) js-script library.
 
 /**
  * First stage: show.
@@ -39,7 +7,7 @@ function drawStageShow() {
     const data = selectData();
     if (data.length >  0) {
         displayPageCard('show');
-        drawShowCardPage(data, 0);
+        drawShowCardPage(data, 0, () => drawStageMosaic());
         return;
     }
     drawStageResults();
@@ -52,7 +20,7 @@ function drawStageMosaic() {
     const data = selectData();
     if (data.length > 0) {
         displayPageCard('mosaic');
-        drawMosaicCardPage(data);
+        drawMosaicCardPage(data, () => drawStageSelfTest());
         return;
     }
     drawStageResults();
@@ -65,14 +33,14 @@ function drawStageSelfTest() {
     const data = selectData();
     if (data.length >  0) {
         displayPageCard('self-test');
-        drawSelfTestCardPage(randomArray(data, numberOfWordsPerStage), 0);
+        drawSelfTestCardPage(randomArray(data, numberOfWordsPerStage), 0, () => drawStageResults());
         return;
     }
     drawStageResults();
 }
 
 /**
- * Last stage: resutls.
+ * Last stage: results.
  */
 function drawStageResults() {
     displayPageCard('result');
@@ -83,9 +51,9 @@ function selectData() {
     return selectNonAnswered(data);
 }
 
-function drawShowCardPage(data, index) {
+function drawShowCardPage(data, index, nextStage) {
     if (index >= data.length) { // no more data => display next stage
-        drawStageMosaic();
+        nextStage();
         return;
     }
     const page = $('#show');
@@ -97,11 +65,11 @@ function drawShowCardPage(data, index) {
     $('.word', page).html(current.word);
     $('.translations', page).html(current.translations);
     $('#show-next').unbind('click').on('click', function () {
-        drawShowCardPage(data, next);
+        drawShowCardPage(data, next, nextStage);
     });
 }
 
-function drawMosaicCardPage(data) {
+function drawMosaicCardPage(data, nextStage) {
     const stage = 'mosaic';
     const borderDefault = 'border-white';
     const borderSelected = 'border-primary';
@@ -118,7 +86,7 @@ function drawMosaicCardPage(data) {
     const dataRight = randomArray(data, data.length);
 
     next.unbind('click').on('click', function () {
-        sendPatch(toResource(dataLeft, stage), () => drawStageSelfTest());
+        sendPatch(toResource(dataLeft, stage), nextStage);
     });
 
     leftPane.html('');
@@ -173,12 +141,10 @@ function drawMosaicCardPage(data) {
     });
 }
 
-function drawSelfTestCardPage(selfTestData, index) {
+function drawSelfTestCardPage(selfTestData, index, nextStage) {
     const stage = 'self-test';
     if (index >= selfTestData.length) {
-        sendPatch(toResource(selfTestData, stage), function () {
-            drawStageResults();
-        });
+        sendPatch(toResource(selfTestData, stage), nextStage);
         return;
     }
     const page = $('#self-test');
@@ -211,12 +177,12 @@ function drawSelfTestCardPage(selfTestData, index) {
     correct.unbind('click').on('click', function () {
         correct.unbind('click');
         rememberAnswer(current, stage, true);
-        drawSelfTestCardPage(selfTestData, next);
+        drawSelfTestCardPage(selfTestData, next, nextStage);
     });
     wrong.unbind('click').on('click', function () {
         wrong.unbind('click');
         rememberAnswer(current, stage, false);
-        drawSelfTestCardPage(selfTestData, next);
+        drawSelfTestCardPage(selfTestData, next, nextStage);
     });
 }
 
@@ -236,15 +202,6 @@ function drawResultCardPage() {
 
 function toString(data) {
     return data.map(d => d.word).sort().join(', ');
-}
-
-function sendPatch(update, onDoneCallback) {
-    $.ajax({
-        type: 'PATCH',
-        url: '/api/cards/',
-        contentType: "application/json",
-        data: update
-    }).done(onDoneCallback);
 }
 
 function displayTitle(page, stage) {
@@ -273,15 +230,4 @@ function playAudio(sound, callback) {
         promise.then(() => {
         });
     }
-}
-
-function displayPageCard(id) {
-    $.each($('.page'), function (k, v) {
-        let x = $(v);
-        if (x.attr('id') === id) {
-            return;
-        }
-        $(x).hide();
-    });
-    $('#' + id).show()
 }
