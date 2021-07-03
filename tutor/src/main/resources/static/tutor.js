@@ -1,67 +1,74 @@
-// tutor (flashcards) js-script library.
+/*!
+ * tutor (flashcards) js-script library.
+ */
+
+const borderDefault = 'border-white';
+const borderSelected = 'border-primary';
+const borderSuccess = 'border-success';
+const borderError = 'border-danger';
 
 /**
  * First stage: show.
  */
-function drawStageShow() {
+function stageShow() {
     const data = selectNextCardsDeck();
     if (data.length > 0) {
         displayPageCard('show');
-        drawShowCardPage(data, 0, () => drawStageMosaic());
+        drawShowCardPage(data, 0, () => stageMosaic());
         return;
     }
-    drawStageResults();
+    stageResults();
 }
 
 /**
  * Second stage: mosaic.
  */
-function drawStageMosaic() {
+function stageMosaic() {
     const data = selectNextCardsDeck();
     if (data.length > 0) {
         displayPageCard('mosaic');
-        drawMosaicCardPage(data, () => drawStageOptions());
+        drawMosaicCardPage(data, () => stageOptions());
         return;
     }
-    drawStageResults();
+    stageResults();
 }
 
 /**
  * Third stage: options.
  */
-function drawStageOptions() {
+function stageOptions() {
     const data = selectNextCardsDeck();
     if (data.length === 0) {
-        drawStageResults();
+        stageResults();
         return;
     }
     const numberOfOptionsPerCard = 6;
     const dataLeft = randomArray(data, numberOfWordsPerStage);
     const length = dataLeft.length * numberOfOptionsPerCard;
     $.get('/api/cards/' + dictionary.id + "?length=" + length + "&unknown=false").done(function (words) {
-        const options = prepareOptionsData(dataLeft, words);
+        const options = prepareOptionsDataArray(dataLeft, words);
         displayPageCard('options');
-        drawOptionsCardPage(options, 0, () => drawStageSelfTest());
+        drawOptionsCardPage(options, 0, () => stageSelfTest());
     });
 }
 
 /**
  * Fourth stage: self-test.
  */
-function drawStageSelfTest() {
+function stageSelfTest() {
     const data = selectNextCardsDeck();
     if (data.length > 0) {
         displayPageCard('self-test');
-        drawSelfTestCardPage(randomArray(data, numberOfWordsPerStage), 0, () => drawStageResults());
+        drawSelfTestCardPage(randomArray(data, numberOfWordsPerStage), 0, () => stageResults());
         return;
     }
-    drawStageResults();
+    stageResults();
 }
 
 /**
  * The last "stage": show results.
  */
-function drawStageResults() {
+function stageResults() {
     displayPageCard('result');
     drawResultCardPage();
 }
@@ -94,29 +101,20 @@ function drawShowCardPage(data, index, nextStage) {
 
 function drawMosaicCardPage(data, nextStage) {
     const stage = 'mosaic';
-    const borderDefault = 'border-white';
-    const borderSelected = 'border-primary';
-    const borderSuccess = 'border-success';
-    const borderError = 'border-danger';
 
     displayTitle($('#mosaic'), stage);
 
     const leftPane = $('#mosaic-left');
     const rightPane = $('#mosaic-right');
-    const next = $('#mosaic-next');
 
     const dataLeft = randomArray(data, numberOfWordsPerStage);
     const dataRight = randomArray(data, data.length);
-
-    next.unbind('click').on('click', function () {
-        sendPatch(toResource(dataLeft, stage), nextStage);
-    });
 
     leftPane.html('');
     dataLeft.forEach(function (value) {
         let left = $(`<div class="card ${borderDefault}" id="${value.id}-left"><h4>${value.word}</h4></div>`);
         left.unbind('click').on('click', function () {
-            $.each($('#mosaic .card'), (k, v) => setBorderClass(v, borderDefault));
+            setDefaultBorder($('#mosaic .card'));
             setBorderClass(left, borderSelected);
             const sound = value.sound;
             if (sound != null) {
@@ -137,7 +135,7 @@ function drawMosaicCardPage(data, nextStage) {
             }
             const rightCards = $('#mosaic-right .card');
             const leftCards = $('#mosaic-left .card');
-            $.each(rightCards, (k, v) => setBorderClass(v, borderDefault));
+            setDefaultBorder(rightCards);
             const left = $(document.getElementById(right.attr('id').replace('-right', '-left')));
             if (left.length && !left.text().trim()) { // exists but empty
                 return;
@@ -155,9 +153,9 @@ function drawMosaicCardPage(data, nextStage) {
             }
             if (!leftCards.filter((i, e) => $(e).text().trim()).length) {
                 // no more options
-                $.each(rightCards, (k, v) => setBorderClass(v, borderDefault));
-                $.each(leftCards, (k, v) => setBorderClass(v, borderDefault));
-                $('#mosaic-next').parent().show();
+                setDefaultBorder(rightCards);
+                setDefaultBorder(leftCards);
+                setTimeout(() => sendPatch(toResource(dataLeft, stage), nextStage), 500);
             }
         });
         rightPane.append(right);
@@ -173,11 +171,6 @@ function drawOptionsCardPage(options, index, nextStage) {
         return;
     }
 
-    const borderSelected = 'border-primary';
-    const borderDefault = 'border-white';
-    const borderSuccess = 'border-success';
-    const borderError = 'border-danger';
-
     displayTitle($('#options'), stage);
 
     const leftPane = $('#options-left');
@@ -186,15 +179,10 @@ function drawOptionsCardPage(options, index, nextStage) {
     const dataLeft = options[index]['left'];
     const dataRight = options[index]['right'];
 
-    const unselectRights = function () {
-        const rightCards = $('#options-right .card');
-        $.each(rightCards, (k, v) => setBorderClass(v, borderDefault));
-    }
-
     let left = $(`<div class="card ${borderDefault}" id="${dataLeft.id}-left"><h4>${dataLeft.word}</h4></div>`);
     left.unbind('click').on('click', function () {
         setBorderClass(left, borderSelected);
-        unselectRights();
+        setDefaultBorder($('#options-right .card'));
         const sound = dataLeft.sound;
         if (sound != null) {
             playAudio(sound);
@@ -208,20 +196,23 @@ function drawOptionsCardPage(options, index, nextStage) {
         let right = $(`<div class="card ${borderDefault}" id="${value.id}-right"><p class="h4">${value.translations}</p></div>`);
         right.unbind('click').on('click', function () {
             right.unbind('click');
-            unselectRights();
             setBorderClass(left, borderDefault);
+            setDefaultBorder($('#options-right .card'));
 
             const id = Number.parseInt(right.attr('id').replace('-right', ''));
             const success = dataLeft.id === id;
+            if (success) { // strike all other
+                $(`#options-right .card:not('#${id}-right')`).each((k, v) => strikeText($(v).find('p')));
+            } else {
+                strikeText(right.find('p'));
+            }
             setBorderClass(right, success ? borderSuccess : borderError);
             if (!hasStage(dataLeft, stage)) { // only for first
                 rememberAnswer(dataLeft, stage, success);
             }
-            if (success) { // go to next
-                drawOptionsCardPage(options, index + 1, nextStage);
-            } else {
-                const p = right.find('p');
-                p.html(`<del>${p.text()}</del>`).css('color', 'gray');
+            if (success) {
+                // go to next
+                setTimeout(() => drawOptionsCardPage(options, index + 1, nextStage), 500);
             }
         });
         rightPane.append(right);
@@ -275,19 +266,19 @@ function drawSelfTestCardPage(selfTestData, index, nextStage) {
 
 function drawResultCardPage() {
     const page = $('#result');
-    const right = toString(data.filter(d => isAnsweredRight(d)));
-    const wrong = toString(data.filter(function (d) {
+    const right = toWordString(data.filter(d => isAnsweredRight(d)));
+    const wrong = toWordString(data.filter(function (d) {
         const res = isAnsweredRight(d);
         return res !== undefined && !res;
     }));
-    const learned = toString(data.filter(d => d.answered >= numberOfRightAnswers));
+    const learned = toWordString(data.filter(d => d.answered >= numberOfRightAnswers));
     displayTitle(page, 'result');
     $('#result-correct').html(right);
     $('#result-wrong').html(wrong);
     $('#result-learned').html(learned);
 }
 
-function prepareOptionsData(dataLeft, dataRight) {
+function prepareOptionsDataArray(dataLeft, dataRight) {
     const numOptionsPerCard = dataRight.length / dataLeft.length;
     const res = [];
     for (let i = 0; i < dataLeft.length; i++) {
@@ -305,7 +296,7 @@ function prepareOptionsData(dataLeft, dataRight) {
     return res;
 }
 
-function toString(array) {
+function toWordString(array) {
     return array.map(d => d.word).sort().join(', ');
 }
 
@@ -313,8 +304,16 @@ function displayTitle(page, stage) {
     $('.card-title', page).html(dictionary.name + ": " + stage);
 }
 
+function setDefaultBorder(array) {
+    $.each(array, (k, v) => setBorderClass(v, borderDefault));
+}
+
 function setBorderClass(item, border) {
     return $(item).attr('class', $(item).attr('class').replace(/\bborder-.+\b/g, border));
+}
+
+function strikeText(textHolder) {
+    textHolder.html(`<del>${textHolder.text()}</del>`).css('color', 'gray');
 }
 
 function drawAndPlayAudio(parent, sound) {

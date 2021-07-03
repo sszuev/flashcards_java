@@ -1,4 +1,6 @@
-// js-library to work with app data.
+/*!
+ * js-library to work with app data.
+ */
 
 function findById(array, id) {
     return array.find(e => e.id.toString() === id.toString());

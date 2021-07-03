@@ -1,4 +1,6 @@
-// dictionary js-script library.
+/*!
+ * dictionary js-script library.
+ */
 
 function drawDictionariesPage() {
     $.get('/api/dictionaries').done(function (response) {
@@ -18,7 +20,7 @@ function drawDictionariesPage() {
                 dictionary = value;
                 $.get('/api/cards/' + dictionary.id).done(function (array) {
                     data = array;
-                    drawStageShow();
+                    stageShow();
                 });
             });
             tbody.append(row);

@@ -1,4 +1,6 @@
-// A js-script library that contains common function, which are not related to app directly.
+/*!
+ * A js-script library that contains common function, which are not related to app directly.
+ */
 
 /**
  * Creates a random array from the given one.

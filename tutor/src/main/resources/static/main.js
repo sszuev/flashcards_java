@@ -1,4 +1,6 @@
-// main script.
+/*!
+ * main script.
+ */
 
 // a dictionary resource
 let dictionary;
