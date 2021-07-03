@@ -24,5 +24,4 @@ function drawDictionariesPage() {
             tbody.append(row);
         });
     });
-
 }

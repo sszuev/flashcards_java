@@ -1,6 +1,8 @@
 // main script.
 
+// a dictionary resource
 let dictionary;
+// an array with card resources
 let data;
 
 // noinspection JSUnusedLocalSymbols

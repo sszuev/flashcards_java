@@ -4,8 +4,8 @@
  * First stage: show.
  */
 function drawStageShow() {
-    const data = selectData();
-    if (data.length >  0) {
+    const data = selectNextCardsDeck();
+    if (data.length > 0) {
         displayPageCard('show');
         drawShowCardPage(data, 0, () => drawStageMosaic());
         return;
@@ -17,21 +17,40 @@ function drawStageShow() {
  * Second stage: mosaic.
  */
 function drawStageMosaic() {
-    const data = selectData();
+    const data = selectNextCardsDeck();
     if (data.length > 0) {
         displayPageCard('mosaic');
-        drawMosaicCardPage(data, () => drawStageSelfTest());
+        drawMosaicCardPage(data, () => drawStageOptions());
         return;
     }
     drawStageResults();
 }
 
 /**
- * Third stage: self-test.
+ * Third stage: options.
+ */
+function drawStageOptions() {
+    const data = selectNextCardsDeck();
+    if (data.length === 0) {
+        drawStageResults();
+        return;
+    }
+    const numberOfOptionsPerCard = 6;
+    const dataLeft = randomArray(data, numberOfWordsPerStage);
+    const length = dataLeft.length * numberOfOptionsPerCard;
+    $.get('/api/cards/' + dictionary.id + "?length=" + length + "&unknown=false").done(function (words) {
+        const options = prepareOptionsData(dataLeft, words);
+        displayPageCard('options');
+        drawOptionsCardPage(options, 0, () => drawStageSelfTest());
+    });
+}
+
+/**
+ * Fourth stage: self-test.
  */
 function drawStageSelfTest() {
-    const data = selectData();
-    if (data.length >  0) {
+    const data = selectNextCardsDeck();
+    if (data.length > 0) {
         displayPageCard('self-test');
         drawSelfTestCardPage(randomArray(data, numberOfWordsPerStage), 0, () => drawStageResults());
         return;
@@ -40,14 +59,18 @@ function drawStageSelfTest() {
 }
 
 /**
- * Last stage: results.
+ * The last "stage": show results.
  */
 function drawStageResults() {
     displayPageCard('result');
     drawResultCardPage();
 }
 
-function selectData() {
+/**
+ * Returns a deck of cards to process.
+ * @returns {*[]} array of card resources
+ */
+function selectNextCardsDeck() {
     return selectNonAnswered(data);
 }
 
@@ -141,6 +164,70 @@ function drawMosaicCardPage(data, nextStage) {
     });
 }
 
+function drawOptionsCardPage(options, index, nextStage) {
+    const stage = 'options';
+    if (index >= options.length) { // no more data => display next stage
+        sendPatch(toResource(options.map(function (item) {
+            return item['left'];
+        }), stage), nextStage);
+        return;
+    }
+
+    const borderSelected = 'border-primary';
+    const borderDefault = 'border-white';
+    const borderSuccess = 'border-success';
+    const borderError = 'border-danger';
+
+    displayTitle($('#options'), stage);
+
+    const leftPane = $('#options-left');
+    const rightPane = $('#options-right');
+
+    const dataLeft = options[index]['left'];
+    const dataRight = options[index]['right'];
+
+    const unselectRights = function () {
+        const rightCards = $('#options-right .card');
+        $.each(rightCards, (k, v) => setBorderClass(v, borderDefault));
+    }
+
+    let left = $(`<div class="card ${borderDefault}" id="${dataLeft.id}-left"><h4>${dataLeft.word}</h4></div>`);
+    left.unbind('click').on('click', function () {
+        setBorderClass(left, borderSelected);
+        unselectRights();
+        const sound = dataLeft.sound;
+        if (sound != null) {
+            playAudio(sound);
+        }
+    });
+    leftPane.html('').append(left);
+    left.click();
+
+    rightPane.html('');
+    dataRight.forEach(function (value) {
+        let right = $(`<div class="card ${borderDefault}" id="${value.id}-right"><p class="h4">${value.translations}</p></div>`);
+        right.unbind('click').on('click', function () {
+            right.unbind('click');
+            unselectRights();
+            setBorderClass(left, borderDefault);
+
+            const id = Number.parseInt(right.attr('id').replace('-right', ''));
+            const success = dataLeft.id === id;
+            setBorderClass(right, success ? borderSuccess : borderError);
+            if (!hasStage(dataLeft, stage)) { // only for first
+                rememberAnswer(dataLeft, stage, success);
+            }
+            if (success) { // go to next
+                drawOptionsCardPage(options, index + 1, nextStage);
+            } else {
+                const p = right.find('p');
+                p.html(`<del>${p.text()}</del>`).css('color', 'gray');
+            }
+        });
+        rightPane.append(right);
+    });
+}
+
 function drawSelfTestCardPage(selfTestData, index, nextStage) {
     const stage = 'self-test';
     if (index >= selfTestData.length) {
@@ -200,8 +287,26 @@ function drawResultCardPage() {
     $('#result-learned').html(learned);
 }
 
-function toString(data) {
-    return data.map(d => d.word).sort().join(', ');
+function prepareOptionsData(dataLeft, dataRight) {
+    const numOptionsPerCard = dataRight.length / dataLeft.length;
+    const res = [];
+    for (let i = 0; i < dataLeft.length; i++) {
+        const left = dataLeft[i];
+        let right = dataRight.slice(i * numOptionsPerCard, (i + 1) * numOptionsPerCard);
+        right.push(left);
+        right = removeDuplicates(right);
+        shuffleArray(right);
+
+        const item = {};
+        item['left'] = left;
+        item['right'] = right;
+        res.push(item);
+    }
+    return res;
+}
+
+function toString(array) {
+    return array.map(d => d.word).sort().join(', ');
 }
 
 function displayTitle(page, stage) {

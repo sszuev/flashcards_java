@@ -36,7 +36,7 @@ public class CardsRestController {
      *
      * @return a {@link List} of {@link DictionaryResource}s
      */
-    @GetMapping("/api/dictionaries")
+    @GetMapping(value = "/api/dictionaries", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<DictionaryResource> getDictionaries() {
         return cardService.getDictionaries();
     }
@@ -46,11 +46,22 @@ public class CardsRestController {
      * Non-idempotent: every time new result.
      *
      * @param dictionary {@code long} - id of dictionary
+     * @param length     {@code Integer} - the desired size of result collections
+     * @param unknown    {@code Boolean} - {@code true} to return only unknown words,
+     *                   {@code false} or {@code null} if it is does not matter
      * @return a {@code List} of {@link CardResource}s
      */
-    @GetMapping("/api/cards/{dictionary}")
-    public List<CardResource> getNextCardDeck(@PathVariable long dictionary) {
-        return cardService.getNextCardDeck(dictionary);
+    @GetMapping(value = "/api/cards/{dictionary}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<CardResource> getNextCardDeck(@PathVariable(name = "dictionary") long dictionary,
+                                              @RequestParam(name = "length", required = false) Integer length,
+                                              @RequestParam(name = "unknown", required = false) Boolean unknown) {
+        if (length != null && unknown != null) {
+            return cardService.getNextCardDeck(dictionary, length, unknown);
+        }
+        if (length == null && unknown == null) {
+            return cardService.getNextCardDeck(dictionary);
+        }
+        throw new IllegalArgumentException();
     }
 
     /**

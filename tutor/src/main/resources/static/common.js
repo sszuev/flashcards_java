@@ -31,6 +31,18 @@ function shuffleArray(array) {
 }
 
 /**
+ * Removes duplicates.
+ * @param array
+ * @returns {*[]} - a new array
+ */
+function removeDuplicates(array) {
+    const res = [];
+    $.each(array, function(i, e) {
+        if ($.inArray(e, res) === -1) res.push(e);
+    });
+    return res;
+}
+/**
  * Sends PATCH http request.
  * @param update - data to send
  * @param onDoneCallback - any function
