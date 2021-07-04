@@ -24,7 +24,8 @@ public class SettingsController {
         return new ModelAndView("index", Map.of(
                 "numberOfWordsToShow", config.getNumberOfWordsToShow(),
                 "numberOfWordsPerStage", config.getNumberOfWordsPerStage(),
-                "numberOfRightAnswers", config.getNumberOfRightAnswers())
+                "numberOfRightAnswers", config.getNumberOfRightAnswers(),
+                "numberOfOptionsPerWord", config.getStageOptionsNumberOfVariantsPerWord() - 1)
         );
     }
 }

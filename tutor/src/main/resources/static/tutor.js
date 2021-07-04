@@ -42,9 +42,8 @@ function stageOptions() {
         stageResults();
         return;
     }
-    const numberOfOptionsPerCard = 6;
     const dataLeft = randomArray(data, numberOfWordsPerStage);
-    const length = dataLeft.length * numberOfOptionsPerCard;
+    const length = dataLeft.length * numberOfOptionsPerWord;
     $.get('/api/cards/' + dictionary.id + "?length=" + length + "&unknown=false").done(function (words) {
         const options = prepareOptionsDataArray(dataLeft, words);
         displayPageCard('options');

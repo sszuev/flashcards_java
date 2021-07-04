@@ -9,6 +9,9 @@ app:
       words-for-test: 5
       # number of right answers per word (after which word changes its status to 'learned')
       answers: 10
+      stage-options:
+        # number of variants (right panel)
+        variants: 6
 
 spring:
   datasource:
