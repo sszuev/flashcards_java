@@ -12,7 +12,6 @@ import java.util.stream.Stream;
  * Created by @ssz on 13.06.2021.
  */
 public class CardUtils {
-    private static final String TRANSLATION_SEPARATOR = "\\s*,\\s*";
     private static final BiPredicate<Card, Card> SIMILAR = CardUtils::isSimilar;
 
     public static Collection<Card> selectRandomNonSimilarCards(List<Card> cards, int size) {
@@ -28,8 +27,56 @@ public class CardUtils {
         return words(t.getText());
     }
 
+    /**
+     * Splits the given {@code phrase} using comma (i.e. '{@code ,}') as separator.
+     * Commas inside the parentheses (e.g. "{@code (x,y)}") are not considered.
+     *
+     * @param phrase {@code String}, not {@code null}
+     * @return a {@code Stream} of {@code String}s
+     */
     public static Stream<String> words(String phrase) {
-        return Arrays.stream(phrase.split(TRANSLATION_SEPARATOR)).filter(x -> !x.isBlank());
+        return getWords(phrase).stream();
     }
 
+    /**
+     * Splits the given {@code phrase} using comma (i.e. '{@code ,}') as separator.
+     * Commas inside the parentheses (e.g. "{@code (x,y)}") are not considered.
+     *
+     * @param phrase {@code String}, not {@code null}
+     * @return an unmodifiable {@code List} of {@code String}s
+     */
+    public static List<String> getWords(String phrase) {
+        String[] parts = phrase.split(",");
+        ArrayList<String> res = new ArrayList<>(parts.length);
+        for (int i = 0; i < parts.length; i++) {
+            String pi = parts[i].trim();
+            if (pi.isEmpty()) {
+                continue;
+            }
+            if (!pi.contains("(") || pi.contains(")")) {
+                res.add(pi);
+                continue;
+            }
+            StringBuilder sb = new StringBuilder(pi);
+            int j = i + 1;
+            for (; j < parts.length; j++) {
+                String pj = parts[j].trim();
+                if (pj.isEmpty()) {
+                    continue;
+                }
+                sb.append(", ").append(pj);
+                if (pj.contains(")")) {
+                    break;
+                }
+            }
+            if (sb.lastIndexOf(")") == -1) {
+                res.add(pi);
+                continue;
+            }
+            res.add(sb.toString());
+            i = j;
+        }
+        res.trimToSize();
+        return Collections.unmodifiableList(res);
+    }
 }
