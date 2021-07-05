@@ -1,5 +1,6 @@
 package com.gitlab.sszuev.flashcards.dto;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -8,13 +9,13 @@ import java.util.Map;
 @SuppressWarnings("unused")
 public final class CardResource {
     private final String word;
-    private final String translations;
+    private final List<List<String>> translations;
     private final String sound;
     private final int answered;
     private final long id;
     private final Map<Stage, Boolean> details;
 
-    public CardResource(long id, String word, String translations, String sound, int answered, Map<Stage, Boolean> details) {
+    public CardResource(long id, String word, List<List<String>> translations, String sound, int answered, Map<Stage, Boolean> details) {
         this.id = id;
         this.details = details;
         this.word = word;
@@ -39,7 +40,7 @@ public final class CardResource {
         return word;
     }
 
-    public String getTranslations() {
+    public List<List<String>> getTranslations() {
         return translations;
     }
 

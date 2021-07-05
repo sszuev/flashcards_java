@@ -92,7 +92,7 @@ function drawShowCardPage(data, index, nextStage) {
     drawAndPlayAudio(page, current.sound);
     displayTitle(page, 'show');
     $('.word', page).html(current.word);
-    $('.translations', page).html(current.translations);
+    $('.translations', page).html(toTranslationString(current));
     $('#show-next').unbind('click').on('click', function () {
         drawShowCardPage(data, next, nextStage);
     });
@@ -125,7 +125,7 @@ function drawMosaicCardPage(data, nextStage) {
 
     rightPane.html('');
     dataRight.forEach(function (value) {
-        let right = $(`<div class="card ${borderDefault}" id="${value.id}-right"><h4>${value.translations}</h4></div>`);
+        let right = $(`<div class="card ${borderDefault}" id="${value.id}-right"><h4>${toTranslationString(value)}</h4></div>`);
         right.unbind('click').on('click', function () {
             const selected = $(`#mosaic-left .${borderSelected}`);
             if (!selected.length || !$('h4', selected).text().trim()) {
@@ -192,7 +192,7 @@ function drawOptionsCardPage(options, index, nextStage) {
 
     rightPane.html('');
     dataRight.forEach(function (value) {
-        let right = $(`<div class="card ${borderDefault}" id="${value.id}-right"><p class="h4">${value.translations}</p></div>`);
+        let right = $(`<div class="card ${borderDefault}" id="${value.id}-right"><p class="h4">${toTranslationString(value)}</p></div>`);
         right.unbind('click').on('click', function () {
             right.unbind('click');
             setBorderClass(left, borderDefault);
@@ -238,7 +238,7 @@ function drawSelfTestCardPage(selfTestData, index, nextStage) {
     drawAndPlayAudio(page, current.sound);
     displayTitle(page, stage);
     $('.word', page).html(current.word);
-    translation.html(current.translations);
+    translation.html(toTranslationString(current));
     correct.prop('disabled', true);
     wrong.prop('disabled', true);
     translation.hide();
@@ -293,10 +293,6 @@ function prepareOptionsDataArray(dataLeft, dataRight) {
         res.push(item);
     }
     return res;
-}
-
-function toWordString(array) {
-    return array.map(d => d.word).sort().join(', ');
 }
 
 function displayTitle(page, stage) {

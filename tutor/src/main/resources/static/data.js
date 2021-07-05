@@ -1,5 +1,5 @@
 /*!
- * js-library to work with app data.
+ * js-library to work with app data (card-resources).
  */
 
 function findById(array, id) {
@@ -81,4 +81,25 @@ function toResource(array, stage) {
         return item;
     });
     return JSON.stringify(res);
+}
+
+/**
+ * Represents an array of card-resources as a string, containing only words.
+ * @param array
+ * @returns {string}
+ */
+function toWordString(array) {
+    return array.map(d => d.word).sort().join(', ');
+}
+
+/**
+ * Represents an item translations as a single string.
+ * @param item - card resource
+ * @returns {string}
+ */
+function toTranslationString(item) {
+    const res = $.map(item.translations, function (n) {
+        return n;
+    });
+    return res.join(', ');
 }

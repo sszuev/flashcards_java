@@ -8,6 +8,7 @@ import com.gitlab.sszuev.flashcards.domain.Dictionary;
 import com.gitlab.sszuev.flashcards.domain.Language;
 import com.gitlab.sszuev.flashcards.domain.Status;
 import com.gitlab.sszuev.flashcards.services.SoundService;
+import com.gitlab.sszuev.flashcards.utils.CardUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -31,7 +32,9 @@ public class EntityMapper {
 
     public CardResource createResource(Card card, Language lang) {
         String word = card.getText();
-        String translations = card.translations().map(x -> x.getText()).collect(Collectors.joining(", "));
+        List<List<String>> translations = card.translations()
+                .map(x -> CardUtils.getWords(x.getText()))
+                .collect(Collectors.toUnmodifiableList());
         int answered = card.getStatus() == Status.LEARNED ? 0 : Optional.ofNullable(card.getAnswered()).orElse(0);
         return new CardResource(card.getID(),
                 word, translations, speaker.getResourceName(word, lang.name()), answered, Map.of());

@@ -88,10 +88,17 @@ public class CountHolder {
                 LOGGER.debug("Read data from file {}", file);
             }
             if (!Files.exists(file)) {
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("A fresh counter-data has been created.");
+                }
                 return new CountData(LocalDateTime.now(), 0, 0);
             }
             try (InputStream is = Files.newInputStream(file); ObjectInputStream ois = new ObjectInputStream(is)) {
-                return (CountData) ois.readObject();
+                CountData res = (CountData) ois.readObject();
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Loaded count-data: {}", res);
+                }
+                return res;
             }
         }
 
