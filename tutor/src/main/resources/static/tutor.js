@@ -47,12 +47,25 @@ function stageOptions() {
     $.get('/api/cards/' + dictionary.id + "?length=" + length + "&unknown=false").done(function (words) {
         const options = prepareOptionsDataArray(dataLeft, words);
         displayPageCard('options');
-        drawOptionsCardPage(options, 0, () => stageSelfTest());
+        drawOptionsCardPage(options, 0, () => stageWriting());
     });
 }
 
 /**
- * Fourth stage: self-test.
+ * Fourth stage: writing.
+ */
+function stageWriting() {
+    const data = selectNextCardsDeck();
+    if (data.length > 0) {
+        displayPageCard('writing');
+        drawWritingCardPage(randomArray(data, numberOfWordsPerStage), 0, () => stageSelfTest());
+        return;
+    }
+    stageResults();
+}
+
+/**
+ * Fifth stage: self-test.
  */
 function stageSelfTest() {
     const data = selectNextCardsDeck();
@@ -218,6 +231,58 @@ function drawOptionsCardPage(options, index, nextStage) {
     });
 }
 
+function drawWritingCardPage(writingData, index, nextStage) {
+    const stage = 'writing';
+    if (index >= writingData.length) {
+        sendPatch(toResource(writingData, stage), nextStage);
+        return;
+    }
+    const page = $('#writing');
+    const current = writingData[index];
+
+    drawAndPlayAudio(page, current.sound);
+    displayTitle(page, stage);
+    $('.word', page).html(current.word);
+
+    const clazz = "d-flex justify-content-start p-5 w-100";
+    const testDiv = $('#writing-test').show();
+    const nextDiv = $('#writing-next').hide();
+    const textareaInput = $(`<input type="text" class="${clazz}"/>`);
+    const textareaRow = $('#writing-textarea').html('').append(textareaInput);
+
+    const testButton = $('button', testDiv).prop("disabled", true);
+    const nextButton = $('button', nextDiv);
+
+    textareaInput.val('').on('keyup', function () {
+        testButton.prop("disabled", textareaInput.val().length === 0);
+    });
+    testButton.unbind('click').on('click', function () {
+        let res;
+        const givenAnswer = textareaInput.val();
+        const rightAnswer = findTranslationStartsWith(current, givenAnswer);
+        let prefixText;
+        if (rightAnswer) {
+            res = true;
+            prefixText = $(`<h6 class="text-success">${rightAnswer}</h6>`);
+        } else {
+            res = false;
+            prefixText = $(`<del><h6 class="text-danger">${givenAnswer}</h6></del>`);
+        }
+        let suffixText = $(`<h6 class="text-primary">${toTranslationString(current)}</h6>`);
+        const translationsDiv = $(`<div class="${clazz}"></div>`)
+            .append(prefixText).append(`<h6>&nbsp;&#8212;&nbsp;</h6>`)
+            .append(suffixText);
+        textareaRow.html('').append(translationsDiv);
+        testDiv.hide();
+        nextDiv.show();
+        rememberAnswer(current, stage, res);
+    });
+    nextButton.unbind('click').on('click', function () {
+        // go to next
+        drawWritingCardPage(writingData, index + 1, nextStage);
+    });
+}
+
 function drawSelfTestCardPage(selfTestData, index, nextStage) {
     const stage = 'self-test';
     if (index >= selfTestData.length) {
@@ -303,8 +368,8 @@ function setDefaultBorder(array) {
     $.each(array, (k, v) => setBorderClass(v, borderDefault));
 }
 
-function setBorderClass(item, border) {
-    return $(item).attr('class', $(item).attr('class').replace(/\bborder-.+\b/g, border));
+function setBorderClass(item, borderClass) {
+    return $(item).attr('class', $(item).attr('class').replace(/\bborder-.+\b/g, borderClass));
 }
 
 function strikeText(textHolder) {

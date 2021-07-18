@@ -93,13 +93,32 @@ function toWordString(array) {
 }
 
 /**
+ * Finds translation string from the item that starts with the specified substring ignoring case.
+ * @param item - card resource
+ * @param test string to test
+ * @returns {string} or undefined
+ */
+function findTranslationStartsWith(item, test) {
+    test = test.toLowerCase();
+    return toTranslationArray(item).find((s) => s.toLowerCase().startsWith(test));
+}
+
+/**
  * Represents an item translations as a single string.
  * @param item - card resource
  * @returns {string}
  */
 function toTranslationString(item) {
-    const res = $.map(item.translations, function (n) {
+    return toTranslationArray(item).join(', ');
+}
+
+/**
+ * Represents an item translations as a flat array.
+ * @param item - card resource
+ * @returns {array}
+ */
+function toTranslationArray(item) {
+    return $.map(item.translations, function (n) {
         return n;
     });
-    return res.join(', ');
 }
