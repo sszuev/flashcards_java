@@ -20,8 +20,8 @@ SET row_security = off;
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: dev
 --
 
-COPY public.users (id) FROM stdin;
-42
+COPY public.users (id, login, pwd, role) FROM stdin;
+42	demo	$2a$10$QdTL6pRxYsHLXNuwMmQl6eRjXUQ8EJHkji2E0J4zQADtGFNFRVkcG	2
 \.
 
 
@@ -293,6 +293,12 @@ SELECT pg_catalog.setval('public.examples_id_seq', 55, true);
 
 SELECT pg_catalog.setval('public.translations_id_seq', 88, true);
 
+
+--
+-- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dev
+--
+
+SELECT pg_catalog.setval('public.users_id_seq', 1001, true);
 
 --
 -- PostgreSQL database dump complete
