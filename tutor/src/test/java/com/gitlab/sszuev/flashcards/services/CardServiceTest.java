@@ -110,7 +110,7 @@ public class CardServiceTest {
         Dictionary dic1 = TestUtils.mockDictionary(id1, name1, () -> lang1, () -> lang2, cards1);
         Dictionary dic2 = TestUtils.mockDictionary(id2, name2, () -> lang2, () -> lang3, cards2);
 
-        Mockito.when(dictionaryRepository.streamAllByUserId(Mockito.eq(User.DEFAULT_USER_ID)))
+        Mockito.when(dictionaryRepository.streamAllByUserId(Mockito.eq(User.SYSTEM_USER.getID())))
                 .thenReturn(Stream.of(dic1, dic2));
 
         List<DictionaryResource> res = service.getDictionaries();

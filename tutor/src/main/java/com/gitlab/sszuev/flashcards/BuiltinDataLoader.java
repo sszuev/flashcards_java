@@ -1,6 +1,7 @@
 package com.gitlab.sszuev.flashcards;
 
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
+import com.gitlab.sszuev.flashcards.domain.User;
 import com.gitlab.sszuev.flashcards.parser.LingvoParser;
 import com.gitlab.sszuev.flashcards.repositories.DictionaryRepository;
 import com.gitlab.sszuev.flashcards.repositories.UserRepository;
@@ -19,7 +20,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * To load XML (lingvo) data  from resources to database.
@@ -59,14 +63,16 @@ public class BuiltinDataLoader implements ApplicationListener<ApplicationReadyEv
         }
     }
 
-    @Transactional
     @Override
     public void onApplicationEvent(@NonNull ApplicationReadyEvent event) {
         if (resources.length == 0) {
             LOGGER.info("No data found to upload.");
             return;
         }
-        Arrays.stream(resources).filter(Resource::isReadable).map(this::parse).forEach(this::save);
+        List<Dictionary> dictionaries = Arrays.stream(resources)
+                .filter(Resource::isReadable).map(this::parse)
+                .collect(Collectors.toList());
+        saveAll(dictionaries);
         LOGGER.info("Uploading is completed.");
     }
 
@@ -77,9 +83,19 @@ public class BuiltinDataLoader implements ApplicationListener<ApplicationReadyEv
         return parser.parse(resource);
     }
 
-    private void save(Dictionary dictionary) {
-        LOGGER.info("Upload: '{}'", dictionary.getName());
-        userRepository.save(dictionary.getUser());
-        dictionaryRepository.save(dictionary);
+    @Transactional
+    public void saveAll(Collection<Dictionary> dictionaries) {
+        // refresh user links
+        dictionaries.forEach(d -> {
+            User given = d.getUser();
+            User actual = userRepository.findByLogin(given.getLogin()).orElseGet(() -> {
+                LOGGER.info("Create user: '{}'", given.getLogin());
+                return userRepository.save(given);
+            });
+            d.setUser(actual);
+        });
+
+        LOGGER.info("Upload: '{}'", dictionaries.stream().map(Dictionary::getName).collect(Collectors.joining(",")));
+        dictionaryRepository.saveAll(dictionaries);
     }
 }

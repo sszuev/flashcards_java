@@ -43,7 +43,7 @@ public class CardServiceImpl implements CardService {
     @Transactional(readOnly = true)
     @Override
     public List<DictionaryResource> getDictionaries() {
-        return dictionaryRepository.streamAllByUserId(User.DEFAULT_USER_ID)
+        return dictionaryRepository.streamAllByUserId(User.SYSTEM_USER.getID())
                 .map(mapper::createResource)
                 .collect(Collectors.toUnmodifiableList());
     }

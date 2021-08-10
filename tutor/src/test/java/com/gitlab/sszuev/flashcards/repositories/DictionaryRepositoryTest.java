@@ -31,7 +31,7 @@ public class DictionaryRepositoryTest extends RepositoryTestBase {
     public void testListCards() {
         Statistics statistics = prepareStatistics();
         Dictionary dic = repository.findAll().stream()
-                .filter(x -> Objects.equals(User.DEFAULT_USER_ID, x.getUser().getID()))
+                .filter(x -> Objects.equals(User.SYSTEM_USER.getLogin(), x.getUser().getLogin()))
                 .filter(x -> Objects.equals(TEST_DICTIONARY_NAME, x.getName()))
                 .findFirst()
                 .orElseThrow(AssertionError::new);
@@ -50,7 +50,7 @@ public class DictionaryRepositoryTest extends RepositoryTestBase {
     @Test
     public void testListByUser() {
         Statistics statistics = prepareStatistics();
-        List<Dictionary> list = repository.streamAllByUserId(User.DEFAULT_USER_ID).collect(Collectors.toList());
+        List<Dictionary> list = repository.streamAllByUserId(1).collect(Collectors.toList());
         Assertions.assertEquals(2, list.size());
         Set<String> names = list.stream().map(Dictionary::getName).collect(Collectors.toSet());
         Assertions.assertEquals(2, names.size());

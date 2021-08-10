@@ -10,14 +10,22 @@ import java.util.List;
  */
 public class EntityFactory {
 
-    public static Dictionary newDictionary(long userId,
+    public static User newUser(Long id, String login, String pwd, int role) {
+        User res = new User();
+        res.setID(id);
+        res.setLogin(login);
+        res.setPassword(pwd);
+        res.setRole(role);
+        return res;
+    }
+
+    public static Dictionary newDictionary(User user,
                                            String name,
                                            Language srcLanguage,
                                            Language dstLanguage,
                                            List<Card> cards) {
         Dictionary res = new Dictionary();
-        res.setUser(new User());
-        res.getUser().setID(userId);
+        res.setUser(user);
         res.setName(name);
         res.setSourceLanguage(srcLanguage);
         res.setTargetLanguage(dstLanguage);
