@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head th:fragment="headerfiles">
+    <meta charset="UTF-8"/>
+</head>
+<body>
+<div th:fragment="header">
+    <div class="container">
+        <div class="d-flex flex-row-reverse bd-highlight">
+            <div class="logout d-inline-block">
+                <form name="logoutForm" th:action="@{/logout}" method="post">
+                    <input class="btn btn-link" type="submit" value="Sign Out"/>
+                </form>
+            </div>
+            <div class="d-inline-block">
+                <div class="btn">
+                    <span>[</span>
+                    <span class="hello" sec:authentication="name">MrNobody</span>
+                    <span>]</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

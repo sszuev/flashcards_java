@@ -3,6 +3,8 @@
 A module that responsible for tutor process: 
 it conducts card logic in web, stores userdata (scores), etc.
 
+_(to login use demo:demo)_
+
 There are following 5 stages:
 - familiarization with current card random set (just cards one-by-one)
 - an exercise with mapping words and their translations ("mosaic")

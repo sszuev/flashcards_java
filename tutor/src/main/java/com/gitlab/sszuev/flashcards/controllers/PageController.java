@@ -12,15 +12,20 @@ import java.util.Objects;
  * Created by @ssz on 31.05.2021.
  */
 @Controller
-public class SettingsController {
+public class PageController {
     private final RunConfig config;
 
-    public SettingsController(RunConfig config) {
+    public PageController(RunConfig config) {
         this.config = Objects.requireNonNull(config);
     }
 
+    @GetMapping("/{path:[^.]*}")
+    public String redirect() {
+        return "redirect:/";
+    }
+
     @GetMapping(value = {"/"})
-    public ModelAndView getRunSettings() {
+    public ModelAndView index() {
         return new ModelAndView("index", Map.of(
                 "numberOfWordsToShow", config.getNumberOfWordsToShow(),
                 "numberOfWordsPerStage", config.getNumberOfWordsPerStage(),
