@@ -33,3 +33,4 @@ $ docker run --network flashcards-net -e JAVA_OPTS="-Dspring.profiles.active=doc
 ```
 $ docker-compose -f docker-compose.yml up -d
 ```
+_NOTE: to make the TTS service work need to obtain voice rss api key and store it in the `.env` file_

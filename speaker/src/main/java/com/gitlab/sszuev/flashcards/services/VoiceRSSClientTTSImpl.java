@@ -80,6 +80,8 @@ public class VoiceRSSClientTTSImpl implements TextToSpeechService {
             , Map.entry("tr-tr", "Turkish")
             , Map.entry("vi-vn", "Vietnamese"));
 
+    private static final String UNSPECIFIED = "unspecified";
+
     private final RestTemplate restTemplate;
     private final Compounder compounder;
 
@@ -91,16 +93,26 @@ public class VoiceRSSClientTTSImpl implements TextToSpeechService {
                                  Compounder compounder,
                                  @Value("${app.speaker.voicerss.api:api.voicerss.org}") String url,
                                  @Value("${app.speaker.voicerss.format:16khz_16bit_stereo}") String format,
-                                 @Value("${app.speaker.voicerss.key}") String key) {
+                                 @Value("${app.speaker.voicerss.key:" + UNSPECIFIED + "}") String key) {
         this.compounder = Objects.requireNonNull(compounder);
         this.api = Objects.requireNonNull(url);
         this.key = Objects.requireNonNull(key);
         this.format = Objects.requireNonNull(format);
         this.restTemplate = Objects.requireNonNull(template);
+        if (noKeySpecified()) {
+            LOGGER.warn("No voice-RSS key specified, use -Dapp.speaker.voicerss.key=your_key");
+        }
+    }
+
+    private boolean noKeySpecified() {
+        return UNSPECIFIED.equals(key) || key.isEmpty();
     }
 
     @Override
     public String getResourceID(String text, String language, String... options) {
+        if (noKeySpecified()) {
+            return null;
+        }
         String lang = LANGUAGES.stream()
                 .map(Map.Entry::getKey)
                 .filter(x -> x.startsWith(language.toLowerCase()))
@@ -111,6 +123,9 @@ public class VoiceRSSClientTTSImpl implements TextToSpeechService {
 
     @Override
     public Resource getResource(String id) {
+        if (noKeySpecified()) {
+            throw new IllegalStateException("No voice-rss key is given!");
+        }
         String lang = compounder.getFirst(id);
         String text = compounder.getRest(id);
 
