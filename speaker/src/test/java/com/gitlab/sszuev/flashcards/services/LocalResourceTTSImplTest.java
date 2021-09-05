@@ -32,8 +32,8 @@ public class LocalResourceTTSImplTest {
     private static final String TEST_LANG = "en";
     private static final String TEST_WORD = "weather";
     private static final String TEST_ID = String.format("%s%s%s.flac", TEST_LANG, TEST_SEPARATOR, TEST_WORD);
-    private static final long TEST_SIZE = 26395;
-    private static final byte[] TEST_MD5 = {-125, 77, -109, -54, 100, -9, -127, 121, -2, 58, -108, -15, -97, -106, 87, 46};
+    private static final long TEST_SIZE = 35851;
+    private static final byte[] TEST_MD5 = {-76, 97, 23, 2, -103, 119, -4, -107, 59, 117, 33, -128, -25, 51, 112, 114};
 
     private TextToSpeechService service;
 
