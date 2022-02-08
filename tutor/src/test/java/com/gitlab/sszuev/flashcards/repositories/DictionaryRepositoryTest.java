@@ -50,7 +50,7 @@ public class DictionaryRepositoryTest extends RepositoryTestBase {
     @Test
     public void testListByUser() {
         Statistics statistics = prepareStatistics();
-        List<Dictionary> list = repository.streamAllByUserId(1).collect(Collectors.toList());
+        List<Dictionary> list = repository.streamAllByUserId(1).toList();
         Assertions.assertEquals(2, list.size());
         Set<String> names = list.stream().map(Dictionary::getName).collect(Collectors.toSet());
         Assertions.assertEquals(2, names.size());

@@ -1,9 +1,16 @@
 package com.gitlab.sszuev.flashcards.services.impl;
 
 import com.gitlab.sszuev.flashcards.RunConfig;
+import com.gitlab.sszuev.flashcards.domain.Card;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
-import com.gitlab.sszuev.flashcards.domain.*;
-import com.gitlab.sszuev.flashcards.dto.*;
+import com.gitlab.sszuev.flashcards.domain.Language;
+import com.gitlab.sszuev.flashcards.domain.Status;
+import com.gitlab.sszuev.flashcards.domain.User;
+import com.gitlab.sszuev.flashcards.dto.CardRequest;
+import com.gitlab.sszuev.flashcards.dto.CardResource;
+import com.gitlab.sszuev.flashcards.dto.DictionaryResource;
+import com.gitlab.sszuev.flashcards.dto.EntityMapper;
+import com.gitlab.sszuev.flashcards.dto.Stage;
 import com.gitlab.sszuev.flashcards.repositories.CardRepository;
 import com.gitlab.sszuev.flashcards.repositories.DictionaryRepository;
 import com.gitlab.sszuev.flashcards.services.CardService;
@@ -14,7 +21,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Random;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -43,9 +58,16 @@ public class CardServiceImpl implements CardService {
     @Transactional(readOnly = true)
     @Override
     public List<DictionaryResource> getDictionaries() {
+        // todo: separated selects for total and learned counts
         return dictionaryRepository.streamAllByUserId(User.SYSTEM_USER.getID())
-                .map(mapper::createResource)
-                .collect(Collectors.toUnmodifiableList());
+                .map(mapper::createResource).toList();
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<CardResource> getAllCards(long dicId) {
+        Language lang = getDictionary(dicId).getSourceLanguage();
+        return cardRepository.streamByDictionaryId(dicId).map(c -> mapper.createResource(c, lang)).toList();
     }
 
     @Transactional(readOnly = true)
@@ -62,12 +84,15 @@ public class CardServiceImpl implements CardService {
     @Transactional(readOnly = true)
     @Override
     public List<CardResource> getNextCardDeck(long dicId, int length, boolean unknown) {
-        Dictionary dic = dictionaryRepository.findById(dicId)
-                .orElseThrow(() -> new IllegalStateException("Can't find dictionary by id=" + dicId));
+        Dictionary dic = getDictionary(dicId);
         Language lang = dic.getSourceLanguage();
         return getRandomCards(dicId, length, unknown)
-                .stream().map(c -> mapper.createResource(c, lang))
-                .collect(Collectors.toUnmodifiableList());
+                .stream().map(c -> mapper.createResource(c, lang)).toList();
+    }
+
+    public Dictionary getDictionary(long dicId) {
+        return dictionaryRepository.findById(dicId)
+                .orElseThrow(() -> new IllegalStateException("Can't find dictionary by id=" + dicId));
     }
 
     public Collection<Card> getRandomCards(long dicId, int length, boolean unknown) {

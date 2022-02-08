@@ -18,7 +18,7 @@ function drawDictionariesPage() {
                           </tr>`);
             row.unbind('click').on('click', function () {
                 dictionary = value;
-                $.get('/api/cards/' + dictionary.id).done(function (array) {
+                $.get('/api/cards/random/' + dictionary.id).done(function (array) {
                     data = array;
                     stageShow();
                 });

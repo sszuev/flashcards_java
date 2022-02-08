@@ -10,7 +10,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
@@ -42,6 +47,16 @@ public class CardsRestController {
     }
 
     /**
+     * Gets a list of card-resources by dictionary id.
+     *
+     * @return a {@link List} of {@link CardResource}s
+     */
+    @GetMapping(value = "/api/cards/{dictionary}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<CardResource> getDictionaryCards(@PathVariable(name = "dictionary") long dictionary) {
+        return cardService.getAllCards(dictionary);
+    }
+
+    /**
      * Randomly peeks card-resources from the underlying db by the given dictionary id.
      * Non-idempotent: every time new result.
      *
@@ -51,7 +66,7 @@ public class CardsRestController {
      *                   {@code false} or {@code null} if it is does not matter
      * @return a {@code List} of {@link CardResource}s
      */
-    @GetMapping(value = "/api/cards/{dictionary}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/api/cards/random/{dictionary}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<CardResource> getNextCardDeck(@PathVariable(name = "dictionary") long dictionary,
                                               @RequestParam(name = "length", required = false) Integer length,
                                               @RequestParam(name = "unknown", required = false) Boolean unknown) {

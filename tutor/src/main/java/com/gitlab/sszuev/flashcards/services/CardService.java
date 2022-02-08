@@ -19,6 +19,14 @@ public interface CardService {
     List<DictionaryResource> getDictionaries();
 
     /**
+     * Returns all cards by dictionary.
+     *
+     * @param dictionaryId {@code long} - id of dictionary
+     * @return a {@code List} of {@link CardResource}s
+     */
+    List<CardResource> getAllCards(long dictionaryId);
+
+    /**
      * Returns a deck ({@code List}) of cards to proceed by peeking them randomly from the specified dictionary.
      * The method is not-idempotent: each its call should return a new deck different from previous one.
      *
@@ -32,9 +40,9 @@ public interface CardService {
      * The method is not-idempotent: each its call should return a new deck different from previous one.
      *
      * @param dictionaryId {@code long} - id of dictionary
-     * @param length  {@code int} - the desired length of returned {@code List},
-     *                note that actual length may differ from the specified value
-     * @param unknown {@code boolean} - if {@code true} returns only unknown cards, otherwise cards
+     * @param length       {@code int} - the desired length of returned {@code List},
+     *                     note that actual length may differ from the specified value
+     * @param unknown      {@code boolean} - if {@code true} returns only unknown cards, otherwise cards with any status
      * @return a {@code List} of {@link CardResource}s - every time a new one
      */
     List<CardResource> getNextCardDeck(long dictionaryId, int length, boolean unknown);

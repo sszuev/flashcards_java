@@ -1,8 +1,11 @@
 package com.gitlab.sszuev.flashcards.services;
 
 import com.gitlab.sszuev.flashcards.TestUtils;
+import com.gitlab.sszuev.flashcards.domain.Card;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
-import com.gitlab.sszuev.flashcards.domain.*;
+import com.gitlab.sszuev.flashcards.domain.Language;
+import com.gitlab.sszuev.flashcards.domain.Status;
+import com.gitlab.sszuev.flashcards.domain.User;
 import com.gitlab.sszuev.flashcards.dto.CardRequest;
 import com.gitlab.sszuev.flashcards.dto.CardResource;
 import com.gitlab.sszuev.flashcards.dto.DictionaryResource;
@@ -17,7 +20,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -162,4 +170,23 @@ public class CardServiceTest {
         Assertions.assertEquals(1, card2.getAnswered());
     }
 
+    @Test
+    public void testGetAllCards() {
+        Language lang = () -> "xxx";
+        long dicId = 42;
+        String dicName = "xxx";
+        Map<Long, String> words = Map.of(-1L, "A", -2L, "B", -3L, "C");
+
+        Dictionary dic = TestUtils.mockDictionary(dicId, dicName, lang);
+        Mockito.when(cardRepository.streamByDictionaryId(Mockito.eq(dicId)))
+                .thenReturn(words.entrySet().stream().sorted(Map.Entry.comparingByValue())
+                        .map(e -> TestUtils.mockCard(e.getKey(), e.getValue())));
+        Mockito.when(dictionaryRepository.findById(Mockito.eq(dicId))).thenReturn(Optional.of(dic));
+
+        List<CardResource> res = service.getAllCards(dicId);
+        Assertions.assertNotNull(res);
+        Assertions.assertEquals(words.size(), res.size());
+        Assertions.assertEquals(words.values().stream().sorted().toList(),
+                res.stream().map(CardResource::getWord).collect(Collectors.toList()));
+    }
 }

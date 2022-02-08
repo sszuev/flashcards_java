@@ -2,7 +2,7 @@
  * main script.
  */
 
-// a dictionary resource
+// selected dictionary resource (todo: support selecting several dictionaries)
 let dictionary;
 // an array with card resources
 let data;
