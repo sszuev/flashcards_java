@@ -172,3 +172,17 @@ function toYaURI(itemWord, sourceLang, targetLang) {
         "&text=" + encodeURIComponent(itemWord);
     return "https://translate.yandex.ru/" + fragment;
 }
+
+/**
+ * Finds first item from the array of cards by the specified prefix.
+ * @param array {array} of resource cards
+ * @param prefix {string}
+ * @returns item
+ */
+function findItem(array, prefix) {
+    if (!prefix.trim()) {
+        return null;
+    }
+    prefix = prefix.trim().toLowerCase();
+    return array.find((s) => s.word.toLowerCase().startsWith(prefix));
+}

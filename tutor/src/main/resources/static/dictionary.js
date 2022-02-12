@@ -4,6 +4,7 @@
 
 const selectedRowClass = 'table-secondary';
 const runRowClass = 'table-dark';
+const findRowClass = 'table-success';
 
 function drawDictionariesPage() {
     $.get('/api/dictionaries').done(function (response) {
@@ -56,19 +57,34 @@ function drawDictionaryPage() {
         return;
     }
     selectActiveRow(dictionary.id);
+    const tableRow = $('#words-table-row');
     const tbody = $('#words tbody');
     const title = $('#words-title');
     const glDiv = $('#edit-card-dialog-gl-collapse');
     const yaDiv = $('#edit-card-dialog-ya-collapse');
     const lgDiv = $('#edit-card-dialog-lg-collapse');
+    const search = $('#words-search');
     title.html(dictionary.name);
     tbody.html('');
     prepareTable('words', resetWordSelection);
 
-    $('#words-table-row').css('height', calcInitTableHeight());
+    tableRow.css('height', calcInitTableHeight());
 
     $.get('/api/cards/' + dictionary.id).done(function (response) {
         displayPageCard('words');
+
+        search.on('input', function () {
+            resetRowSelections(tbody);
+            const item = findItem(response, search.val());
+            if (item == null) {
+                return;
+            }
+            const row = $('#w' + item.id);
+            const position = row.offset().top - tableRow.offset().top + tableRow.scrollTop();
+            tableRow.scrollTop(position);
+            row.addClass(findRowClass);
+        });
+
         $.each(response, function (key, item) {
             let row = $(`<tr id="${'w' + item.id}">
                             <td>${item.word}</td>
