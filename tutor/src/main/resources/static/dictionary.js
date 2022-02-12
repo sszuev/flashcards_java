@@ -58,7 +58,9 @@ function drawDictionaryPage() {
     selectActiveRow(dictionary.id);
     const tbody = $('#words tbody');
     const title = $('#words-title');
-    const frameDiv = $('#edit-card-dialog-lingvo-collapse');
+    const glDiv = $('#edit-card-dialog-gl-collapse');
+    const yaDiv = $('#edit-card-dialog-ya-collapse');
+    const lgDiv = $('#edit-card-dialog-lg-collapse');
     title.html(dictionary.name);
     tbody.html('');
     prepareTable('words', resetWordSelection);
@@ -76,14 +78,24 @@ function drawDictionaryPage() {
 
             row.on('click', function () {
                 resetRowSelections(tbody);
-                frameDiv.removeClass('show');
+                lgDiv.removeClass('show');
+                glDiv.removeClass('show');
+                yaDiv.removeClass('show');
                 row.addClass(selectedRowClass);
                 $('#words-btn-edit').prop('disabled', false);
 
                 const wordInput = $('#edit-card-dialog-word');
                 wordInput.val(item.word);
 
-                frameDiv.unbind('show.bs.collapse').on('show.bs.collapse', onFrameOpen);
+                lgDiv.unbind('show.bs.collapse').on('show.bs.collapse', function () {
+                    onCollapseShow(lgDiv, createLgFrame);
+                });
+                yaDiv.unbind('show.bs.collapse').on('show.bs.collapse', function () {
+                    onCollapseShow(yaDiv, createYaLink);
+                });
+                glDiv.unbind('show.bs.collapse').on('show.bs.collapse', function () {
+                    onCollapseShow(glDiv, createGlLink);
+                });
             });
 
             tbody.append(row);
@@ -91,24 +103,18 @@ function drawDictionaryPage() {
     });
 }
 
-function onFrameOpen() {
+function onCollapseShow(collapseDiv, printLink) {
     const wordInput = $('#edit-card-dialog-word');
-    const frameDiv = $('#edit-card-dialog-lingvo-collapse div');
+    const innerDiv = $('div', collapseDiv);
 
     const wordNext = wordInput.val();
-    const wordPrev = frameDiv.attr('word-txt');
+    const wordPrev = innerDiv.attr('word-txt');
     if (wordNext === wordPrev) {
         return;
     }
-    let extUri = toLingvoURI(wordNext, dictionary.sourceLang, dictionary.targetLang);
-    let height = calcInitFrameHeight();
-    let frame = $(`<iframe noborder="0" width="1140" height="800">xxx</iframe>`);
-    frame.attr('src', extUri);
-    frame.attr('height', height);
-    frameDiv.html('').append(frame);
-    frameDiv.attr('word-txt', wordNext);
+    printLink(innerDiv, wordNext, dictionary.sourceLang, dictionary.targetLang);
+    innerDiv.attr('word-txt', wordNext);
 }
-
 
 function prepareTable(id, resetSelection) {
     const thead = $('#' + id + ' thead');
@@ -126,6 +132,25 @@ function prepareTable(id, resetSelection) {
     });
 }
 
+function createGlLink(frameDiv, text, sourceLang, targetLang) {
+    const extUri = toGlURI(text, sourceLang, targetLang);
+    frameDiv.html(`<a href='${extUri}'>${extUri}</a>`);
+}
+
+function createYaLink(frameDiv, text, sourceLang, targetLang) {
+    const extUri = toYaURI(text, sourceLang, targetLang);
+    frameDiv.html(`<a href='${extUri}'>${extUri}</a>`);
+}
+
+function createLgFrame(frameDiv, text, sourceLang, targetLang) {
+    const extUri = toLgURI(text, sourceLang, targetLang);
+    const height = calcInitFrameHeight();
+    const frame = $(`<iframe noborder="0" width="1140" height="800">xxx</iframe>`);
+    frame.attr('src', extUri);
+    frame.attr('height', height);
+    frameDiv.html('').append(frame);
+}
+
 function resetRowSelections(tbody) {
     $('tr', tbody).each(function (i, r) {
         $(r).removeClass();
@@ -141,7 +166,7 @@ function resetDictionarySelection() {
 
 function resetWordSelection() {
     $('#words-btn-edit').prop('disabled', true);
-    $('#edit-card-dialog-lingvo-collapse').removeClass('show');
+    $('#edit-card-dialog-lg-collapse').removeClass('show');
 }
 
 function selectActiveRow(id) {
@@ -153,5 +178,5 @@ function calcInitTableHeight() {
 }
 
 function calcInitFrameHeight() {
-    return Math.round($(document).height() * 5 / 9);
+    return Math.round($(document).height() * 7 / 18);
 }

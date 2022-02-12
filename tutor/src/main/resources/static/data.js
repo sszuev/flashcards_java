@@ -142,7 +142,33 @@ function percentage(item) {
  * @param targetLang {string} - target language, e.g. "en"
  * @returns {string} an uri
  */
-function toLingvoURI(itemWord, sourceLang, targetLang) {
+function toLgURI(itemWord, sourceLang, targetLang) {
     let fragment = sourceLang.toLowerCase() + '-' + targetLang.toLowerCase() + "/" + encodeURIComponent(itemWord);
     return "https://www.lingvolive.com/en-us/translate/" + fragment;
+}
+
+/**
+ * Returns an uri to google-translator.
+ * @param itemWord {string}  - the card resource word
+ * @param sourceLang {string}- source language, e.g. "en"
+ * @param targetLang {string} - target language, e.g. "en"
+ * @returns {string} an uri
+ */
+function toGlURI(itemWord, sourceLang, targetLang) {
+    let fragment = '?sl=' + sourceLang.toLowerCase() + '&tl=' + targetLang.toLowerCase() +
+        "&text=" + encodeURIComponent(itemWord);
+    return "https://translate.google.com/" + fragment;
+}
+
+/**
+ * Returns an uri to yandex-translator.
+ * @param itemWord {string}  - the card resource word
+ * @param sourceLang {string}- source language, e.g. "en"
+ * @param targetLang {string} - target language, e.g. "en"
+ * @returns {string} an uri
+ */
+function toYaURI(itemWord, sourceLang, targetLang) {
+    let fragment = '?lang=' + sourceLang.toLowerCase() + '-' + targetLang.toLowerCase() +
+        "&text=" + encodeURIComponent(itemWord);
+    return "https://translate.yandex.ru/" + fragment;
 }
