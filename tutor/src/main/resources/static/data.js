@@ -134,3 +134,15 @@ function percentage(item) {
     }
     return Math.round(100.0 * item.answered / numberOfRightAnswers);
 }
+
+/**
+ * Returns an uri to lingvo-online.
+ * @param itemWord {string}  - the card resource word
+ * @param sourceLang {string}- source language, e.g. "en"
+ * @param targetLang {string} - target language, e.g. "en"
+ * @returns {string} an uri
+ */
+function toLingvoURI(itemWord, sourceLang, targetLang) {
+    let fragment = sourceLang.toLowerCase() + '-' + targetLang.toLowerCase() + "/" + encodeURIComponent(itemWord);
+    return "https://www.lingvolive.com/en-us/translate/" + fragment;
+}

@@ -5,6 +5,7 @@
     <title>OpenTutor - flashcards</title>
     <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/bootstrap/js/bootstrap.js"></script>
     <script src="/common.js"></script>
     <script src="/data.js"></script>
     <script src="/dictionary.js"></script>
@@ -44,10 +45,10 @@
         </div>
     </div>
 </div>
-<div id="dictionary" class="page card container container-table" style="display: none;">
+<div id="words" class="page card container container-table" style="display: none;">
     <div class="card-body">
-        <h1 id="dictionary-title" class="card-title" >dictionary</h1>
-        <div id="dictionary-table-row" class="row" style="overflow: auto">
+        <h1 id="words-title" class="card-title" >dictionary</h1>
+        <div id="words-table-row" class="row" style="overflow: auto">
             <table class="table">
                 <thead>
                 <tr>
@@ -60,8 +61,45 @@
             </table>
         </div>
         <div class="row">
-            <div id="dictionary-btn-group" class="btn-group" role="group" aria-label="Dictionary group">
-                <button id="dictionary-btn-add" type="button" class="btn btn-secondary" disabled>Add</button>
+            <div id="words-btn-group" class="btn-group" role="group" aria-label="Dictionary group">
+                <button id="words-btn-add" type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#edit-card-dialog" disabled>Add</button>
+                <button id="words-btn-edit" type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#edit-card-dialog" disabled>Edit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="edit-card-dialog" tabindex="-1" aria-labelledby="edit-card-dialog-label" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="edit-card-dialog-label">Edit word</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <label>
+                        <input id="edit-card-dialog-word" type="text"/>
+                    </label>
+                </div>
+                <div class="row">
+                    <div class="card-header" id="edit-card-dialog-lingvo-header">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#edit-card-dialog-lingvo-collapse"
+                                    aria-expanded="false"
+                                    aria-controls="#edit-card-dialog-lingvo-collapse">LingvoTranslator</button>
+                        </h5>
+                    </div>
+                    <div id="edit-card-dialog-lingvo-collapse" class="collapse" aria-labelledby="edit-card-dialog-lingvo-header">
+                        <div class="card-body" style="overflow: auto">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
             </div>
         </div>
     </div>
