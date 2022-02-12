@@ -37,7 +37,7 @@ public class EntityMapper {
         String word = card.getText();
         List<List<String>> translations = card.translations()
                 .map(x -> CardUtils.getWords(x.getText())).toList();
-        int answered = card.getStatus() == Status.LEARNED ? 0 : Optional.ofNullable(card.getAnswered()).orElse(0);
+        int answered = Optional.ofNullable(card.getAnswered()).orElse(0);
         return new CardResource(card.getID(),
                 word, translations, speaker.getResourceName(word, lang.name()), answered, Map.of());
     }

@@ -12,20 +12,24 @@ function drawDictionariesPage() {
         const tbody = $('#dictionaries tbody');
         const thead = $('#dictionaries thead');
         const title = $('#dictionaries .card-title');
-        const btnRun = $('#btn-run');
+        const btnRun = $('#dictionaries-btn-run');
+        const btnEdit = $('#dictionaries-btn-edit');
         tbody.html('');
-        resetSelection();
+        resetDictionarySelection();
         thead.on('click', function () {
             resetRowSelections(tbody);
-            resetSelection();
+            resetDictionarySelection();
         });
         title.on('click', function () {
             resetRowSelections(tbody);
-            resetSelection();
+            resetDictionarySelection();
         });
-        btnRun.on('click', runStage);
+        btnRun.on('click', drawRunPage);
+        btnEdit.on('click', drawDictionaryPage);
+        $('#dictionaries-table-row').css('height', calcInitTableHeight());
+
         $.each(response, function (key, value) {
-            let row = $(`<tr id="${value.id}">
+            let row = $(`<tr id="${'d' + value.id}">
                             <td>${value.sourceLang}</td>
                             <td>${value.targetLang}</td>
                             <td>${value.name}</td>
@@ -37,8 +41,44 @@ function drawDictionariesPage() {
                 resetRowSelections(tbody);
                 row.addClass(selectedRowClass);
                 btnRun.prop("disabled", false);
+                btnEdit.prop("disabled", false);
             });
-            row.dblclick(runStage);
+            row.dblclick(drawRunPage);
+            tbody.append(row);
+        });
+    });
+}
+
+function drawRunPage() {
+    if (dictionary == null) {
+        return;
+    }
+    selectActiveRow(dictionary.id);
+    $.get('/api/cards/random/' + dictionary.id).done(function (array) {
+        data = array;
+        stageShow();
+    });
+}
+
+function drawDictionaryPage() {
+    if (dictionary == null) {
+        return;
+    }
+    selectActiveRow(dictionary.id);
+    const table = $('#dictionary-table');
+    const tbody = $('#dictionary tbody');
+    const title = $('#dictionary-title');
+    title.html(dictionary.name);
+    $('#dictionary-table-row').css('height', calcInitTableHeight());
+
+    $.get('/api/cards/' + dictionary.id).done(function (response) {
+        displayPageCard('dictionary');
+        $.each(response, function (key, item) {
+            let row = $(`<tr id="${'w' + item.id}">
+                            <td>${item.word}</td>
+                            <td>${toTranslationString(item)}</td>
+                            <td>${percentage(item)}</td>
+                          </tr>`);
             tbody.append(row);
         });
     });
@@ -50,18 +90,17 @@ function resetRowSelections(tbody) {
     })
 }
 
-function resetSelection() {
+function resetDictionarySelection() {
     dictionary = null;
-    $('#btn-run').prop("disabled", true);
+    $('#dictionaries-btn-group button').each(function (i, b) {
+        $(b).prop('disabled', true);
+    });
 }
 
-function runStage() {
-    if (dictionary == null) {
-        return;
-    }
-    $('#' + dictionary.id).addClass(runRowClass);
-    $.get('/api/cards/random/' + dictionary.id).done(function (array) {
-        data = array;
-        stageShow();
-    });
+function selectActiveRow(id) {
+    $('#' + id).addClass(runRowClass);
+}
+
+function calcInitTableHeight() {
+    return Math.round($(document).height() * 7 / 9);
 }

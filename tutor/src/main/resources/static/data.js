@@ -122,3 +122,15 @@ function toTranslationArray(item) {
         return n;
     });
 }
+
+/**
+ * Returns learning percentage for card.
+ * @param item - card resource
+ * @returns {number} - int percentage
+ */
+function percentage(item) {
+    if (item.answered > numberOfRightAnswers) {
+        return 100;
+    }
+    return Math.round(100.0 * item.answered / numberOfRightAnswers);
+}

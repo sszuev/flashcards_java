@@ -22,7 +22,7 @@
 <div id="dictionaries" class="page card container container-table" style="display: none;">
     <div class="card-body">
         <h1 class="card-title">flashcards</h1>
-        <div class="row">
+        <div id="dictionaries-table-row" class="row" style="overflow: auto">
             <table class="table">
                 <thead>
                     <tr>
@@ -37,12 +37,36 @@
             </table>
         </div>
         <div class="row">
-            <div class="btn-group" role="group" aria-label="Dictionaries group">
-                <button id="btn-run" type="button" class="btn btn-secondary" disabled>Run</button>
+            <div id="dictionaries-btn-group" class="btn-group" role="group" aria-label="Dictionaries group">
+                <button id="dictionaries-btn-run" type="button" class="btn btn-secondary" disabled>Run</button>
+                <button id="dictionaries-btn-edit" type="button" class="btn btn-secondary" disabled>Edit</button>
             </div>
         </div>
     </div>
 </div>
+<div id="dictionary" class="page card container container-table" style="display: none;">
+    <div class="card-body">
+        <h1 id="dictionary-title" class="card-title" >dictionary</h1>
+        <div id="dictionary-table-row" class="row" style="overflow: auto">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Word</th>
+                    <th scope="col">Translation</th>
+                    <th scope="col">Status, %</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div class="row">
+            <div id="dictionary-btn-group" class="btn-group" role="group" aria-label="Dictionary group">
+                <button id="dictionary-btn-add" type="button" class="btn btn-secondary" disabled>Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="show" class="page card container container-table" style="display: none;">
     <div class="card-body">
         <h6 class="card-title">flashcards:</h6>
