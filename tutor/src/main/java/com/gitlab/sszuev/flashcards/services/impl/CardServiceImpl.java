@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +68,8 @@ public class CardServiceImpl implements CardService {
     @Override
     public List<CardResource> getAllCards(long dicId) {
         Language lang = getDictionary(dicId).getSourceLanguage();
-        return cardRepository.streamByDictionaryId(dicId).map(c -> mapper.createResource(c, lang)).toList();
+        return cardRepository.streamByDictionaryId(dicId).map(c -> mapper.createResource(c, lang))
+                .sorted(Comparator.comparing(CardResource::getWord)).toList();
     }
 
     @Transactional(readOnly = true)
