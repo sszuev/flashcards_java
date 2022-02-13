@@ -185,7 +185,7 @@ function initEditDialog() {
         const audio = btn.attr('word-sound');
         if (audio) {
             btn.prop('disabled', true);
-            new Audio('/api/sounds/' + audio).play().then(function () {
+            playAudio(audio, function () {
                 btn.prop('disabled', false);
             });
         }

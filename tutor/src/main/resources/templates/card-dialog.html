@@ -1,55 +1,49 @@
-<div th:fragment="cardDialog (id)">
-    <div class="modal fade" th:id="${id} + '-card-dialog'" tabindex="-1" th:aria-labelledby="${id} + '-card-dialog-label'" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" th:id="${id}+ '-card-dialog-label'">Edit word</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                   <div class="row">
-                        <div class="input-group input-group-sm mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" th:id="${id} + '-card-dialog-word-sizing-sm'">word</span>
-                            </div>
-                            <input th:id="${id} + '-card-dialog-word'" type="text" class="form-control" aria-label="word"
-                                   th:aria-describedby="${id} + 'edit-card-dialog-word-sizing-sm'"/>
-                            <div class="input-group-append">
-                                <button th:id="${id} + '-card-dialog-sound'" type="button" class="btn btn-secondary" disabled>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
-                                        <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"></path>
-                                    </svg>
-                                </button>
-                            </div>
+<div th:fragment="cardDialog (id)" class="modal fade" th:id="${id} + '-card-dialog'" tabindex="-1" th:aria-labelledby="${id} + '-card-dialog-label'" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" th:id="${id}+ '-card-dialog-label'" th:text="${#strings.toUpperCase(id)}">edit word</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+               <div class="row">
+                    <div class="input-group input-group-sm mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" th:id="${id} + '-card-dialog-word-sizing-sm'">word</span>
                         </div>
-                    </div>
-                    <div class="row" th:id="${id} + '-card-dialog-links'">
-                        <div class="card-header">
-                            <h6 class="mb-0" th:id="${id} + '-card-dialog-gl-link'"></h6>
-                        </div>
-                        <div class="card-header">
-                            <h6 class="mb-0" th:id="${id} + '-card-dialog-ya-link'"></h6>
-                        </div>
-                        <div class="card-header d-flex justify-content-between" th:id="${id} + '-card-dialog-lg-header'">
-                            <h6 class="mb-0" th:id="${id}  + '-card-dialog-lg-link'"></h6>
-                            <h6 class="mb-0">
-                                <button class="btn btn-link"
-                                        data-bs-toggle="collapse"
-                                        th:data-bs-target="'#' + ${id} + '-card-dialog-lg-collapse'"
-                                        aria-expanded="false"
-                                        th:aria-controls="'#' + ${id} + '-card-dialog-lg-collapse'">v</button>
-                            </h6>
-                        </div>
-                        <div th:id="${id} + '-card-dialog-lg-collapse'" class="collapse" th:aria-labelledby="${id} + '-card-dialog-lg-header'">
-                            <div class="card-body" style="overflow: auto">
-                            </div>
+                        <input th:id="${id} + '-card-dialog-word'" type="text" class="form-control" aria-label="word"
+                               th:aria-describedby="${id} + 'edit-card-dialog-word-sizing-sm'"/>
+                        <div class="input-group-append">
+                            <button th:insert="speaker.html :: svg" th:id="${id} + '-card-dialog-sound'" type="button" class="sound btn btn-secondary" disabled></button>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+                <div class="row" th:id="${id} + '-card-dialog-links'">
+                    <div class="card-header">
+                        <h6 class="mb-0" th:id="${id} + '-card-dialog-gl-link'"></h6>
+                    </div>
+                    <div class="card-header">
+                        <h6 class="mb-0" th:id="${id} + '-card-dialog-ya-link'"></h6>
+                    </div>
+                    <div class="card-header d-flex justify-content-between" th:id="${id} + '-card-dialog-lg-header'">
+                        <h6 class="mb-0" th:id="${id}  + '-card-dialog-lg-link'"></h6>
+                        <h6 class="mb-0">
+                            <button class="btn btn-link"
+                                    data-bs-toggle="collapse"
+                                    th:data-bs-target="'#' + ${id} + '-card-dialog-lg-collapse'"
+                                    aria-expanded="false"
+                                    th:aria-controls="'#' + ${id} + '-card-dialog-lg-collapse'">v</button>
+                        </h6>
+                    </div>
+                    <div th:id="${id} + '-card-dialog-lg-collapse'" class="collapse" th:aria-labelledby="${id} + '-card-dialog-lg-header'">
+                        <div class="card-body" style="overflow: auto">
+                        </div>
+                    </div>
                 </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
             </div>
         </div>
     </div>
