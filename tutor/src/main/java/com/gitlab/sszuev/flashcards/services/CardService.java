@@ -19,7 +19,8 @@ public interface CardService {
     List<DictionaryResource> getDictionaries();
 
     /**
-     * Returns all cards by dictionary.
+     * Returns all cards from the specified dictionary,
+     * the result is sorted in natural order (by {@link CardResource#getWord()}).
      *
      * @param dictionaryId {@code long} - id of dictionary
      * @return a {@code List} of {@link CardResource}s

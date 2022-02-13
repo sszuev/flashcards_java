@@ -134,3 +134,55 @@ function percentage(item) {
     }
     return Math.round(100.0 * item.answered / numberOfRightAnswers);
 }
+
+/**
+ * Returns an uri to lingvo-online.
+ * @param itemWord {string}  - the card resource word
+ * @param sourceLang {string}- source language, e.g. "en"
+ * @param targetLang {string} - target language, e.g. "en"
+ * @returns {string} an uri
+ */
+function toLgURI(itemWord, sourceLang, targetLang) {
+    let fragment = sourceLang.toLowerCase() + '-' + targetLang.toLowerCase() + "/" + encodeURIComponent(itemWord);
+    return "https://www.lingvolive.com/en-us/translate/" + fragment;
+}
+
+/**
+ * Returns an uri to google-translator.
+ * @param itemWord {string}  - the card resource word
+ * @param sourceLang {string}- source language, e.g. "en"
+ * @param targetLang {string} - target language, e.g. "en"
+ * @returns {string} an uri
+ */
+function toGlURI(itemWord, sourceLang, targetLang) {
+    let fragment = '?sl=' + sourceLang.toLowerCase() + '&tl=' + targetLang.toLowerCase() +
+        "&text=" + encodeURIComponent(itemWord);
+    return "https://translate.google.com/" + fragment;
+}
+
+/**
+ * Returns an uri to yandex-translator.
+ * @param itemWord {string}  - the card resource word
+ * @param sourceLang {string}- source language, e.g. "en"
+ * @param targetLang {string} - target language, e.g. "en"
+ * @returns {string} an uri
+ */
+function toYaURI(itemWord, sourceLang, targetLang) {
+    let fragment = '?lang=' + sourceLang.toLowerCase() + '-' + targetLang.toLowerCase() +
+        "&text=" + encodeURIComponent(itemWord);
+    return "https://translate.yandex.ru/" + fragment;
+}
+
+/**
+ * Finds first item from the array of cards by the specified prefix.
+ * @param array {array} of resource cards
+ * @param prefix {string}
+ * @returns item
+ */
+function findItem(array, prefix) {
+    if (!prefix.trim()) {
+        return null;
+    }
+    prefix = prefix.trim().toLowerCase();
+    return array.find((s) => s.word.toLowerCase().startsWith(prefix));
+}

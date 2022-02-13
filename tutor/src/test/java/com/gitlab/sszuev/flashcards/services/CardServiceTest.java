@@ -175,18 +175,19 @@ public class CardServiceTest {
         Language lang = () -> "xxx";
         long dicId = 42;
         String dicName = "xxx";
-        Map<Long, String> words = Map.of(-1L, "A", -2L, "B", -3L, "C");
+        List<Map.Entry<Long, String>> words = List.of(Map.entry(-1L, "C"), Map.entry(-2L, "A"),
+                Map.entry(-4L, "G"), Map.entry(-5L, "f"), Map.entry(-42L, "a"));
 
         Dictionary dic = TestUtils.mockDictionary(dicId, dicName, lang);
         Mockito.when(cardRepository.streamByDictionaryId(Mockito.eq(dicId)))
-                .thenReturn(words.entrySet().stream().sorted(Map.Entry.comparingByValue())
+                .thenReturn(words.stream()
                         .map(e -> TestUtils.mockCard(e.getKey(), e.getValue())));
         Mockito.when(dictionaryRepository.findById(Mockito.eq(dicId))).thenReturn(Optional.of(dic));
 
         List<CardResource> res = service.getAllCards(dicId);
         Assertions.assertNotNull(res);
         Assertions.assertEquals(words.size(), res.size());
-        Assertions.assertEquals(words.values().stream().sorted().toList(),
+        Assertions.assertEquals(words.stream().map(Map.Entry::getValue).sorted().toList(),
                 res.stream().map(CardResource::getWord).collect(Collectors.toList()));
     }
 }
