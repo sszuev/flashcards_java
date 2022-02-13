@@ -376,22 +376,18 @@ function strikeText(textHolder) {
     textHolder.html(`<del>${textHolder.text()}</del>`).css('color', 'gray');
 }
 
-function drawAndPlayAudio(parent, sound) {
-    let item = $('.sound', parent);
-    if (sound != null) {
-        playAudio(sound, p => item.html(`<audio controls><source src='${p}' type='audio/wav'/></audio>`));
-    } else {
-        item.html('');
+function drawAndPlayAudio(parent, audio) {
+    if (!audio) {
+        return;
     }
+    const btn = $('.sound', parent);
+    btn.prop('disabled', false);
+    btn.unbind('click').on('click', function () {
+        btn.prop('disabled', true);
+        playAudio(audio, function () {
+            btn.prop('disabled', false);
+        });
+    });
+    btn.click();
 }
 
-function playAudio(sound, callback) {
-    const path = '/api/sounds/' + sound;
-    const promise = new Audio(path).play();
-    if (callback) {
-        promise.then(() => callback(path));
-    } else {
-        promise.then(() => {
-        });
-    }
-}

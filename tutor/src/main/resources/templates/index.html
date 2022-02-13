@@ -37,6 +37,10 @@
                 <tbody></tbody>
             </table>
         </div>
+        <div class="row d-grid p-3">
+            <!--suppress HtmlFormInputWithoutLabel -->
+            <input value="&nbsp;" type="text" class="invisible"/>
+        </div>
         <div class="row">
             <div id="dictionaries-btn-group" class="btn-group" role="group" aria-label="Dictionaries group">
                 <button id="dictionaries-btn-run" type="button" class="btn btn-secondary" disabled>Run</button>
@@ -66,74 +70,14 @@
         </div>
         <div class="row">
             <div id="words-btn-group" class="btn-group" role="group" aria-label="Dictionary group">
-                <button id="words-btn-add" type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#edit-card-dialog" disabled>Add</button>
+                <button id="words-btn-add" type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#add-card-dialog" disabled>Add</button>
                 <button id="words-btn-edit" type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#edit-card-dialog" disabled>Edit</button>
             </div>
         </div>
     </div>
 </div>
-<div class="modal fade" id="edit-card-dialog" tabindex="-1" aria-labelledby="edit-card-dialog-label" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="edit-card-dialog-label">Edit word</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <label>
-                        <input id="edit-card-dialog-word" type="text"/>
-                    </label>
-                </div>
-                <div class="row">
-                    <div class="card-header" id="edit-card-dialog-gl-header">
-                        <h5 class="mb-0">
-                            <button class="btn btn-link"
-                                    data-bs-toggle="collapse"
-                                    data-bs-target="#edit-card-dialog-gl-collapse"
-                                    aria-expanded="false"
-                                    aria-controls="#edit-card-dialog-gl-collapse">GoogleTranslator</button>
-                        </h5>
-                    </div>
-                    <div id="edit-card-dialog-gl-collapse" class="collapse" aria-labelledby="edit-card-dialog-gl-header">
-                        <div class="card-body" style="overflow: auto">
-                        </div>
-                    </div>
-                    <div class="card-header" id="edit-card-dialog-ya-header">
-                        <h5 class="mb-0">
-                            <button class="btn btn-link"
-                                    data-bs-toggle="collapse"
-                                    data-bs-target="#edit-card-dialog-ya-collapse"
-                                    aria-expanded="false"
-                                    aria-controls="#edit-card-dialog-ya-collapse">YandexTranslator</button>
-                        </h5>
-                    </div>
-                    <div id="edit-card-dialog-ya-collapse" class="collapse" aria-labelledby="edit-card-dialog-ya-header">
-                        <div class="card-body" style="overflow: auto">
-                        </div>
-                    </div>
-                    <div class="card-header" id="edit-card-dialog-lg-header">
-                        <h5 class="mb-0">
-                            <button class="btn btn-link"
-                                    data-bs-toggle="collapse"
-                                    data-bs-target="#edit-card-dialog-lg-collapse"
-                                    aria-expanded="false"
-                                    aria-controls="#edit-card-dialog-lg-collapse">LingvoTranslator</button>
-                        </h5>
-                    </div>
-                    <div id="edit-card-dialog-lg-collapse" class="collapse" aria-labelledby="edit-card-dialog-lg-header">
-                        <div class="card-body" style="overflow: auto">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-            </div>
-        </div>
-    </div>
-</div>
+<div th:replace="card-dialog.html :: cardDialog(id='edit')"></div>
+<div th:replace="card-dialog.html :: cardDialog(id='add')"></div>
 
 <div id="show" class="page card container container-table" style="display: none;">
     <div class="card-body">
@@ -141,7 +85,7 @@
         <div class="row">
             <div class="d-flex align-items-center justify-content-between">
                 <div><h1 class="word">word</h1></div>
-                <div class="sound"></div>
+                <button th:insert="speaker.html :: svg" id="show-card-sound" type="button" class="sound btn btn-secondary" disabled></button>
             </div>
         </div>
         <div class="row">
@@ -158,7 +102,7 @@
         <div class="row">
             <div class="d-flex align-items-center justify-content-between">
                 <div><h1 class="word">word</h1></div>
-                <div class="sound"></div>
+                <button th:insert="speaker.html :: svg" id="self-test-card-sound" type="button" class="sound btn btn-secondary" disabled></button>
             </div>
         </div>
         <div class="row">
@@ -199,7 +143,7 @@
         <div class="row">
             <div class="d-flex align-items-center justify-content-between">
                 <div><h1 class="word">word</h1></div>
-                <div class="sound"></div>
+                <button th:insert="speaker.html :: svg" id="writing-card-sound" type="button" class="sound btn btn-secondary" disabled></button>
             </div>
         </div>
         <div class="row" id="writing-textarea"></div>

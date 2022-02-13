@@ -2,9 +2,11 @@
  * dictionary js-script library.
  */
 
-const selectedRowClass = 'table-secondary';
+const selectedRowClass = 'table-success';
 const runRowClass = 'table-dark';
-const findRowClass = 'table-success';
+
+const tableHeightRation = 2. / 3;
+const lgFrameHeightRation = 7. / 18;
 
 function drawDictionariesPage() {
     $.get('/api/dictionaries').done(function (response) {
@@ -14,7 +16,7 @@ function drawDictionariesPage() {
         const btnRun = $('#dictionaries-btn-run');
         const btnEdit = $('#dictionaries-btn-edit');
         tbody.html('');
-        prepareTable('dictionaries', resetDictionarySelection);
+        initTableListeners('dictionaries', resetDictionarySelection);
 
         btnRun.on('click', drawRunPage);
         btnEdit.on('click', drawDictionaryPage);
@@ -30,8 +32,8 @@ function drawDictionariesPage() {
                           </tr>`);
             row.on('click', function () {
                 dictionary = value;
-                resetRowSelections(tbody);
-                row.addClass(selectedRowClass);
+                resetRowSelection(tbody);
+                markRowSelected(row);
                 btnRun.prop('disabled', false);
                 btnEdit.prop('disabled', false);
             });
@@ -45,7 +47,7 @@ function drawRunPage() {
     if (dictionary == null) {
         return;
     }
-    selectActiveRow(dictionary.id);
+    markRowRun(dictionary.id);
     $.get('/api/cards/random/' + dictionary.id).done(function (array) {
         data = array;
         stageShow();
@@ -56,33 +58,36 @@ function drawDictionaryPage() {
     if (dictionary == null) {
         return;
     }
-    selectActiveRow(dictionary.id);
+    markRowRun(dictionary.id);
+
     const tableRow = $('#words-table-row');
     const tbody = $('#words tbody');
-    const title = $('#words-title');
-    const glDiv = $('#edit-card-dialog-gl-collapse');
-    const yaDiv = $('#edit-card-dialog-ya-collapse');
-    const lgDiv = $('#edit-card-dialog-lg-collapse');
     const search = $('#words-search');
-    title.html(dictionary.name);
-    tbody.html('');
-    prepareTable('words', resetWordSelection);
 
+    $('#words-title').html(dictionary.name);
+    tbody.html('');
+    initDialog('add');
+    initDialog('edit');
+    initEditDialog();
+    initTableListeners('words', resetWordSelection);
     tableRow.css('height', calcInitTableHeight());
 
     $.get('/api/cards/' + dictionary.id).done(function (response) {
         displayPageCard('words');
 
         search.on('input', function () {
-            resetRowSelections(tbody);
+            resetWordSelection();
             const item = findItem(response, search.val());
             if (item == null) {
+                selectCardItemForAdd(null, search.val());
                 return;
             }
             const row = $('#w' + item.id);
             const position = row.offset().top - tableRow.offset().top + tableRow.scrollTop();
             tableRow.scrollTop(position);
-            row.addClass(findRowClass);
+
+            selectCardItemForEdit(row, item);
+            selectCardItemForAdd(row, search.val());
         });
 
         $.each(response, function (key, item) {
@@ -91,86 +96,54 @@ function drawDictionaryPage() {
                             <td>${toTranslationString(item)}</td>
                             <td>${percentage(item)}</td>
                           </tr>`);
-
             row.on('click', function () {
-                resetRowSelections(tbody);
-                lgDiv.removeClass('show');
-                glDiv.removeClass('show');
-                yaDiv.removeClass('show');
-                row.addClass(selectedRowClass);
-                $('#words-btn-edit').prop('disabled', false);
-
-                const wordInput = $('#edit-card-dialog-word');
-                wordInput.val(item.word);
-
-                lgDiv.unbind('show.bs.collapse').on('show.bs.collapse', function () {
-                    onCollapseShow(lgDiv, createLgFrame);
-                });
-                yaDiv.unbind('show.bs.collapse').on('show.bs.collapse', function () {
-                    onCollapseShow(yaDiv, createYaLink);
-                });
-                glDiv.unbind('show.bs.collapse').on('show.bs.collapse', function () {
-                    onCollapseShow(glDiv, createGlLink);
-                });
+                resetWordSelection();
+                selectCardItemForEdit(row, item);
+                selectCardItemForAdd(row, item.word);
             });
-
             tbody.append(row);
         });
     });
 }
 
-function onCollapseShow(collapseDiv, printLink) {
-    const wordInput = $('#edit-card-dialog-word');
-    const innerDiv = $('div', collapseDiv);
+function selectCardItemForEdit(row, item) {
+    cleanDialogLinks('edit');
+    markRowSelected(row);
+    $('#edit-card-dialog-word').val(item.word);
+    insertDialogLinks('edit');
+    $('#words-btn-edit').prop('disabled', false);
 
-    const wordNext = wordInput.val();
-    const wordPrev = innerDiv.attr('word-txt');
-    if (wordNext === wordPrev) {
-        return;
-    }
-    printLink(innerDiv, wordNext, dictionary.sourceLang, dictionary.targetLang);
-    innerDiv.attr('word-txt', wordNext);
+    const btn = $('#edit-card-dialog-sound');
+    btn.attr('word-txt', item.word);
+    btn.attr('word-sound', item.sound);
+
+    $('#edit-card-dialog-translation').val(toTranslationArray(item).join("; "));
 }
 
-function prepareTable(id, resetSelection) {
+function selectCardItemForAdd(row, word) {
+    cleanDialogLinks('add');
+    if (row != null) {
+        markRowSelected(row);
+    }
+    $('#add-card-dialog-word').val(word);
+    insertDialogLinks('add');
+    $('#words-btn-add').prop('disabled', false);
+}
+
+function initTableListeners(id, resetSelection) {
     const thead = $('#' + id + ' thead');
     const title = $('#' + id + ' .card-title');
-    const tbody = $('#' + id +  ' tbody');
+    const tbody = $('#' + id + ' tbody');
 
     resetSelection();
     thead.on('click', function () {
-        resetRowSelections(tbody);
+        resetRowSelection(tbody);
         resetSelection();
     });
     title.on('click', function () {
-        resetRowSelections(tbody);
+        resetRowSelection(tbody);
         resetSelection();
     });
-}
-
-function createGlLink(frameDiv, text, sourceLang, targetLang) {
-    const extUri = toGlURI(text, sourceLang, targetLang);
-    frameDiv.html(`<a href='${extUri}'>${extUri}</a>`);
-}
-
-function createYaLink(frameDiv, text, sourceLang, targetLang) {
-    const extUri = toYaURI(text, sourceLang, targetLang);
-    frameDiv.html(`<a href='${extUri}'>${extUri}</a>`);
-}
-
-function createLgFrame(frameDiv, text, sourceLang, targetLang) {
-    const extUri = toLgURI(text, sourceLang, targetLang);
-    const height = calcInitFrameHeight();
-    const frame = $(`<iframe noborder="0" width="1140" height="800">xxx</iframe>`);
-    frame.attr('src', extUri);
-    frame.attr('height', height);
-    frameDiv.html('').append(frame);
-}
-
-function resetRowSelections(tbody) {
-    $('tr', tbody).each(function (i, r) {
-        $(r).removeClass();
-    })
 }
 
 function resetDictionarySelection() {
@@ -181,18 +154,104 @@ function resetDictionarySelection() {
 }
 
 function resetWordSelection() {
-    $('#words-btn-edit').prop('disabled', true);
-    $('#edit-card-dialog-lg-collapse').removeClass('show');
+    disableWordButton('add');
+    disableWordButton('edit');
+    cleanDialogLinks('add');
+    cleanDialogLinks('edit');
+    resetRowSelection($('#words tbody'));
 }
 
-function selectActiveRow(id) {
+function resetRowSelection(tbody) {
+    $('tr', tbody).each(function (i, r) {
+        $(r).removeClass();
+    })
+}
+
+function disableWordButton(suffix) {
+    $('#words-btn-' + suffix).prop('disabled', true);
+}
+
+function initDialog(prefix) {
+    $('#' + prefix + '-card-dialog-lg-collapse').unbind('show.bs.collapse').on('show.bs.collapse', function () {
+        onCollapseLgFrame(prefix);
+    });
+    $('#' + prefix + '-card-dialog-word').on('input', function () {
+        insertDialogLinks(prefix);
+    });
+}
+
+function initEditDialog() {
+    const btn = $('#edit-card-dialog-sound');
+    btn.prop('disabled', false);
+    btn.on('click', function () {
+        const audio = btn.attr('word-sound');
+        if (!audio) {
+            return;
+        }
+        btn.prop('disabled', true);
+        playAudio(audio, function () {
+            btn.prop('disabled', false);
+        });
+    });
+}
+
+function cleanDialogLinks(prefix) {
+    $('#' + prefix + '-card-dialog-gl-link').html('');
+    $('#' + prefix + '-card-dialog-yq-link').html('');
+    $('#' + prefix + '-card-dialog-lg-link').html('');
+    $('#' + prefix + '-card-dialog-lg-collapse').removeClass('show');
+}
+
+function insertDialogLinks(prefix) {
+    const input = $('#' + prefix + '-card-dialog-word');
+    const sl = dictionary.sourceLang;
+    const tl = dictionary.targetLang;
+    const text = input.val();
+    if (!text) {
+        return;
+    }
+    createLink($('#' + prefix + '-card-dialog-gl-link'), toGlURI(text, sl, tl));
+    createLink($('#' + prefix + '-card-dialog-ya-link'), toYaURI(text, sl, tl));
+    createLink($('#' + prefix + '-card-dialog-lg-link'), toLgURI(text, sl, tl));
+}
+
+function createLink(parent, uri) {
+    parent.html(`<a class='btn btn-link' href='${uri}'>${uri}</a>`);
+}
+
+function onCollapseLgFrame(prefix) {
+    const sl = dictionary.sourceLang;
+    const tl = dictionary.targetLang;
+
+    const lgDiv = $('#' + prefix + '-card-dialog-lg-collapse div');
+    const dialogLinksDiv = $('#' + prefix + '-card-dialog-links');
+    const wordInput = $('#' + prefix + '-card-dialog-word');
+    const text = wordInput.val();
+    const prev = dialogLinksDiv.attr('word-txt');
+    if (text === prev) {
+        return;
+    }
+    const extUri = toLgURI(text, sl, tl);
+    const height = calcInitLgFrameHeight();
+    const frame = $(`<iframe noborder="0" width="1140" height="800">LgFrame</iframe>`);
+    frame.attr('src', extUri);
+    frame.attr('height', height);
+    lgDiv.html('').append(frame);
+    dialogLinksDiv.attr('word-txt', text);
+}
+
+function markRowRun(id) {
     $('#' + id).addClass(runRowClass);
 }
 
-function calcInitTableHeight() {
-    return Math.round($(document).height() * 7 / 9);
+function markRowSelected(row) {
+    row.addClass(selectedRowClass);
 }
 
-function calcInitFrameHeight() {
-    return Math.round($(document).height() * 7 / 18);
+function calcInitTableHeight() {
+    return Math.round($(document).height() * tableHeightRation);
+}
+
+function calcInitLgFrameHeight() {
+    return Math.round($(document).height() * lgFrameHeightRation);
 }
