@@ -66,8 +66,9 @@ function drawDictionaryPage() {
 
     $('#words-title').html(dictionary.name);
     tbody.html('');
-    initDialogListeners('add');
-    initDialogListeners('edit');
+    initDialog('add');
+    initDialog('edit');
+    initEditDialog();
     initTableListeners('words', resetWordSelection);
     tableRow.css('height', calcInitTableHeight());
 
@@ -85,7 +86,7 @@ function drawDictionaryPage() {
             const position = row.offset().top - tableRow.offset().top + tableRow.scrollTop();
             tableRow.scrollTop(position);
 
-            selectCardItemForEdit(row, item.word);
+            selectCardItemForEdit(row, item);
             selectCardItemForAdd(row, search.val());
         });
 
@@ -97,7 +98,7 @@ function drawDictionaryPage() {
                           </tr>`);
             row.on('click', function () {
                 resetWordSelection();
-                selectCardItemForEdit(row, item.word);
+                selectCardItemForEdit(row, item);
                 selectCardItemForAdd(row, item.word);
             });
             tbody.append(row);
@@ -105,12 +106,16 @@ function drawDictionaryPage() {
     });
 }
 
-function selectCardItemForEdit(row, word) {
+function selectCardItemForEdit(row, item) {
     cleanDialogLinks('edit');
     markRowSelected(row);
-    $('#edit-card-dialog-word').val(word);
+    $('#edit-card-dialog-word').val(item.word);
     insertDialogLinks('edit');
     $('#words-btn-edit').prop('disabled', false);
+
+    const btn = $('#edit-card-dialog-sound');
+    btn.attr('word-txt', item.word);
+    btn.attr('word-sound', item.sound);
 }
 
 function selectCardItemForAdd(row, word) {
@@ -164,12 +169,26 @@ function disableWordButton(suffix) {
     $('#words-btn-' + suffix).prop('disabled', true);
 }
 
-function initDialogListeners(prefix) {
+function initDialog(prefix) {
     $('#' + prefix + '-card-dialog-lg-collapse').unbind('show.bs.collapse').on('show.bs.collapse', function () {
         onCollapseLgFrame(prefix);
     });
     $('#' + prefix + '-card-dialog-word').on('input', function () {
         insertDialogLinks(prefix);
+    });
+}
+
+function initEditDialog() {
+    const btn = $('#edit-card-dialog-sound');
+    btn.prop('disabled', false);
+    btn.on('click', function () {
+        const audio = btn.attr('word-sound');
+        if (audio) {
+            btn.prop('disabled', true);
+            new Audio('/api/sounds/' + audio).play().then(function () {
+                btn.prop('disabled', false);
+            });
+        }
     });
 }
 
