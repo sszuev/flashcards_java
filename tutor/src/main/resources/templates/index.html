@@ -37,6 +37,10 @@
                 <tbody></tbody>
             </table>
         </div>
+        <div class="row d-grid p-3">
+            <!--suppress HtmlFormInputWithoutLabel -->
+            <input value="&nbsp;" type="text" class="invisible"/>
+        </div>
         <div class="row">
             <div id="dictionaries-btn-group" class="btn-group" role="group" aria-label="Dictionaries group">
                 <button id="dictionaries-btn-run" type="button" class="btn btn-secondary" disabled>Run</button>
@@ -66,7 +70,7 @@
         </div>
         <div class="row">
             <div id="words-btn-group" class="btn-group" role="group" aria-label="Dictionary group">
-                <button id="words-btn-add" type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#edit-card-dialog" disabled>Add</button>
+                <button id="words-btn-add" type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#add-card-dialog" disabled>Add</button>
                 <button id="words-btn-edit" type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#edit-card-dialog" disabled>Edit</button>
             </div>
         </div>
@@ -124,6 +128,67 @@
                     <div id="edit-card-dialog-lg-collapse" class="collapse" aria-labelledby="edit-card-dialog-lg-header">
                         <div class="card-body" style="overflow: auto">
                         </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="add-card-dialog" tabindex="-1" aria-labelledby="add-card-dialog-label" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="add-card-dialog-label">Edit word</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <label>
+                        <input id="add-card-dialog-word" type="text"/>
+                    </label>
+                </div>
+                <div class="row">
+                    <div class="card-header" id="add-card-dialog-gl-header">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#add-card-dialog-gl-collapse"
+                                    aria-expanded="false"
+                                    aria-controls="#add-card-dialog-gl-collapse">GoogleTranslator</button>
+                        </h5>
+                    </div>
+                    <div id="add-card-dialog-gl-collapse" class="collapse" aria-labelledby="add-card-dialog-gl-header">
+                        <div class="card-body" style="overflow: auto">
+                        </div>
+                    </div>
+                    <div class="card-header" id="add-card-dialog-ya-header">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#add-card-dialog-ya-collapse"
+                                    aria-expanded="false"
+                                    aria-controls="#add-card-dialog-ya-collapse">YandexTranslator</button>
+                        </h5>
+                    </div>
+                    <div id="add-card-dialog-ya-collapse" class="collapse" aria-labelledby="add-card-dialog-ya-header">
+                        <div class="card-body" style="overflow: auto">
+                        </div>
+                    </div>
+                    <div class="card-header" id="add-card-dialog-lg-header">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#add-card-dialog-lg-collapse"
+                                    aria-expanded="false"
+                                    aria-controls="#add-card-dialog-lg-collapse">LingvoTranslator</button>
+                        </h5>
+                    </div>
+                    <div id="add-card-dialog-lg-collapse" class="collapse" aria-labelledby="add-card-dialog-lg-header">
+                        <div class="card-body" style="overflow: auto"></div>
                     </div>
                 </div>
             </div>

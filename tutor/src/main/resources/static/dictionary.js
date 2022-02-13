@@ -2,9 +2,11 @@
  * dictionary js-script library.
  */
 
-const selectedRowClass = 'table-secondary';
+const selectedRowClass = 'table-success';
 const runRowClass = 'table-dark';
-const findRowClass = 'table-success';
+
+const tableHeightRation = 2. / 3;
+const lgFrameHeightRation = 7. / 18;
 
 function drawDictionariesPage() {
     $.get('/api/dictionaries').done(function (response) {
@@ -30,8 +32,8 @@ function drawDictionariesPage() {
                           </tr>`);
             row.on('click', function () {
                 dictionary = value;
-                resetRowSelections(tbody);
-                row.addClass(selectedRowClass);
+                resetRowSelection(tbody);
+                selectRow(row);
                 btnRun.prop('disabled', false);
                 btnEdit.prop('disabled', false);
             });
@@ -45,7 +47,7 @@ function drawRunPage() {
     if (dictionary == null) {
         return;
     }
-    selectActiveRow(dictionary.id);
+    runRow(dictionary.id);
     $.get('/api/cards/random/' + dictionary.id).done(function (array) {
         data = array;
         stageShow();
@@ -56,33 +58,35 @@ function drawDictionaryPage() {
     if (dictionary == null) {
         return;
     }
-    selectActiveRow(dictionary.id);
+    runRow(dictionary.id);
+
     const tableRow = $('#words-table-row');
     const tbody = $('#words tbody');
     const title = $('#words-title');
-    const glDiv = $('#edit-card-dialog-gl-collapse');
-    const yaDiv = $('#edit-card-dialog-ya-collapse');
-    const lgDiv = $('#edit-card-dialog-lg-collapse');
+    prepareDialogLinks('add');
+    prepareDialogLinks('edit');
     const search = $('#words-search');
     title.html(dictionary.name);
     tbody.html('');
     prepareTable('words', resetWordSelection);
-
     tableRow.css('height', calcInitTableHeight());
 
     $.get('/api/cards/' + dictionary.id).done(function (response) {
         displayPageCard('words');
 
         search.on('input', function () {
-            resetRowSelections(tbody);
+            resetWordSelection();
             const item = findItem(response, search.val());
             if (item == null) {
+                selectCardItemForAdd(null, search.val());
                 return;
             }
             const row = $('#w' + item.id);
             const position = row.offset().top - tableRow.offset().top + tableRow.scrollTop();
             tableRow.scrollTop(position);
-            row.addClass(findRowClass);
+
+            selectCardItemForEdit(row, item.word);
+            selectCardItemForAdd(row, search.val());
         });
 
         $.each(response, function (key, item) {
@@ -91,32 +95,93 @@ function drawDictionaryPage() {
                             <td>${toTranslationString(item)}</td>
                             <td>${percentage(item)}</td>
                           </tr>`);
-
             row.on('click', function () {
-                resetRowSelections(tbody);
-                lgDiv.removeClass('show');
-                glDiv.removeClass('show');
-                yaDiv.removeClass('show');
-                row.addClass(selectedRowClass);
-                $('#words-btn-edit').prop('disabled', false);
-
-                const wordInput = $('#edit-card-dialog-word');
-                wordInput.val(item.word);
-
-                lgDiv.unbind('show.bs.collapse').on('show.bs.collapse', function () {
-                    onCollapseShow(lgDiv, createLgFrame);
-                });
-                yaDiv.unbind('show.bs.collapse').on('show.bs.collapse', function () {
-                    onCollapseShow(yaDiv, createYaLink);
-                });
-                glDiv.unbind('show.bs.collapse').on('show.bs.collapse', function () {
-                    onCollapseShow(glDiv, createGlLink);
-                });
+                resetWordSelection();
+                selectCardItemForEdit(row, item.word);
+                selectCardItemForAdd(row, item.word);
             });
-
             tbody.append(row);
         });
     });
+}
+
+function selectCardItemForEdit(row, word) {
+    collapseDialogLinks('edit');
+    selectRow(row);
+    $('#edit-card-dialog-word').val(word);
+    $('#words-btn-edit').prop('disabled', false);
+}
+
+function selectCardItemForAdd(row, word) {
+    collapseDialogLinks('add');
+    if (row != null) {
+        selectRow(row);
+    }
+    $('#add-card-dialog-word').val(word);
+    $('#words-btn-add').prop('disabled', false);
+}
+
+function prepareTable(id, resetSelection) {
+    const thead = $('#' + id + ' thead');
+    const title = $('#' + id + ' .card-title');
+    const tbody = $('#' + id + ' tbody');
+
+    resetSelection();
+    thead.on('click', function () {
+        resetRowSelection(tbody);
+        resetSelection();
+    });
+    title.on('click', function () {
+        resetRowSelection(tbody);
+        resetSelection();
+    });
+}
+
+function resetDictionarySelection() {
+    dictionary = null;
+    $('#dictionaries-btn-group button').each(function (i, b) {
+        $(b).prop('disabled', true);
+    });
+}
+
+function resetWordSelection() {
+    disableWordButton('add');
+    disableWordButton('edit');
+    collapseDialogLinks('add');
+    collapseDialogLinks('edit');
+    resetRowSelection($('#words tbody'));
+}
+
+function resetRowSelection(tbody) {
+    $('tr', tbody).each(function (i, r) {
+        $(r).removeClass();
+    })
+}
+
+function disableWordButton(suffix) {
+    $('#words-btn-' + suffix).prop('disabled', true);
+}
+
+function prepareDialogLinks(prefix) {
+    const glDiv = $('#' + prefix + '-card-dialog-gl-collapse');
+    const yaDiv = $('#' + prefix + '-card-dialog-ya-collapse');
+    const lgDiv = $('#' + prefix + '-card-dialog-lg-collapse');
+
+    lgDiv.unbind('show.bs.collapse').on('show.bs.collapse', function () {
+        onCollapseShow(lgDiv, createLgFrame);
+    });
+    yaDiv.unbind('show.bs.collapse').on('show.bs.collapse', function () {
+        onCollapseShow(yaDiv, createYaLink);
+    });
+    glDiv.unbind('show.bs.collapse').on('show.bs.collapse', function () {
+        onCollapseShow(glDiv, createGlLink);
+    });
+}
+
+function collapseDialogLinks(prefix) {
+    $('#' + prefix + '-card-dialog-gl-collapse').removeClass('show');
+    $('#' + prefix + '-card-dialog-yl-collapse').removeClass('show');
+    $('#' + prefix + '-card-dialog-ll-collapse').removeClass('show');
 }
 
 function onCollapseShow(collapseDiv, printLink) {
@@ -132,22 +197,6 @@ function onCollapseShow(collapseDiv, printLink) {
     innerDiv.attr('word-txt', wordNext);
 }
 
-function prepareTable(id, resetSelection) {
-    const thead = $('#' + id + ' thead');
-    const title = $('#' + id + ' .card-title');
-    const tbody = $('#' + id +  ' tbody');
-
-    resetSelection();
-    thead.on('click', function () {
-        resetRowSelections(tbody);
-        resetSelection();
-    });
-    title.on('click', function () {
-        resetRowSelections(tbody);
-        resetSelection();
-    });
-}
-
 function createGlLink(frameDiv, text, sourceLang, targetLang) {
     const extUri = toGlURI(text, sourceLang, targetLang);
     frameDiv.html(`<a href='${extUri}'>${extUri}</a>`);
@@ -160,39 +209,25 @@ function createYaLink(frameDiv, text, sourceLang, targetLang) {
 
 function createLgFrame(frameDiv, text, sourceLang, targetLang) {
     const extUri = toLgURI(text, sourceLang, targetLang);
-    const height = calcInitFrameHeight();
+    const height = calcInitLgFrameHeight();
     const frame = $(`<iframe noborder="0" width="1140" height="800">xxx</iframe>`);
     frame.attr('src', extUri);
     frame.attr('height', height);
     frameDiv.html('').append(frame);
 }
 
-function resetRowSelections(tbody) {
-    $('tr', tbody).each(function (i, r) {
-        $(r).removeClass();
-    })
-}
-
-function resetDictionarySelection() {
-    dictionary = null;
-    $('#dictionaries-btn-group button').each(function (i, b) {
-        $(b).prop('disabled', true);
-    });
-}
-
-function resetWordSelection() {
-    $('#words-btn-edit').prop('disabled', true);
-    $('#edit-card-dialog-lg-collapse').removeClass('show');
-}
-
-function selectActiveRow(id) {
+function runRow(id) {
     $('#' + id).addClass(runRowClass);
 }
 
-function calcInitTableHeight() {
-    return Math.round($(document).height() * 7 / 9);
+function selectRow(row) {
+    row.addClass(selectedRowClass);
 }
 
-function calcInitFrameHeight() {
-    return Math.round($(document).height() * 7 / 18);
+function calcInitTableHeight() {
+    return Math.round($(document).height() * tableHeightRation);
+}
+
+function calcInitLgFrameHeight() {
+    return Math.round($(document).height() * lgFrameHeightRation);
 }
