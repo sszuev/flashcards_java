@@ -18,6 +18,33 @@
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="input-group input-group-sm mb-3">
+                        <div class="input-group-prepend">
+                            <span style="width: 120px" class="input-group-text" th:id="${id} + '-card-dialog-transcription-sizing-sm'">transcription</span>
+                        </div>
+                        <input th:id="${id} + '-card-dialog-transcription'" type="text" class="form-control" aria-label="transcription"
+                               th:aria-describedby="${id} + 'edit-card-dialog-transcription-sizing-sm'"/>
+                     </div>
+                </div>
+                <div class="row">
+                    <div class="input-group input-group-sm mb-3">
+                        <div class="input-group-prepend d-flex align-items-stretch">
+                            <span style="width: 120px" class="input-group-text" th:id="${id} + '-card-dialog-translation-sizing-sm'">translation</span>
+                        </div>
+                        <textarea th:id="${id} + '-card-dialog-translation'" rows="3" class="form-control" aria-label="translation"
+                                  th:aria-describedby="${id} + 'edit-card-dialog-translation-sizing-sm'"></textarea>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-group input-group-sm mb-3">
+                        <div class="input-group-prepend d-flex align-items-stretch">
+                            <span style="width: 120px" class="input-group-text" th:id="${id} + '-card-dialog-examples-sizing-sm'">examples</span>
+                        </div>
+                        <textarea th:id="${id} + '-card-dialog-examples'" rows="3" class="form-control" aria-label="examples"
+                                  th:aria-describedby="${id} + 'edit-card-dialog-examples-sizing-sm'"></textarea>
+                    </div>
+                </div>
                 <div class="row" th:id="${id} + '-card-dialog-links'">
                     <div class="card-header">
                         <h6 class="mb-0" th:id="${id} + '-card-dialog-gl-link'"></h6>

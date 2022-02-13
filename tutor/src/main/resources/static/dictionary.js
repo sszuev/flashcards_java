@@ -116,6 +116,8 @@ function selectCardItemForEdit(row, item) {
     const btn = $('#edit-card-dialog-sound');
     btn.attr('word-txt', item.word);
     btn.attr('word-sound', item.sound);
+
+    $('#edit-card-dialog-translation').val(toTranslationArray(item).join("; "));
 }
 
 function selectCardItemForAdd(row, word) {
@@ -183,12 +185,13 @@ function initEditDialog() {
     btn.prop('disabled', false);
     btn.on('click', function () {
         const audio = btn.attr('word-sound');
-        if (audio) {
-            btn.prop('disabled', true);
-            playAudio(audio, function () {
-                btn.prop('disabled', false);
-            });
+        if (!audio) {
+            return;
         }
+        btn.prop('disabled', true);
+        playAudio(audio, function () {
+            btn.prop('disabled', false);
+        });
     });
 }
 
