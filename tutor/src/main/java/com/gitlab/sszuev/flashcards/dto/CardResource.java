@@ -7,22 +7,15 @@ import java.util.Map;
  * Created by @ssz on 02.05.2021.
  */
 @SuppressWarnings("unused")
-public final class CardResource {
-    private final String word;
-    private final List<List<String>> translations;
-    private final String sound;
-    private final int answered;
-    private final long id;
-    private final Map<Stage, Boolean> details;
-
-    public CardResource(long id, String word, List<List<String>> translations, String sound, int answered, Map<Stage, Boolean> details) {
-        this.id = id;
-        this.details = details;
-        this.word = word;
-        this.translations = translations;
-        this.sound = sound;
-        this.answered = answered;
-    }
+public record CardResource(long id,
+                           String word,
+                           String transcription,
+                           String partOfSpeech,
+                           List<List<String>> translations,
+                           List<String> examples,
+                           String sound,
+                           int answered,
+                           Map<Stage, Boolean> details) {
 
     public long getId() {
         return id;
@@ -46,5 +39,20 @@ public final class CardResource {
 
     public Map<Stage, Boolean> getDetails() {
         return details;
+    }
+
+    @Override
+    public String transcription() {
+        return transcription;
+    }
+
+    @Override
+    public List<String> examples() {
+        return examples;
+    }
+
+    @Override
+    public String partOfSpeech() {
+        return partOfSpeech;
     }
 }

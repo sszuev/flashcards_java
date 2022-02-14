@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gitlab.sszuev.flashcards.domain.Card;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
 import com.gitlab.sszuev.flashcards.domain.Language;
+import com.gitlab.sszuev.flashcards.domain.PartOfSpeech;
 import com.gitlab.sszuev.flashcards.domain.Status;
 import com.gitlab.sszuev.flashcards.services.SoundService;
 import com.gitlab.sszuev.flashcards.utils.CardUtils;
@@ -38,8 +39,11 @@ public class EntityMapper {
         List<List<String>> translations = card.translations()
                 .map(x -> CardUtils.getWords(x.getText())).toList();
         int answered = Optional.ofNullable(card.getAnswered()).orElse(0);
-        return new CardResource(card.getID(),
-                word, translations, speaker.getResourceName(word, lang.name()), answered, Map.of());
+        List<String> examples = card.examples().map(x -> x.getText()).toList();
+        String transcription = card.getTranscription();
+        String partOfSpeech = card.partOfSpeech().map(PartOfSpeech::name).orElse(null);
+        return new CardResource(card.getID(), word, transcription, partOfSpeech,
+                translations, examples, speaker.getResourceName(word, lang.name()), answered, Map.of());
     }
 
     public DictionaryResource createResource(Dictionary dictionary) {
