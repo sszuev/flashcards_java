@@ -12,7 +12,7 @@ function renderPage() {
     drawDictionariesPage();
 }
 
-function displayPageCard(id) {
+function displayPage(id) {
     $.each($('.page'), function (k, v) {
         let x = $(v);
         if (x.attr('id') === id) {

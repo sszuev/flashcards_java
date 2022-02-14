@@ -13,7 +13,7 @@ const borderError = 'border-danger';
 function stageShow() {
     const data = selectNextCardsDeck();
     if (data.length > 0) {
-        displayPageCard('show');
+        displayPage('show');
         drawShowCardPage(data, 0, () => stageMosaic());
         return;
     }
@@ -26,7 +26,7 @@ function stageShow() {
 function stageMosaic() {
     const data = selectNextCardsDeck();
     if (data.length > 0) {
-        displayPageCard('mosaic');
+        displayPage('mosaic');
         drawMosaicCardPage(data, () => stageOptions());
         return;
     }
@@ -46,7 +46,7 @@ function stageOptions() {
     const length = dataLeft.length * numberOfOptionsPerWord;
     $.get('/api/cards/random/' + dictionary.id + "?length=" + length + "&unknown=false").done(function (words) {
         const options = prepareOptionsDataArray(dataLeft, words);
-        displayPageCard('options');
+        displayPage('options');
         drawOptionsCardPage(options, 0, () => stageWriting());
     });
 }
@@ -57,7 +57,7 @@ function stageOptions() {
 function stageWriting() {
     const data = selectNextCardsDeck();
     if (data.length > 0) {
-        displayPageCard('writing');
+        displayPage('writing');
         drawWritingCardPage(randomArray(data, numberOfWordsPerStage), 0, () => stageSelfTest());
         return;
     }
@@ -70,7 +70,7 @@ function stageWriting() {
 function stageSelfTest() {
     const data = selectNextCardsDeck();
     if (data.length > 0) {
-        displayPageCard('self-test');
+        displayPage('self-test');
         drawSelfTestCardPage(randomArray(data, numberOfWordsPerStage), 0, () => stageResults());
         return;
     }
@@ -81,7 +81,7 @@ function stageSelfTest() {
  * The last "stage": show results.
  */
 function stageResults() {
-    displayPageCard('result');
+    displayPage('result');
     drawResultCardPage();
 }
 
