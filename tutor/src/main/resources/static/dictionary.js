@@ -127,7 +127,13 @@ function selectCardItemForEdit(row, item) {
     btn.attr('word-txt', item.word);
     btn.attr('word-sound', item.sound);
 
+    const index = dictionary.partsOfSpeech.indexOf(item.partOfSpeech)
+    if (index > -1) {
+        $('#edit-card-dialog-part-of-speech option').eq(index + 1).prop('selected', true);
+    }
+    $('#edit-card-dialog-transcription').val(item.transcription);
     $('#edit-card-dialog-translation').val(toTranslationArray(item).join("; "));
+    $('#edit-card-dialog-examples').val(item.examples.join("\n"));
 }
 
 function selectCardItemForAdd(row, word) {
@@ -187,6 +193,10 @@ function initDialog(prefix) {
     });
     $('#' + prefix + '-card-dialog-word').on('input', function () {
         insertDialogLinks(prefix);
+    });
+    const select = $('#' + prefix + '-card-dialog-part-of-speech')
+    $.each(dictionary.partsOfSpeech, function (index, value) {
+        select.append($(`<option value="${index}">${value}</option>`));
     });
 }
 
