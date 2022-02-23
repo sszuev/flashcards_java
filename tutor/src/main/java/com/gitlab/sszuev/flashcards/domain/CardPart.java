@@ -1,6 +1,12 @@
 package com.gitlab.sszuev.flashcards.domain;
 
-import javax.persistence.*;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
 
 /**
  * Created by @ssz on 09.05.2021.

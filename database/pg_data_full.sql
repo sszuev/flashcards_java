@@ -24,6 +24,14 @@ COPY public.users (id, login, pwd, role) FROM stdin;
 42	demo	$2a$10$QdTL6pRxYsHLXNuwMmQl6eRjXUQ8EJHkji2E0J4zQADtGFNFRVkcG	2
 \.
 
+--
+-- Data for Name: languages; Type: TABLE DATA; Schema: public; Owner: dev
+--
+
+COPY public.languages (id, parts_of_speech) FROM stdin;
+EN	noun,verb,adjective,adverb,pronoun,preposition,conjunction,interjection,article
+RU	существительное,прилагательное,числительное,местоимение,глагол,наречие,причастие,предлог,союз,частица,междометие
+\.
 
 --
 -- Data for Name: dictionaries; Type: TABLE DATA; Schema: public; Owner: dev

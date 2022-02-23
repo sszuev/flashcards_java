@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -53,19 +54,19 @@ public class CardServiceTest {
 
     @Test
     public void testNextDeckWithUnknownManyItems() {
-        Language lang = () -> "ue";
+        String lang = "ue";
         long dicId = 42;
         String dicName = "xxx";
 
         Map<Long, String> words = Map.of(-1L, "A", -2L, "B", -3L, "C", -4L, "D", -5L, "E", -6L,
                 "F", -7L, "G", -8L, "H", -9L, "I", -10L, "K");
 
-        Dictionary dic = TestUtils.mockDictionary(dicId, dicName, lang);
+        Dictionary dic = TestUtils.mockDictionary(dicId, dicName, TestUtils.mockLanguage(lang, null));
         Mockito.when(cardRepository.streamByDictionaryIdAndStatusIn(Mockito.eq(dicId),
                 Mockito.eq(List.of(Status.UNKNOWN, Status.IN_PROCESS))))
                 .thenReturn(words.entrySet().stream().map(e -> {
                     String word = e.getValue();
-                    Mockito.when(soundService.getResourceName(Mockito.eq(word), Mockito.eq(lang.name())))
+                    Mockito.when(soundService.getResourceName(Mockito.eq(word), Mockito.eq(lang)))
                             .thenReturn("sound-" + word);
                     return TestUtils.mockCard(e.getKey(), word);
                 }));
@@ -85,7 +86,7 @@ public class CardServiceTest {
 
     @Test
     public void testNextDeckWithAllFewItems() {
-        Language lang = () -> "eq";
+        Language lang = TestUtils.mockLanguage("eq", null);
         long dicId = 42;
         String dicName = "yyy";
 
@@ -109,14 +110,14 @@ public class CardServiceTest {
         long id2 = -2;
         String name1 = "A";
         String name2 = "B";
-        String lang1 = "ee";
-        String lang2 = "rr";
-        String lang3 = "xx";
+        Language lang1 = TestUtils.mockLanguage("ee", List.of("A", "B"));
+        Language lang2 = TestUtils.mockLanguage("rr", List.of("C", "D"));
+        Language lang3 = TestUtils.mockLanguage("xx", List.of("E", "F"));
         Map<Status, Integer> cards1 = Map.of(Status.IN_PROCESS, 2, Status.LEARNED, 3);
         Map<Status, Integer> cards2 = Map.of(Status.UNKNOWN, 1, Status.LEARNED, 42);
 
-        Dictionary dic1 = TestUtils.mockDictionary(id1, name1, () -> lang1, () -> lang2, cards1);
-        Dictionary dic2 = TestUtils.mockDictionary(id2, name2, () -> lang2, () -> lang3, cards2);
+        Dictionary dic1 = TestUtils.mockDictionary(id1, name1, lang1, lang2, cards1);
+        Dictionary dic2 = TestUtils.mockDictionary(id2, name2, lang2, lang3, cards2);
 
         Mockito.when(dictionaryRepository.streamAllByUserId(Mockito.eq(User.SYSTEM_USER.getID())))
                 .thenReturn(Stream.of(dic1, dic2));
@@ -129,13 +130,15 @@ public class CardServiceTest {
     }
 
     private void assertDictionaryResource(DictionaryResource res,
-                                          long id, String name, String src, String dst, Map<Status, Integer> data) {
+                                          long id, String name, Language src, Language dst, Map<Status, Integer> data) {
         Assertions.assertEquals(name, res.getName());
         Assertions.assertEquals(id, res.getId());
-        Assertions.assertEquals(src, res.getSourceLang());
-        Assertions.assertEquals(dst, res.getTargetLang());
+        Assertions.assertEquals(src.getID(), res.getSourceLang());
+        Assertions.assertEquals(dst.getID(), res.getTargetLang());
         Assertions.assertEquals(data.get(Status.LEARNED).longValue(), res.getLearned());
         Assertions.assertEquals(data.values().stream().mapToLong(x -> x).sum(), res.getTotal());
+        List<String> partsOfSpeech = List.of(src.getPartsOfSpeech().toLowerCase(Locale.ROOT).split(","));
+        Assertions.assertEquals(partsOfSpeech, res.getPartsOfSpeech());
     }
 
     @Test
@@ -172,7 +175,7 @@ public class CardServiceTest {
 
     @Test
     public void testGetAllCards() {
-        Language lang = () -> "xxx";
+        Language lang = TestUtils.mockLanguage("xxx", null);
         long dicId = 42;
         String dicName = "xxx";
         List<Map.Entry<Long, String>> words = List.of(Map.entry(-1L, "C"), Map.entry(-2L, "A"),

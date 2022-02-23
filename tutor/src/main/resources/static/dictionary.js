@@ -10,7 +10,7 @@ const lgFrameHeightRation = 7. / 18;
 
 function drawDictionariesPage() {
     $.get('/api/dictionaries').done(function (response) {
-        displayPageCard('dictionaries');
+        displayPage('dictionaries');
 
         const tbody = $('#dictionaries tbody');
         const btnRun = $('#dictionaries-btn-run');
@@ -72,8 +72,10 @@ function drawDictionaryPage() {
     initTableListeners('words', resetWordSelection);
     tableRow.css('height', calcInitTableHeight());
 
+    const editPopup = new bootstrap.Modal(document.getElementById('edit-card-dialog'));
+
     $.get('/api/cards/' + dictionary.id).done(function (response) {
-        displayPageCard('words');
+        displayPage('words');
 
         search.on('input', function () {
             resetWordSelection();
@@ -97,13 +99,21 @@ function drawDictionaryPage() {
                             <td>${percentage(item)}</td>
                           </tr>`);
             row.on('click', function () {
-                resetWordSelection();
-                selectCardItemForEdit(row, item);
-                selectCardItemForAdd(row, item.word);
+                wordRowOnClick(row, item);
+            });
+            row.dblclick(function () {
+                wordRowOnClick(row, item);
+                editPopup.show();
             });
             tbody.append(row);
         });
     });
+}
+
+function wordRowOnClick(row, item) {
+    resetWordSelection();
+    selectCardItemForEdit(row, item);
+    selectCardItemForAdd(row, item.word);
 }
 
 function selectCardItemForEdit(row, item) {
@@ -117,7 +127,13 @@ function selectCardItemForEdit(row, item) {
     btn.attr('word-txt', item.word);
     btn.attr('word-sound', item.sound);
 
+    const index = dictionary.partsOfSpeech.indexOf(item.partOfSpeech)
+    if (index > -1) {
+        $('#edit-card-dialog-part-of-speech option').eq(index + 1).prop('selected', true);
+    }
+    $('#edit-card-dialog-transcription').val(item.transcription);
     $('#edit-card-dialog-translation').val(toTranslationArray(item).join("; "));
+    $('#edit-card-dialog-examples').val(item.examples.join("\n"));
 }
 
 function selectCardItemForAdd(row, word) {
@@ -177,6 +193,10 @@ function initDialog(prefix) {
     });
     $('#' + prefix + '-card-dialog-word').on('input', function () {
         insertDialogLinks(prefix);
+    });
+    const select = $('#' + prefix + '-card-dialog-part-of-speech')
+    $.each(dictionary.partsOfSpeech, function (index, value) {
+        select.append($(`<option value="${index}">${value}</option>`));
     });
 }
 
