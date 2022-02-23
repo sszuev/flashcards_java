@@ -16,9 +16,12 @@ import java.util.stream.IntStream;
  */
 public class TestUtils {
 
-    public static Language mockLanguage(String lang) {
+    public static Language mockLanguage(String lang, List<String> partsOfSpeech) {
         Language res = Mockito.mock(Language.class);
         Mockito.when(res.getID()).thenReturn(lang);
+        if (partsOfSpeech != null) {
+            Mockito.when(res.getPartsOfSpeech()).thenReturn(String.join(",", partsOfSpeech));
+        }
         return res;
     }
 

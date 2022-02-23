@@ -1,9 +1,17 @@
 package com.gitlab.sszuev.flashcards.dto;
 
+import java.util.List;
+
 /**
  * Created by @ssz on 16.05.2021.
  */
-public record DictionaryResource(long id, String name, String sourceLang, String targetLang, long total, long learned) {
+public record DictionaryResource(long id,
+                                 String name,
+                                 String sourceLang,
+                                 String targetLang,
+                                 List<String> partsOfSpeech,
+                                 long total,
+                                 long learned) {
 
     public String getSourceLang() {
         return sourceLang;
@@ -11,6 +19,10 @@ public record DictionaryResource(long id, String name, String sourceLang, String
 
     public String getTargetLang() {
         return targetLang;
+    }
+
+    public List<String> getPartsOfSpeech() {
+        return partsOfSpeech;
     }
 
     public long getId() {

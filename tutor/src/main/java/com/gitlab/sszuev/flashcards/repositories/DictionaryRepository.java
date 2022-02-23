@@ -13,10 +13,10 @@ import java.util.stream.Stream;
  */
 public interface DictionaryRepository extends JpaRepository<Dictionary, Long> {
 
-    @Query(value = "SELECT d FROM Dictionary d JOIN FETCH d.targetLang WHERE d.user.id = :userId")
+    @Query(value = "SELECT d FROM Dictionary d JOIN FETCH d.sourceLang WHERE d.user.id = :userId")
     Stream<Dictionary> streamAllByUserId(long userId);
 
-    @Query(value = "SELECT d FROM Dictionary d JOIN FETCH d.targetLang")
+    @Query(value = "SELECT d FROM Dictionary d JOIN FETCH d.sourceLang")
     Stream<Dictionary> streamAll();
 
 }
