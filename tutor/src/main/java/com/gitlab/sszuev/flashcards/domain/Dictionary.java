@@ -1,6 +1,16 @@
 package com.gitlab.sszuev.flashcards.domain;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -20,10 +30,12 @@ public class Dictionary implements HasID {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-    @Column(name = "source_lang", nullable = false)
-    private String srcLang;
-    @Column(name = "target_lang", nullable = false)
-    private String dstLang;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "source_lang", nullable = false)
+    private Language sourceLang;
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "target_lang", nullable = false)
+    private Language targetLang;
     @OneToMany(targetEntity = Card.class
             , mappedBy = "dictionary"
             , orphanRemoval = true
@@ -42,19 +54,19 @@ public class Dictionary implements HasID {
     }
 
     public Language getSourceLanguage() {
-        return Language.fromString(srcLang);
+        return sourceLang;
     }
 
     public void setSourceLanguage(Language srcLang) {
-        this.srcLang = Language.toString(srcLang);
+        this.sourceLang = srcLang;
     }
 
     public Language getTargetLanguage() {
-        return Language.fromString(dstLang);
+        return targetLang;
     }
 
     public void setTargetLanguage(Language dstLang) {
-        this.dstLang = Language.toString(dstLang);
+        this.targetLang = dstLang;
     }
 
     public List<Card> getCards() {

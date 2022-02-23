@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gitlab.sszuev.flashcards.domain.Card;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
 import com.gitlab.sszuev.flashcards.domain.Language;
-import com.gitlab.sszuev.flashcards.domain.PartOfSpeech;
 import com.gitlab.sszuev.flashcards.domain.Status;
 import com.gitlab.sszuev.flashcards.services.SoundService;
 import com.gitlab.sszuev.flashcards.utils.CardUtils;
@@ -41,16 +40,16 @@ public class EntityMapper {
         int answered = Optional.ofNullable(card.getAnswered()).orElse(0);
         List<String> examples = card.examples().map(x -> x.getText()).toList();
         String transcription = card.getTranscription();
-        String partOfSpeech = card.partOfSpeech().map(PartOfSpeech::name).orElse(null);
+        String partOfSpeech = card.getPartOfSpeech();
         return new CardResource(card.getID(), word, transcription, partOfSpeech,
-                translations, examples, speaker.getResourceName(word, lang.name()), answered, Map.of());
+                translations, examples, speaker.getResourceName(word, lang.getID()), answered, Map.of());
     }
 
     public DictionaryResource createResource(Dictionary dictionary) {
         long total = dictionary.cards().count();
         long learned = dictionary.cards().filter(x -> Status.LEARNED == x.getStatus()).count();
-        String src = dictionary.getSourceLanguage().name();
-        String dst = dictionary.getTargetLanguage().name();
+        String src = dictionary.getSourceLanguage().getID();
+        String dst = dictionary.getTargetLanguage().getID();
         return new DictionaryResource(dictionary.getID(), dictionary.getName(), src, dst, total, learned);
     }
 

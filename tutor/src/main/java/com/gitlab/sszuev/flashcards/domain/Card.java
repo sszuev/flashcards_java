@@ -15,7 +15,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -95,12 +94,12 @@ public class Card extends WithText implements HasID {
         this.transcription = transcription;
     }
 
-    public Optional<PartOfSpeech> partOfSpeech() {
-        return Optional.ofNullable(PartOfSpeech.fromString(partOfSpeech));
+    public String getPartOfSpeech() {
+        return partOfSpeech;
     }
 
-    public void setPartOfSpeech(PartOfSpeech partOfSpeech) {
-        this.partOfSpeech = PartOfSpeech.toString(partOfSpeech);
+    public void setPartOfSpeech(String partOfSpeech) {
+        this.partOfSpeech = partOfSpeech;
     }
 
     public Dictionary getDictionary() {

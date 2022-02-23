@@ -1,6 +1,13 @@
 package com.gitlab.sszuev.flashcards.parser;
 
-import com.gitlab.sszuev.flashcards.domain.*;
+import com.gitlab.sszuev.flashcards.domain.Card;
+import com.gitlab.sszuev.flashcards.domain.Dictionary;
+import com.gitlab.sszuev.flashcards.domain.EntityFactory;
+import com.gitlab.sszuev.flashcards.domain.Example;
+import com.gitlab.sszuev.flashcards.domain.Language;
+import com.gitlab.sszuev.flashcards.domain.Status;
+import com.gitlab.sszuev.flashcards.domain.Translation;
+import com.gitlab.sszuev.flashcards.domain.User;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -12,13 +19,16 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -28,10 +38,10 @@ import java.util.stream.Stream;
  */
 @Component
 public class LingvoParser {
-    private static final Map<String, Language> LANGUAGE_MAP = Map.of(
+    private static final Map<String, StandardLanguage> LANGUAGE_MAP = Map.of(
             "1033", StandardLanguage.EN,
             "1049", StandardLanguage.RU);
-    private static final Map<String, PartOfSpeech> PART_OF_SPEECH_MAP = Map.of(
+    private static final Map<String, StandardPartOfSpeech> PART_OF_SPEECH_MAP = Map.of(
             "1", StandardPartOfSpeech.NOUN,
             "2", StandardPartOfSpeech.ADJECTIVE,
             "3", StandardPartOfSpeech.VERB);
@@ -95,11 +105,12 @@ public class LingvoParser {
     }
 
     private static Language parseLanguage(Element root, String id) {
-        return WrongDataException.requireNonNull(LANGUAGE_MAP.get(root.getAttribute(id)), "Can't find language " + id);
+        return EntityFactory.newLanguage(WrongDataException.requireNonNull(LANGUAGE_MAP.get(root.getAttribute(id)).name(),
+                "Can't find language " + id), null);
     }
 
     private static List<Card> parseCardList(Element root) {
-        return DOMUtils.elements(root, "card").flatMap(LingvoParser::parseMeanings).collect(Collectors.toUnmodifiableList());
+        return DOMUtils.elements(root, "card").flatMap(LingvoParser::parseMeanings).toList();
     }
 
     private static Stream<Card> parseMeanings(Element node) {
@@ -111,22 +122,22 @@ public class LingvoParser {
     private static Card parseMeaning(String word, Element node) {
         String transcription = node.getAttribute("transcription");
         String id = node.getAttribute("partOfSpeech");
-        PartOfSpeech pos = id == null ? null : PART_OF_SPEECH_MAP.get(id);
+        String pos = Optional.ofNullable(PART_OF_SPEECH_MAP.get(id)).map(Enum::name).orElse(null);
         Element statistics = DOMUtils.getElement(node, "statistics");
         Status status = WrongDataException.requireNonNull(STATUS_MAP.get(WrongDataException
                 .requireNonNull(statistics.getAttribute("status"), "no status")), "unknown status");
         Integer answered;
         if (status != Status.LEARNED) {
-            answered = Optional.ofNullable(statistics.getAttribute("answered"))
+            answered = Optional.of(statistics.getAttribute("answered"))
                     .filter(x -> x.matches("\\d+")).map(Integer::parseInt).orElse(0);
         } else { // in case of status=4 there is some big number
             answered = null;
         }
         List<Translation> translations = DOMUtils.elements(DOMUtils.getElement(node, "translations"), "word")
-                .map(LingvoParser::parseTranslation).collect(Collectors.toUnmodifiableList());
+                .map(LingvoParser::parseTranslation).toList();
         List<Example> examples = DOMUtils.findElement(node, "examples")
                 .map(x -> DOMUtils.elements(x, "example")).orElseGet(Stream::empty)
-                .map(LingvoParser::parseExample).collect(Collectors.toUnmodifiableList());
+                .map(LingvoParser::parseExample).toList();
         return EntityFactory.newCard(word,
                 transcription, pos, translations, examples, status, answered, "parsed from lingvo xml");
     }

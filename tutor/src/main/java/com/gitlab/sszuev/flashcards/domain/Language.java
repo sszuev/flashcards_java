@@ -1,41 +1,38 @@
 package com.gitlab.sszuev.flashcards.domain;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 /**
  * Describes the language.
  * <p>
  * Created by @ssz on 29.04.2021.
  */
-public interface Language {
+@Entity
+@Table(name = "languages")
+public class Language {
 
-    /**
-     * Returns the language tag.
-     *
-     * @return {@code String}, never {@code null}
-     */
-    String name();
+    @Id
+    private String id;
+    @Column(name = "parts_of_speech")
+    private String partsOfSpeech;
 
-    /**
-     * Gets {@link Language} that corresponds the given {@code lang}.
-     *
-     * @param lang {@code String}, can be {@code null}
-     * @return {@link Language} or {@code null}
-     */
-    static Language fromString(String lang) {
-        if (lang == null) return null;
-        try {
-            return StandardLanguage.valueOf(lang.toUpperCase());
-        } catch (IllegalArgumentException ignore) {
-            return () -> lang;
-        }
+    public String getID() {
+        return id;
     }
 
-    /**
-     * Gets lang-tag from the specified {@link Language}
-     *
-     * @param lang {@link Language}, can be {@code null}
-     * @return {@code String} or {@code null}
-     */
-    static String toString(Language lang) {
-        return lang == null ? null : lang.name();
+    public void setID(String id) {
+        this.id = id;
     }
+
+    public String getPartsOfSpeech() {
+        return partsOfSpeech;
+    }
+
+    public void setPartsOfSpeech(String partsOfSpeech) {
+        this.partsOfSpeech = partsOfSpeech;
+    }
+
 }

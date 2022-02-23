@@ -19,6 +19,13 @@ public class EntityFactory {
         return res;
     }
 
+    public static Language newLanguage(String id, String partsOfSpeech) {
+        Language res = new Language();
+        res.setID(id);
+        res.setPartsOfSpeech(partsOfSpeech);
+        return res;
+    }
+
     public static Dictionary newDictionary(User user,
                                            String name,
                                            Language srcLanguage,
@@ -36,7 +43,7 @@ public class EntityFactory {
 
     public static Card newCard(String word,
                                String transcription,
-                               PartOfSpeech partOfSpeech,
+                               String partOfSpeech,
                                Collection<Translation> translations,
                                Collection<Example> examples,
                                Status status,

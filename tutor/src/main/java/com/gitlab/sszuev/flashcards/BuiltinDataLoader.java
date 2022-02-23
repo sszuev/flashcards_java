@@ -1,9 +1,11 @@
 package com.gitlab.sszuev.flashcards;
 
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
+import com.gitlab.sszuev.flashcards.domain.Language;
 import com.gitlab.sszuev.flashcards.domain.User;
 import com.gitlab.sszuev.flashcards.parser.LingvoParser;
 import com.gitlab.sszuev.flashcards.repositories.DictionaryRepository;
+import com.gitlab.sszuev.flashcards.repositories.LanguageRepository;
 import com.gitlab.sszuev.flashcards.repositories.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,17 +40,20 @@ public class BuiltinDataLoader implements ApplicationListener<ApplicationReadyEv
     private final Resource[] resources;
     private final LingvoParser parser;
 
+    private final LanguageRepository languageRepository;
     private final DictionaryRepository dictionaryRepository;
     private final UserRepository userRepository;
 
     public BuiltinDataLoader(@Value("${app.data.dir:classpath:data/*}") String dir,
                              ResourcePatternResolver resolver,
                              LingvoParser parser,
+                             LanguageRepository languageRepository,
                              DictionaryRepository dictionaryRepository,
                              UserRepository userRepository) {
         this.resources = readResources(Objects.requireNonNull(resolver), Objects.requireNonNull(dir));
         this.parser = Objects.requireNonNull(parser);
         this.dictionaryRepository = Objects.requireNonNull(dictionaryRepository);
+        this.languageRepository = Objects.requireNonNull(languageRepository);
         this.userRepository = Objects.requireNonNull(userRepository);
     }
 
@@ -87,15 +92,26 @@ public class BuiltinDataLoader implements ApplicationListener<ApplicationReadyEv
     public void saveAll(Collection<Dictionary> dictionaries) {
         // refresh user links
         dictionaries.forEach(d -> {
-            User given = d.getUser();
-            User actual = userRepository.findByLogin(given.getLogin()).orElseGet(() -> {
-                LOGGER.info("Create user: '{}'", given.getLogin());
-                return userRepository.save(given);
-            });
-            d.setUser(actual);
+            d.setUser(saveUserIfNeeded(d.getUser()));
+            d.setSourceLanguage(saveLanguageIfNeeded(d.getSourceLanguage()));
+            d.setTargetLanguage(saveLanguageIfNeeded(d.getTargetLanguage()));
         });
 
         LOGGER.info("Upload: '{}'", dictionaries.stream().map(Dictionary::getName).collect(Collectors.joining(",")));
         dictionaryRepository.saveAll(dictionaries);
+    }
+
+    private User saveUserIfNeeded(User given) {
+        return userRepository.findByLogin(given.getLogin()).orElseGet(() -> {
+            LOGGER.info("Create user: '{}'", given.getLogin());
+            return userRepository.save(given);
+        });
+    }
+
+    private Language saveLanguageIfNeeded(Language language) {
+        return languageRepository.findById(language.getID()).orElseGet(() -> {
+            LOGGER.info("Create language: '{}'", language.getID());
+            return languageRepository.save(language);
+        });
     }
 }

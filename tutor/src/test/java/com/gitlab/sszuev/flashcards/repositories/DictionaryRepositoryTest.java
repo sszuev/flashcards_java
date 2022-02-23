@@ -30,13 +30,14 @@ public class DictionaryRepositoryTest extends RepositoryTestBase {
     @Test
     public void testListCards() {
         Statistics statistics = prepareStatistics();
-        Dictionary dic = repository.findAll().stream()
+        Dictionary dic = repository.streamAll()
                 .filter(x -> Objects.equals(User.SYSTEM_USER.getLogin(), x.getUser().getLogin()))
                 .filter(x -> Objects.equals(TEST_DICTIONARY_NAME, x.getName()))
                 .findFirst()
                 .orElseThrow(AssertionError::new);
-        LOGGER.info("Dictionary: {} ({} => {})", dic.getName(), dic.getSourceLanguage(), dic.getTargetLanguage());
         Assertions.assertEquals(2, statistics.getPrepareStatementCount());
+        LOGGER.info("Dictionary: {} ({} => {})", dic.getName(), dic.getSourceLanguage(), dic.getTargetLanguage());
+        Assertions.assertEquals(3, statistics.getPrepareStatementCount());
         Assertions.assertEquals(65, dic.cards().count());
         dic.cards().forEach(c -> {
             LOGGER.info("{} => {}({})", c.getText(),
@@ -44,7 +45,7 @@ public class DictionaryRepositoryTest extends RepositoryTestBase {
                     c.examples().map(x -> x.getText()).collect(Collectors.joining(", ")));
             Assertions.assertEquals(Status.UNKNOWN, c.getStatus());
         });
-        Assertions.assertEquals(5, statistics.getPrepareStatementCount());
+        Assertions.assertEquals(6, statistics.getPrepareStatementCount());
     }
 
     @Test
