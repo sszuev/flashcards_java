@@ -51,7 +51,7 @@ public class CardsRestController {
      *
      * @return a {@link List} of {@link CardResource}s
      */
-    @GetMapping(value = "/api/cards/{dictionary}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/api/dictionaries/{dictionary}/cards", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<CardResource> getDictionaryCards(@PathVariable(name = "dictionary") long dictionary) {
         return cardService.getAllCards(dictionary);
     }
@@ -66,7 +66,7 @@ public class CardsRestController {
      *                   {@code false} or {@code null} if it is does not matter
      * @return a {@code List} of {@link CardResource}s
      */
-    @GetMapping(value = "/api/cards/random/{dictionary}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/api/dictionaries/{dictionary}/cards/random", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<CardResource> getNextCardDeck(@PathVariable(name = "dictionary") long dictionary,
                                               @RequestParam(name = "length", required = false) Integer length,
                                               @RequestParam(name = "unknown", required = false) Boolean unknown) {
@@ -80,7 +80,7 @@ public class CardsRestController {
     }
 
     /**
-     * Updates cards in underlying db.
+     * Updates cards in underlying db (while learning process).
      *
      * @param request a {@code List} of {@link CardRequest}s
      */

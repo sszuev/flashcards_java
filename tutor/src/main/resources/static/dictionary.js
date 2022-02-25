@@ -48,7 +48,7 @@ function drawRunPage() {
         return;
     }
     markRowRun(dictionary.id);
-    $.get('/api/cards/random/' + dictionary.id).done(function (array) {
+    $.get('/api/dictionaries/' + dictionary.id + '/cards/random').done(function (array) {
         data = array;
         stageShow();
     });
@@ -74,7 +74,7 @@ function drawDictionaryPage() {
 
     const editPopup = new bootstrap.Modal(document.getElementById('edit-card-dialog'));
 
-    $.get('/api/cards/' + dictionary.id).done(function (response) {
+    $.get('/api/dictionaries/' + dictionary.id + '/cards').done(function (response) {
         displayPage('words');
 
         search.on('input', function () {

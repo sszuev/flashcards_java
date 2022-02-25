@@ -44,7 +44,7 @@ function stageOptions() {
     }
     const dataLeft = randomArray(data, numberOfWordsPerStage);
     const length = dataLeft.length * numberOfOptionsPerWord;
-    $.get('/api/cards/random/' + dictionary.id + "?length=" + length + "&unknown=false").done(function (words) {
+    $.get('/api/dictionaries/' + dictionary.id + "/cards/random?length=" + length + "&unknown=false").done(function (words) {
         const options = prepareOptionsDataArray(dataLeft, words);
         displayPage('options');
         drawOptionsCardPage(options, 0, () => stageWriting());
