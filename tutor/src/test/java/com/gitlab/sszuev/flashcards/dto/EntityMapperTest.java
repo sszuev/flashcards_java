@@ -1,8 +1,6 @@
 package com.gitlab.sszuev.flashcards.dto;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gitlab.sszuev.flashcards.TestUtils;
-import com.gitlab.sszuev.flashcards.domain.Card;
 import com.gitlab.sszuev.flashcards.services.SoundService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -11,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,19 +26,18 @@ public class EntityMapperTest {
 
     @Test
     public void testReadDetailsAsMap() {
-        Card card = TestUtils.createCard(42, "x", 0, "{\"writing\":[true,true],\"self-test\":[false]}");
-        Map<Stage, List<Boolean>> res = mapper.readDetailsAsMap(card);
+        Map<Stage, Long> res = mapper.readDetailsAsMap("{\"writing\":3,\"self-test\":0}");
         Assertions.assertNotNull(res);
-        Assertions.assertEquals(List.of(true, true), res.get(Stage.WRITING));
-        Assertions.assertEquals(List.of(false), res.get(Stage.SELF_TEST));
+        Assertions.assertEquals(3L, res.get(Stage.WRITING));
+        Assertions.assertEquals(0L, res.get(Stage.SELF_TEST));
     }
 
     @Test
     public void testWriteDetailsAsString() {
-        Map<Stage, List<Boolean>> data = Map.of(Stage.SELF_TEST, List.of(true, false, true), Stage.MOSAIC, List.of(true));
+        Map<Stage, Long> data = Map.of(Stage.SELF_TEST, 42L, Stage.MOSAIC, 1L);
         String json = mapper.writeDetailsAsString(data);
         Assertions.assertTrue(json.startsWith("{") && json.endsWith("}"));
-        Assertions.assertTrue(json.contains("\"self-test\":[true,false,true]"));
-        Assertions.assertTrue(json.contains("\"mosaic\":[true]"));
+        Assertions.assertTrue(json.contains("\"self-test\":42"));
+        Assertions.assertTrue(json.contains("\"mosaic\":1"));
     }
 }

@@ -7,7 +7,7 @@ import java.util.Map;
  * Created by @ssz on 02.05.2021.
  */
 @SuppressWarnings("unused")
-public record CardResource(long id,
+public record CardResource(Long id,
                            String word,
                            String transcription,
                            String partOfSpeech,
@@ -15,13 +15,13 @@ public record CardResource(long id,
                            List<String> examples,
                            String sound,
                            int answered,
-                           Map<Stage, Boolean> details) {
+                           Map<Stage, Long> details) {
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public int getAnswered() {
+    public Integer getAnswered() {
         return answered;
     }
 
@@ -37,7 +37,7 @@ public record CardResource(long id,
         return translations;
     }
 
-    public Map<Stage, Boolean> getDetails() {
+    public Map<Stage, Long> getDetails() {
         return details;
     }
 

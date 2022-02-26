@@ -1,7 +1,7 @@
 package com.gitlab.sszuev.flashcards.controllers;
 
-import com.gitlab.sszuev.flashcards.dto.CardRequest;
 import com.gitlab.sszuev.flashcards.dto.CardResource;
+import com.gitlab.sszuev.flashcards.dto.CardUpdateResource;
 import com.gitlab.sszuev.flashcards.dto.DictionaryResource;
 import com.gitlab.sszuev.flashcards.services.CardService;
 import com.gitlab.sszuev.flashcards.services.SoundService;
@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -79,13 +81,29 @@ public class CardsRestController {
         throw new IllegalArgumentException();
     }
 
+    @PostMapping(value = "/api/cards", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void create(@RequestBody CardResource resource) {
+        if (resource.getId() != null) {
+            throw new IllegalArgumentException("Existing resource specified: " + resource.getId() + ".");
+        }
+        cardService.save(resource);
+    }
+
+    @PutMapping(value = "/api/cards", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void update(@RequestBody CardResource resource) {
+        if (resource.getId() == null) {
+            throw new IllegalArgumentException("The given resource has no id.");
+        }
+        cardService.save(resource);
+    }
+
     /**
      * Updates cards in underlying db (while learning process).
      *
-     * @param request a {@code List} of {@link CardRequest}s
+     * @param request a {@code List} of {@link CardUpdateResource}s
      */
     @PatchMapping(value = "/api/cards", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void update(@RequestBody List<CardRequest> request) {
+    public void update(@RequestBody List<CardUpdateResource> request) {
         cardService.update(request);
     }
 

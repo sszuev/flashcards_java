@@ -9,6 +9,8 @@ import com.gitlab.sszuev.flashcards.domain.Language;
 import com.gitlab.sszuev.flashcards.domain.Status;
 import com.gitlab.sszuev.flashcards.services.SoundService;
 import com.gitlab.sszuev.flashcards.utils.CardUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -25,8 +27,10 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Component
 public class EntityMapper {
+    private static final Logger LOGGER = LoggerFactory.getLogger(EntityMapper.class);
+
     private static final Map<String, Locale> LOCALES = new ConcurrentHashMap<>();
-    private static final TypeReference<Map<Stage, List<Boolean>>> DB_DETAILS_TYPE_REFERENCE = new TypeReference<>() {
+    private static final TypeReference<Map<Stage, Long>> DB_DETAILS_TYPE_REFERENCE = new TypeReference<>() {
     };
 
     private final ObjectMapper mapper;
@@ -37,7 +41,7 @@ public class EntityMapper {
         this.mapper = Objects.requireNonNull(mapper);
     }
 
-    public CardResource createResource(Card card, Language lang) {
+    public CardResource toResource(Card card, Language lang) {
         String word = card.getText();
         List<List<String>> translations = card.translations()
                 .map(x -> CardUtils.getWords(x.getText())).toList();
@@ -45,25 +49,18 @@ public class EntityMapper {
         List<String> examples = card.examples().map(x -> x.getText()).toList();
         String transcription = card.getTranscription();
         String partOfSpeech = parsePartsOfSpeech(card.getPartOfSpeech(), lang);
+        Map<Stage, Long> details = readDetailsAsMap(card.getDetails());
         return new CardResource(card.getID(), word, transcription, partOfSpeech,
-                translations, examples, speaker.getResourceName(word, lang.getID()), answered, Map.of());
+                translations, examples, speaker.getResourceName(word, lang.getID()), answered, details);
     }
 
-    public DictionaryResource createResource(Dictionary dictionary) {
+    public DictionaryResource toResource(Dictionary dictionary) {
         long total = dictionary.cards().count();
         long learned = dictionary.cards().filter(x -> Status.LEARNED == x.getStatus()).count();
         String src = dictionary.getSourceLanguage().getID();
         String dst = dictionary.getTargetLanguage().getID();
         List<String> partsOfSpeech = parsePartsOfSpeech(dictionary.getSourceLanguage());
         return new DictionaryResource(dictionary.getID(), dictionary.getName(), src, dst, partsOfSpeech, total, learned);
-    }
-
-    public Map<Stage, List<Boolean>> readDetailsAsMap(Card card) {
-        String details = card.getDetails();
-        if (details == null || !(details.startsWith("{") && details.endsWith("}"))) {
-            return new HashMap<>();
-        }
-        return readDetailsAsMap(details);
     }
 
     private static List<String> parsePartsOfSpeech(Language language) {
@@ -87,15 +84,19 @@ public class EntityMapper {
         return partsOfSpeech.trim().toLowerCase(locale);
     }
 
-    private Map<Stage, List<Boolean>> readDetailsAsMap(String details) {
+    public Map<Stage, Long> readDetailsAsMap(String details) {
+        if (details == null) {
+            return new HashMap<>();
+        }
         try {
             return mapper.readValue(details, DB_DETAILS_TYPE_REFERENCE);
         } catch (JsonProcessingException e) {
-            throw new IllegalArgumentException("Can't parse '" + details + "'", e);
+            LOGGER.warn("Can't parse details: " + details, e);
+            return new HashMap<>();
         }
     }
 
-    public String writeDetailsAsString(Map<Stage, List<Boolean>> details) {
+    public String writeDetailsAsString(Map<Stage, Long> details) {
         try {
             return mapper.writeValueAsString(details);
         } catch (JsonProcessingException e) {

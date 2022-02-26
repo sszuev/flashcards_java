@@ -6,28 +6,25 @@ function findById(array, id) {
     return array.find(e => e.id.toString() === id.toString());
 }
 
-function rememberAnswer(item, stage, answer) {
-    if (item.details == null) {
-        item.details = {};
+function rememberAnswer(item, stage, booleanAnswer) {
+    if (item.currentDetails == null) {
+        item.currentDetails = {};
     }
-    item.details[stage] = answer;
-    if (answer) {
-        item.answered++;
-    }
+    item.currentDetails[stage] = booleanAnswer;
 }
 
 function hasStage(item, stage) {
-    return item.details != null && item.details[stage] != null;
+    return item.currentDetails != null && item.currentDetails[stage] != null;
 }
 
 /**
- * Determines if the card is fully answered.
+ * Answers true iif the card is fully answered.
  * If there is a wrong answer for any stage, then the method returns false.
  * @param item a data (card)
  * @returns {boolean|undefined}
  */
 function isAnsweredRight(item) {
-    const details = item.details;
+    const details = item.currentDetails;
     if (details == null || !Object.keys(details).length) {
         return undefined;
     }
@@ -40,6 +37,75 @@ function isAnsweredRight(item) {
         }
     }
     return true;
+}
+
+/**
+ * Answers a resource for sending to server.
+ *
+ * @param array a data array (items)
+ * @param stage i.e. 'self-test', 'mosaic'
+ * @returns {string}
+ */
+function toUpdateResource(array, stage) {
+    const copyToUpdateResource = function (st, updateResource, itemResource) {
+        updateResource.details = {};
+        updateResource.details[st] = itemResource.currentDetails[st] ? 1 : 0; // boolean to int
+    }
+    const res = array.map(function (item) {
+        const cardUpdateResource = {};
+        cardUpdateResource.id = item.id;
+        if (stage) {
+            copyToUpdateResource(stage, cardUpdateResource, item);
+        } else {
+            // copy all
+            for (let s in item.currentDetails) {
+                if (!item.currentDetails.hasOwnProperty(s)) {
+                    continue;
+                }
+                copyToUpdateResource(s, cardUpdateResource, item);
+            }
+        }
+        return cardUpdateResource;
+    });
+    return JSON.stringify(res);
+}
+
+/**
+ * Updates the array of items-resources by coping item.currentDetails to item.details.
+ * @param array a data array (items)
+ * @param stage i.e. 'self-test', 'mosaic'
+ */
+function updateItemResource(array, stage) {
+    const updateItem = function (st, itemResource) {
+
+        if (itemResource.details == null) {
+            itemResource.details = {};
+        }
+        let value;
+        if (itemResource.details[st]) {
+            value = itemResource.details[st];
+        } else {
+            value = 1;
+        }
+        value = value << 1;
+        if (itemResource.currentDetails[st]) {
+            value = value + 1;
+            itemResource.answered++;
+        }
+        itemResource.details[st] = value;
+    }
+    array.forEach(function (item) {
+        if (stage) {
+            updateItem(stage, item);
+        } else {
+            for (let s in item.currentDetails) {
+                if (!item.currentDetails.hasOwnProperty(s)) {
+                    continue;
+                }
+                updateItem(s, item);
+            }
+        }
+    });
 }
 
 /**
@@ -60,27 +126,6 @@ function selectNonAnswered(array, limit) {
         }
     }
     return res;
-}
-
-/**
- * Answers a resource for sending to server.
- * @param array a data array
- * @param stage i.e. 'self-test', 'mosaic'
- * @returns {string}
- */
-function toResource(array, stage) {
-    const res = array.map(function (d) {
-        const item = {};
-        item.id = d.id;
-        if (stage) {
-            item.details = {};
-            item.details[stage] = d.details[stage];
-        } else {
-            item.details = d.details;
-        }
-        return item;
-    });
-    return JSON.stringify(res);
 }
 
 /**

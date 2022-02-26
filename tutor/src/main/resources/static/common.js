@@ -44,16 +44,3 @@ function removeDuplicates(array) {
     });
     return res;
 }
-/**
- * Sends PATCH http request.
- * @param update - data to send
- * @param onDoneCallback - any function
- */
-function sendPatch(update, onDoneCallback) {
-    $.ajax({
-        type: 'PATCH',
-        url: '/api/cards/',
-        contentType: "application/json",
-        data: update
-    }).done(onDoneCallback);
-}

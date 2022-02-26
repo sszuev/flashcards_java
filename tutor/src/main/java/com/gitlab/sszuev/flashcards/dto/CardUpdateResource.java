@@ -8,9 +8,9 @@ import java.util.Map;
 /**
  * Created by @ssz on 15.05.2021.
  */
-public record CardRequest(long id, Map<Stage, Boolean> details) {
+public record CardUpdateResource(long id, Map<Stage, Integer> details) {
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-    public CardRequest(@JsonProperty("id") long id, @JsonProperty("details") Map<Stage, Boolean> details) {
+    public CardUpdateResource(@JsonProperty("id") long id, @JsonProperty("details") Map<Stage, Integer> details) {
         this.id = id;
         this.details = details;
     }
@@ -19,7 +19,7 @@ public record CardRequest(long id, Map<Stage, Boolean> details) {
         return id;
     }
 
-    public Map<Stage, Boolean> getDetails() {
+    public Map<Stage, Integer> getDetails() {
         return details;
     }
 }
