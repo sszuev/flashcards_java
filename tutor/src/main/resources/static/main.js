@@ -29,7 +29,6 @@ function displayPage(id) {
  * @param callback - function to call on complete
  */
 function playAudio(resource, callback) {
-    const audio = new Audio('/api/sounds/' + resource);
     if (!callback) {
         callback = () => {};
     }

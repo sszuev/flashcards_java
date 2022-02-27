@@ -6,8 +6,8 @@ import com.gitlab.sszuev.flashcards.domain.Dictionary;
 import com.gitlab.sszuev.flashcards.domain.Language;
 import com.gitlab.sszuev.flashcards.domain.Status;
 import com.gitlab.sszuev.flashcards.domain.User;
-import com.gitlab.sszuev.flashcards.dto.CardRequest;
 import com.gitlab.sszuev.flashcards.dto.CardResource;
+import com.gitlab.sszuev.flashcards.dto.CardUpdateResource;
 import com.gitlab.sszuev.flashcards.dto.DictionaryResource;
 import com.gitlab.sszuev.flashcards.dto.Stage;
 import com.gitlab.sszuev.flashcards.repositories.CardRepository;
@@ -145,11 +145,11 @@ public class CardServiceTest {
     public void testUpdate() {
         long id1 = -1;
         long id2 = -2;
-        List<CardRequest> requests = List.of(new CardRequest(id1, Map.of(Stage.SELF_TEST, true)),
-                new CardRequest(id2, Map.of(Stage.OPTIONS, false)));
-        Collection<Long> ids = requests.stream().map(CardRequest::getId).collect(Collectors.toSet());
-        Card card1 = TestUtils.createCard(id1, "x", 2, "{\"writing\":[true,true],\"self-test\":[false]}");
-        Card card2 = TestUtils.createCard(id2, "y", 1, "{\"mosaic\":[true],\"self-test\":[false]}");
+        List<CardUpdateResource> requests = List.of(new CardUpdateResource(id1, Map.of(Stage.SELF_TEST, 1)),
+                new CardUpdateResource(id2, Map.of(Stage.OPTIONS, 0)));
+        Collection<Long> ids = requests.stream().map(CardUpdateResource::getId).collect(Collectors.toSet());
+        Card card1 = TestUtils.createCard(id1, "x", 2, "{\"writing\":3,\"self-test\":4}");
+        Card card2 = TestUtils.createCard(id2, "y", 1, "{\"mosaic\":1,\"self-test\":0}");
 
         Mockito.when(cardRepository.streamByIdIn(Mockito.eq(ids))).thenReturn(Stream.of(card1, card2));
         List<Card> res = new ArrayList<>();

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.function.BiPredicate;
 
@@ -73,9 +72,5 @@ public class CollectionUtils {
             }
         }
         return false;
-    }
-
-    public static <K, V> void addAll(Map<K, List<V>> base, Map<K, V> add) {
-        add.forEach((k, v) -> base.computeIfAbsent(k, x -> new ArrayList<>()).add(v));
     }
 }

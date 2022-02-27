@@ -1,7 +1,7 @@
 package com.gitlab.sszuev.flashcards.services;
 
-import com.gitlab.sszuev.flashcards.dto.CardRequest;
 import com.gitlab.sszuev.flashcards.dto.CardResource;
+import com.gitlab.sszuev.flashcards.dto.CardUpdateResource;
 import com.gitlab.sszuev.flashcards.dto.DictionaryResource;
 
 import java.util.List;
@@ -51,7 +51,13 @@ public interface CardService {
     /**
      * Updates cards by applying the specifies data.
      *
-     * @param data a {@code List} of {@link CardRequest}s
+     * @param data a {@code List} of {@link CardUpdateResource}s
      */
-    void update(List<CardRequest> data);
+    void update(List<CardUpdateResource> data);
+
+    /**
+     * Saves the given {@link CardResource} into db.
+     * @param resource {@link CardResource}
+     */
+    void save(CardResource resource);
 }

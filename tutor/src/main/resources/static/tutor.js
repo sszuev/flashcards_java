@@ -44,7 +44,7 @@ function stageOptions() {
     }
     const dataLeft = randomArray(data, numberOfWordsPerStage);
     const length = dataLeft.length * numberOfOptionsPerWord;
-    $.get('/api/cards/random/' + dictionary.id + "?length=" + length + "&unknown=false").done(function (words) {
+    $.get('/api/dictionaries/' + dictionary.id + "/cards/random?length=" + length + "&unknown=false").done(function (words) {
         const options = prepareOptionsDataArray(dataLeft, words);
         displayPage('options');
         drawOptionsCardPage(options, 0, () => stageWriting());
@@ -160,14 +160,15 @@ function drawMosaicCardPage(data, nextStage) {
             }
             const id = selected.attr('id').replace('-left', '');
             const data = findById(dataLeft, id);
-            if (!hasStage(data, stage)) { // only for first
+            if (!hasStage(data, stage)) {
+                // remember only the first answer, the next, even right, will be ignored
                 rememberAnswer(data, stage, success);
             }
             if (!leftCards.filter((i, e) => $(e).text().trim()).length) {
                 // no more options
                 setDefaultBorder(rightCards);
                 setDefaultBorder(leftCards);
-                setTimeout(() => sendPatch(toResource(dataLeft, stage), nextStage), 500);
+                setTimeout(() => updateItemsAndCall(dataLeft, stage, nextStage), 500);
             }
         });
         rightPane.append(right);
@@ -177,9 +178,10 @@ function drawMosaicCardPage(data, nextStage) {
 function drawOptionsCardPage(options, index, nextStage) {
     const stage = 'options';
     if (index >= options.length) { // no more data => display next stage
-        sendPatch(toResource(options.map(function (item) {
+        const items = options.map(function (item) {
             return item['left'];
-        }), stage), nextStage);
+        });
+        updateItemsAndCall(items, stage, nextStage);
         return;
     }
 
@@ -219,7 +221,8 @@ function drawOptionsCardPage(options, index, nextStage) {
                 strikeText(right.find('p'));
             }
             setBorderClass(right, success ? borderSuccess : borderError);
-            if (!hasStage(dataLeft, stage)) { // only for first
+            if (!hasStage(dataLeft, stage)) {
+                // remember only the first answer, the next, even right, will be ignored
                 rememberAnswer(dataLeft, stage, success);
             }
             if (success) {
@@ -234,7 +237,7 @@ function drawOptionsCardPage(options, index, nextStage) {
 function drawWritingCardPage(writingData, index, nextStage) {
     const stage = 'writing';
     if (index >= writingData.length) {
-        sendPatch(toResource(writingData, stage), nextStage);
+        updateItemsAndCall(writingData, stage, nextStage);
         return;
     }
     const page = $('#writing');
@@ -286,7 +289,7 @@ function drawWritingCardPage(writingData, index, nextStage) {
 function drawSelfTestCardPage(selfTestData, index, nextStage) {
     const stage = 'self-test';
     if (index >= selfTestData.length) {
-        sendPatch(toResource(selfTestData, stage), nextStage);
+        updateItemsAndCall(selfTestData, stage, nextStage);
         return;
     }
     const page = $('#self-test');
@@ -340,6 +343,10 @@ function drawResultCardPage() {
     $('#result-correct').html(right);
     $('#result-wrong').html(wrong);
     $('#result-learned').html(learned);
+    // remove state details
+    data.forEach(function (item) {
+        delete item.currentDetails
+    });
 }
 
 function prepareOptionsDataArray(dataLeft, dataRight) {
@@ -391,3 +398,23 @@ function drawAndPlayAudio(parent, audio) {
     btn.click();
 }
 
+function updateItemsAndCall(array, stage, nextStageCallback) {
+    sendPatch(toUpdateResource(array, stage), function () {
+        updateItemResource(array, stage);
+        nextStageCallback();
+    });
+}
+
+/**
+ * Sends PATCH http request.
+ * @param update - data to send
+ * @param onDoneCallback - any function
+ */
+function sendPatch(update, onDoneCallback) {
+    $.ajax({
+        type: 'PATCH',
+        url: '/api/cards/',
+        contentType: "application/json",
+        data: update
+    }).done(onDoneCallback);
+}
