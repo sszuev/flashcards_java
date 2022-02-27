@@ -91,7 +91,7 @@ public class EntityMapper {
         try {
             return mapper.readValue(details, DB_DETAILS_TYPE_REFERENCE);
         } catch (JsonProcessingException e) {
-            LOGGER.warn("Can't parse details: " + details, e);
+            LOGGER.debug("Can't parse details: '" + details + "': " + e.getMessage());
             return new HashMap<>();
         }
     }
