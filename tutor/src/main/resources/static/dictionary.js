@@ -140,8 +140,14 @@ function selectCardItemForEdit(row, item) {
         $('#edit-card-dialog-part-of-speech option').eq(index + 1).prop('selected', true);
     }
     $('#edit-card-dialog-transcription').val(item.transcription);
-    $('#edit-card-dialog-translation').val(toTranslationArray(item).join("; "));
-    $('#edit-card-dialog-examples').val(item.examples.join("\n"));
+    const translations = item.translations.map(x => x.join(", "));
+    const examples = item.examples;
+    const translationsArea = $('#edit-card-dialog-translation');
+    const examplesArea = $('#edit-card-dialog-examples');
+    translationsArea.attr('rows', translations.length);
+    examplesArea.attr('rows', examples.length);
+    translationsArea.val(translations.join("\n"));
+    examplesArea.val(examples.join("\n"));
 }
 
 function selectCardItemForAdd(row, word) {
@@ -266,9 +272,8 @@ function createResourceItem(dialogId, items) {
     resItem.transcription = $('#' + dialogId + '-card-dialog-transcription').val();
     resItem.partOfSpeech = $('#' + dialogId + '-card-dialog-part-of-speech option:selected').text();
     resItem.examples = $('#' + dialogId + '-card-dialog-examples').val().split("\n");
-    resItem.translations = $('#' + dialogId + '-card-dialog-translation').val().split(";")
+    resItem.translations = $('#' + dialogId + '-card-dialog-translation').val().split("\n")
         .map(x => x.trim().split(',').map(t => t.trim()));
-
     return resItem;
 }
 
