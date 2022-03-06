@@ -261,6 +261,7 @@ function createResourceItem(dialogId, items) {
     const itemId = input.attr('item-id');
 
     const resItem = itemId ? jQuery.extend({}, findById(items, itemId)) : {};
+    resItem.dictionaryId = dictionary.id;
     resItem.word = input.val();
     resItem.transcription = $('#' + dialogId + '-card-dialog-transcription').val();
     resItem.partOfSpeech = $('#' + dialogId + '-card-dialog-part-of-speech option:selected').text();
@@ -292,7 +293,7 @@ function insertDialogLinks(dialogId) {
 }
 
 function createLink(parent, uri) {
-    parent.html(`<a class='btn btn-link' href='${uri}'>${uri}</a>`);
+    parent.html(`<a class='btn btn-link' href='${uri}' target='_blank'>${uri}</a>`);
 }
 
 function onCollapseLgFrame(dialogId) {

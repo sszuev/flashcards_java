@@ -83,15 +83,15 @@ public class CardsRestController {
 
     @PostMapping(value = "/api/cards", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void create(@RequestBody CardResource resource) {
-        if (resource.getId() != null) {
-            throw new IllegalArgumentException("Existing resource specified: " + resource.getId() + ".");
+        if (resource.id() != null) {
+            throw new IllegalArgumentException("Existing resource specified: " + resource.id() + ".");
         }
         cardService.save(resource);
     }
 
     @PutMapping(value = "/api/cards", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void update(@RequestBody CardResource resource) {
-        if (resource.getId() == null) {
+        if (resource.id() == null) {
             throw new IllegalArgumentException("The given resource has no id.");
         }
         cardService.save(resource);

@@ -5,8 +5,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gitlab.sszuev.flashcards.domain.Card;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
+import com.gitlab.sszuev.flashcards.domain.Example;
 import com.gitlab.sszuev.flashcards.domain.Language;
 import com.gitlab.sszuev.flashcards.domain.Status;
+import com.gitlab.sszuev.flashcards.domain.Translation;
 import com.gitlab.sszuev.flashcards.services.SoundService;
 import com.gitlab.sszuev.flashcards.utils.CardUtils;
 import org.slf4j.Logger;
@@ -21,6 +23,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Created by @ssz on 02.05.2021.
@@ -41,17 +44,32 @@ public class EntityMapper {
         this.mapper = Objects.requireNonNull(mapper);
     }
 
-    public CardResource toResource(Card card, Language lang) {
+    public Card fromResource(CardResource card, Dictionary dictionary) {
+        Card res = new Card();
+        res.setID(card.id());
+        res.setText(card.word());
+        res.setDictionary(dictionary);
+        res.setTranscription(card.transcription());
+        res.setStatus(card.status());
+        res.setAnswered(card.answered());
+        res.setExamples(card.examples().stream().map(x -> newExample(x, res)).collect(Collectors.toList()));
+        res.setTranslations(card.translations().stream().map(x -> newTranslation(x, res)).collect(Collectors.toList()));
+        res.setPartOfSpeech(card.partOfSpeech());
+        res.setDetails(writeDetailsAsString(card.details()));
+        return res;
+    }
+
+    public CardResource toResource(Card card, long dictionaryId, Language lang) {
         String word = card.getText();
         List<List<String>> translations = card.translations()
-                .map(x -> CardUtils.getWords(x.getText())).toList();
+                .map(c -> CardUtils.getWords(c.getText())).toList();
         int answered = Optional.ofNullable(card.getAnswered()).orElse(0);
-        List<String> examples = card.examples().map(x -> x.getText()).toList();
+        List<String> examples = card.examples().map(e -> e.getText()).toList();
         String transcription = card.getTranscription();
         String partOfSpeech = parsePartsOfSpeech(card.getPartOfSpeech(), lang);
         Map<Stage, Long> details = readDetailsAsMap(card.getDetails());
-        return new CardResource(card.getID(), word, transcription, partOfSpeech,
-                translations, examples, speaker.getResourceName(word, lang.getID()), answered, details);
+        return new CardResource(card.getID(), dictionaryId, word, transcription,
+                partOfSpeech, translations, examples, speaker.getResourceName(word, lang.getID()), card.getStatus(), answered, details);
     }
 
     public DictionaryResource toResource(Dictionary dictionary) {
@@ -78,6 +96,20 @@ public class EntityMapper {
         }
         Locale locale = getLocal(language);
         return normalize(partsOfSpeech, locale);
+    }
+
+    private static Example newExample(String text, Card card) {
+        Example res = new Example();
+        res.setText(text);
+        res.setCard(card);
+        return res;
+    }
+
+    private static Translation newTranslation(List<String> text, Card card) {
+        Translation res = new Translation();
+        res.setText(String.join(",", text));
+        res.setCard(card);
+        return res;
     }
 
     private static String normalize(String partsOfSpeech, Locale locale) {

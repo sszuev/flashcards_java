@@ -67,8 +67,8 @@ public class CardServiceImpl implements CardService {
     @Override
     public List<CardResource> getAllCards(long dicId) {
         Language lang = getDictionary(dicId).getSourceLanguage();
-        return cardRepository.streamByDictionaryId(dicId).map(c -> mapper.toResource(c, lang))
-                .sorted(Comparator.comparing(CardResource::getWord)).toList();
+        return cardRepository.streamByDictionaryId(dicId).map(c -> mapper.toResource(c, dicId, lang))
+                .sorted(Comparator.comparing(CardResource::word)).toList();
     }
 
     @Transactional(readOnly = true)
@@ -88,7 +88,7 @@ public class CardServiceImpl implements CardService {
         Dictionary dic = getDictionary(dicId);
         Language lang = dic.getSourceLanguage();
         return getRandomCards(dicId, length, unknown)
-                .stream().map(c -> mapper.toResource(c, lang)).toList();
+                .stream().map(c -> mapper.toResource(c, dicId, lang)).toList();
     }
 
     public Dictionary getDictionary(long dicId) {
@@ -117,15 +117,17 @@ public class CardServiceImpl implements CardService {
     @Transactional
     @Override
     public void update(List<CardUpdateResource> data) {
-        update(data.stream().collect(Collectors.toMap(CardUpdateResource::getId, CardUpdateResource::getDetails)));
+        update(data.stream().collect(Collectors.toMap(CardUpdateResource::id, CardUpdateResource::details)));
     }
 
     @Transactional
     @Override
     public void save(CardResource resource) {
         LOGGER.info("Save {}", resource);
-        //TODO:
-        throw new UnsupportedOperationException("TODO");
+        Dictionary dic = dictionaryRepository.findById(resource.dictionaryId())
+                .orElseThrow(() -> new IllegalArgumentException("Can't find dictionary = " + resource.dictionaryId()));
+        Card card = mapper.fromResource(resource, dic);
+        cardRepository.save(card);
     }
 
     private void update(Map<Long, Map<Stage, Integer>> data) {
