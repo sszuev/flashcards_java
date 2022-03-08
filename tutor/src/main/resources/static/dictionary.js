@@ -2,9 +2,6 @@
  * dictionary js-script library.
  */
 
-const selectedRowClass = 'table-success';
-const runRowClass = 'table-dark';
-
 const tableHeightRation = 2. / 3;
 const lgFrameHeightRation = 7. / 18;
 
@@ -47,7 +44,7 @@ function drawRunPage() {
     if (dictionary == null) {
         return;
     }
-    markRowRun(dictionary.id);
+    resetRowSelection($('#dictionaries tbody'));
     $.get('/api/dictionaries/' + dictionary.id + '/cards/random').done(function (array) {
         data = array;
         stageShow();
@@ -58,7 +55,7 @@ function drawDictionaryPage() {
     if (dictionary == null) {
         return;
     }
-    markRowRun(dictionary.id);
+    resetRowSelection($('#dictionaries tbody'));
 
     const tableRow = $('#words-table-row');
     const tbody = $('#words tbody');
@@ -78,7 +75,7 @@ function drawDictionaryPage() {
 
         initDialog('add', items);
         initDialog('edit', items);
-        initEditDialog();
+        initPrompt('delete');
 
         displayPage('words');
 
@@ -119,6 +116,7 @@ function wordRowOnClick(row, item) {
     resetWordSelection();
     selectCardItemForEdit(row, item);
     selectCardItemForAdd(row, item.word);
+    selectCardItemForDelete(item);
 }
 
 function selectCardItemForEdit(row, item) {
@@ -166,6 +164,13 @@ function selectCardItemForAdd(row, word) {
     $('#add-card-dialog-examples').val('');
 }
 
+function selectCardItemForDelete(item) {
+    disableWordButton('delete', false);
+    const body = $('#delete-prompt-body');
+    body.attr('item-id', item.id);
+    body.html(item.word);
+}
+
 function initTableListeners(id, resetSelection) {
     const thead = $('#' + id + ' thead');
     const title = $('#' + id + ' .card-title');
@@ -192,6 +197,7 @@ function resetDictionarySelection() {
 function resetWordSelection() {
     disableWordButton('add', true);
     disableWordButton('edit', true);
+    disableWordButton('delete', true);
     cleanDialogLinks('add');
     cleanDialogLinks('edit');
     resetRowSelection($('#words tbody'));
@@ -238,6 +244,9 @@ function initDialog(dialogId, items) {
             drawDictionaryPage();
         })
     });
+    if ('edit' === dialogId) {
+        initEditDialog();
+    }
 }
 
 function initEditDialog() {
@@ -252,6 +261,14 @@ function initEditDialog() {
         playAudio(audio, function () {
             soundBtn.prop('disabled', false);
         });
+    });
+}
+
+function initPrompt(promptId) {
+    $('#words-btn-' + promptId).off('click').on('click', function () {
+        const body = $('#' + promptId + '-prompt-body');
+        const itemId = body.attr('item-id');
+        console.log(itemId);
     });
 }
 
@@ -322,12 +339,8 @@ function onCollapseLgFrame(dialogId) {
     dialogLinksDiv.attr('word-txt', text);
 }
 
-function markRowRun(id) {
-    $('#' + id).addClass(runRowClass);
-}
-
 function markRowSelected(row) {
-    row.addClass(selectedRowClass);
+    row.addClass('table-success');
 }
 
 function calcInitTableHeight() {

@@ -26,13 +26,13 @@
         <div id="dictionaries-table-row" class="row" style="overflow: auto">
             <table class="table">
                 <thead>
-                    <tr>
-                        <th scope="col">Source language</th>
-                        <th scope="col">Target language</th>
-                        <th scope="col">Dictionary name</th>
-                        <th scope="col">Total number of words</th>
-                        <th scope="col">Number of learned words</th>
-                    </tr>
+                <tr>
+                    <th scope="col">Source language</th>
+                    <th scope="col">Target language</th>
+                    <th scope="col">Dictionary name</th>
+                    <th scope="col">Total number of words</th>
+                    <th scope="col">Number of learned words</th>
+                </tr>
                 </thead>
                 <tbody></tbody>
             </table>
@@ -51,7 +51,7 @@
 </div>
 <div id="words" class="page card container container-table" style="display: none;">
     <div class="card-body">
-        <h1 id="words-title" class="card-title" >dictionary</h1>
+        <h1 id="words-title" class="card-title">dictionary</h1>
         <div id="words-table-row" class="row" style="overflow: auto">
             <table class="table">
                 <thead>
@@ -70,14 +70,19 @@
         </div>
         <div class="row">
             <div id="words-btn-group" class="btn-group" role="group" aria-label="Dictionary group">
-                <button id="words-btn-add" type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#add-card-dialog" disabled>Add</button>
-                <button id="words-btn-edit" type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#edit-card-dialog" disabled>Edit</button>
+                <button id="words-btn-add" type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                        data-bs-target="#add-card-dialog" disabled>Add</button>
+                <button id="words-btn-edit" type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                        data-bs-target="#edit-card-dialog" disabled>Edit</button>
+                <button id="words-btn-delete" type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                        data-bs-target="#delete-prompt" disabled>Delete</button>
             </div>
         </div>
     </div>
 </div>
 <div th:replace="card-dialog.html :: cardDialog(id='edit')"></div>
 <div th:replace="card-dialog.html :: cardDialog(id='add')"></div>
+<div th:replace="prompt.html :: prompt(id='delete')"></div>
 
 <div id="show" class="page card container container-table" style="display: none;">
     <div class="card-body">
@@ -85,7 +90,8 @@
         <div class="row">
             <div class="d-flex align-items-center justify-content-between">
                 <div><h1 class="word">word</h1></div>
-                <button th:insert="speaker.html :: svg" id="show-card-sound" type="button" class="sound btn btn-secondary" disabled></button>
+                <button th:insert="speaker.html :: svg" id="show-card-sound" type="button"
+                        class="sound btn btn-secondary" disabled></button>
             </div>
         </div>
         <div class="row">
@@ -102,7 +108,8 @@
         <div class="row">
             <div class="d-flex align-items-center justify-content-between">
                 <div><h1 class="word">word</h1></div>
-                <button th:insert="speaker.html :: svg" id="self-test-card-sound" type="button" class="sound btn btn-secondary" disabled></button>
+                <button th:insert="speaker.html :: svg" id="self-test-card-sound" type="button"
+                        class="sound btn btn-secondary" disabled></button>
             </div>
         </div>
         <div class="row">
@@ -143,7 +150,8 @@
         <div class="row">
             <div class="d-flex align-items-center justify-content-between">
                 <div><h1 class="word">word</h1></div>
-                <button th:insert="speaker.html :: svg" id="writing-card-sound" type="button" class="sound btn btn-secondary" disabled></button>
+                <button th:insert="speaker.html :: svg" id="writing-card-sound" type="button"
+                        class="sound btn btn-secondary" disabled></button>
             </div>
         </div>
         <div class="row" id="writing-textarea"></div>
