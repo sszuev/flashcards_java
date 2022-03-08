@@ -122,12 +122,12 @@ public class CardServiceImpl implements CardService {
 
     @Transactional
     @Override
-    public void save(CardResource resource) {
+    public long save(CardResource resource) {
         LOGGER.info("Save {}", resource);
         Dictionary dic = dictionaryRepository.findById(resource.dictionaryId())
                 .orElseThrow(() -> new IllegalArgumentException("Can't find dictionary = " + resource.dictionaryId()));
         Card card = mapper.fromResource(resource, dic);
-        cardRepository.save(card);
+        return cardRepository.save(card).getID();
     }
 
     @Transactional

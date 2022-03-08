@@ -59,8 +59,9 @@ public interface CardService {
      * Saves the given {@link CardResource} into db.
      *
      * @param resource {@link CardResource}
+     * @return {@code long} - if of card
      */
-    void save(CardResource resource);
+    long save(CardResource resource);
 
     /**
      * Deletes the specified card.

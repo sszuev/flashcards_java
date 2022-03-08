@@ -57,58 +57,55 @@ function drawDictionaryPage() {
     }
     resetRowSelection($('#dictionaries tbody'));
 
-    const tableRow = $('#words-table-row');
+    $('#words-title').html(dictionary.name);
+    $('#words tbody').html('');
+    initTableListeners('words', resetWordSelection);
+    $('#words-table-row').css('height', calcInitTableHeight());
+    $.get('/api/dictionaries/' + dictionary.id + '/cards').done(initWordsTable);
+}
+
+function initWordsTable(items) {
     const tbody = $('#words tbody');
     const search = $('#words-search');
 
-    $('#words-title').html(dictionary.name);
-    tbody.html('');
-    initTableListeners('words', resetWordSelection);
-    tableRow.css('height', calcInitTableHeight());
-
-    const addPopup = bootstrap.Modal.getOrCreateInstance(document.getElementById('add-card-dialog'));
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('add-card-dialog')).hide();
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('delete-prompt')).hide();
     const editPopup = bootstrap.Modal.getOrCreateInstance(document.getElementById('edit-card-dialog'));
-    const deletePopup = bootstrap.Modal.getOrCreateInstance(document.getElementById('delete-prompt'));
-    addPopup.hide();
     editPopup.hide();
-    deletePopup.hide();
 
-    $.get('/api/dictionaries/' + dictionary.id + '/cards').done(function (items) {
+    initDialog('add', items);
+    initDialog('edit', items);
+    initPrompt('delete');
 
-        initDialog('add', items);
-        initDialog('edit', items);
-        initPrompt('delete');
+    displayPage('words');
 
-        displayPage('words');
+    search.off('input').on('input', function () {
+        resetWordSelection();
+        const item = findItem(items, search.val());
+        if (item == null) {
+            selectCardItemForAdd(null, search.val());
+            return;
+        }
+        scrollToRow('#w' + item.id, '#words-table-row', markRowSelected);
+        const row = $('#w' + item.id);
+        selectCardItemForEdit(row, item);
+        selectCardItemForAdd(row, search.val());
+    });
 
-        search.off('input').on('input', function () {
-            resetWordSelection();
-            const item = findItem(items, search.val());
-            if (item == null) {
-                selectCardItemForAdd(null, search.val());
-                return;
-            }
-            scrollToRow('#w' + item.id, '#words-table-row', markRowSelected);
-            const row = $('#w' + item.id);
-            selectCardItemForEdit(row, item);
-            selectCardItemForAdd(row, search.val());
-        });
-
-        $.each(items, function (key, item) {
-            let row = $(`<tr id="${'w' + item.id}">
+    $.each(items, function (key, item) {
+        let row = $(`<tr id="${'w' + item.id}">
                             <td>${item.word}</td>
                             <td>${toTranslationString(item)}</td>
                             <td>${percentage(item)}</td>
                           </tr>`);
-            row.off('click').on('click', function () {
-                wordRowOnClick(row, item);
-            });
-            row.off('dblclick').dblclick(function () {
-                wordRowOnClick(row, item);
-                editPopup.show();
-            });
-            tbody.append(row);
+        row.off('click').on('click', function () {
+            wordRowOnClick(row, item);
         });
+        row.off('dblclick').dblclick(function () {
+            wordRowOnClick(row, item);
+            editPopup.show();
+        });
+        tbody.append(row);
     });
 }
 
@@ -240,11 +237,12 @@ function initDialog(dialogId, items) {
             url: '/api/cards/',
             contentType: "application/json",
             data: JSON.stringify(res)
-        }).done(function () {
-            drawDictionaryPage();
-            if (res.id != null) {
-                scrollToRow('#w' + res.id, '#words-table-row', markRowSelected);
+        }).done(function (id) {
+            if (id === '') {
+                id = res.id;
             }
+            drawDictionaryPage();
+            scrollToRow('#w' + id, '#words-table-row', markRowSelected);
         })
     });
     if ('edit' === dialogId) {
@@ -315,8 +313,8 @@ function createResourceItem(dialogId, items) {
 
     const resItem = itemId ? jQuery.extend({}, findById(items, itemId)) : {};
     resItem.dictionaryId = dictionary.id;
-    resItem.word = input.val();
-    resItem.transcription = $('#' + dialogId + '-card-dialog-transcription').val();
+    resItem.word = input.val().trim();
+    resItem.transcription = $('#' + dialogId + '-card-dialog-transcription').val().trim();
     resItem.partOfSpeech = $('#' + dialogId + '-card-dialog-part-of-speech option:selected').text();
     resItem.examples = toArray($('#' + dialogId + '-card-dialog-examples').val(), '\n');
     resItem.translations = toArray($('#' + dialogId + '-card-dialog-translation').val(), '\n')
