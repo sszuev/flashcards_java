@@ -39,8 +39,22 @@ function shuffleArray(array) {
  */
 function removeDuplicates(array) {
     const res = [];
-    $.each(array, function(i, e) {
+    $.each(array, function (i, e) {
         if ($.inArray(e, res) === -1) res.push(e);
     });
     return res;
+}
+
+/**
+ * Splits string using separator.
+ * @param value {string}
+ * @param separator {string}
+ * @returns {*[]|*|string[]}
+ */
+function toArray(value, separator) {
+    value = value.trim();
+    if (value === '') {
+        return [];
+    }
+    return value.split(separator).map(x => x.trim());
 }

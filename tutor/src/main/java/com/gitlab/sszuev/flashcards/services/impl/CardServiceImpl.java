@@ -130,6 +130,13 @@ public class CardServiceImpl implements CardService {
         cardRepository.save(card);
     }
 
+    @Transactional
+    @Override
+    public void deleteCard(long cardId) {
+        LOGGER.info("Delete card with id={}", cardId);
+        cardRepository.deleteById(cardId);
+    }
+
     private void update(Map<Long, Map<Stage, Integer>> data) {
         Map<Long, Card> cards = cardRepository.streamByIdIn(data.keySet())
                 .collect(Collectors.toMap(Card::getID, Function.identity()));

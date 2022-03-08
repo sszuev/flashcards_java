@@ -68,8 +68,10 @@ function drawDictionaryPage() {
 
     const addPopup = bootstrap.Modal.getOrCreateInstance(document.getElementById('add-card-dialog'));
     const editPopup = bootstrap.Modal.getOrCreateInstance(document.getElementById('edit-card-dialog'));
+    const deletePopup = bootstrap.Modal.getOrCreateInstance(document.getElementById('delete-prompt'));
     addPopup.hide();
     editPopup.hide();
+    deletePopup.hide();
 
     $.get('/api/dictionaries/' + dictionary.id + '/cards').done(function (items) {
 
@@ -86,10 +88,8 @@ function drawDictionaryPage() {
                 selectCardItemForAdd(null, search.val());
                 return;
             }
+            scrollToRow('#w' + item.id, '#words-table-row', markRowSelected);
             const row = $('#w' + item.id);
-            const position = row.offset().top - tableRow.offset().top + tableRow.scrollTop();
-            tableRow.scrollTop(position);
-
             selectCardItemForEdit(row, item);
             selectCardItemForAdd(row, search.val());
         });
@@ -114,6 +114,7 @@ function drawDictionaryPage() {
 
 function wordRowOnClick(row, item) {
     resetWordSelection();
+    markRowSelected(row);
     selectCardItemForEdit(row, item);
     selectCardItemForAdd(row, item.word);
     selectCardItemForDelete(item);
@@ -121,7 +122,6 @@ function wordRowOnClick(row, item) {
 
 function selectCardItemForEdit(row, item) {
     cleanDialogLinks('edit');
-    markRowSelected(row);
     const input = $('#edit-card-dialog-word');
     input.val(item.word);
     input.attr('item-id', item.id);
@@ -240,8 +240,11 @@ function initDialog(dialogId, items) {
             url: '/api/cards/',
             contentType: "application/json",
             data: JSON.stringify(res)
-        }).done(function() {
+        }).done(function () {
             drawDictionaryPage();
+            if (res.id != null) {
+                scrollToRow('#w' + res.id, '#words-table-row', markRowSelected);
+            }
         })
     });
     if ('edit' === dialogId) {
@@ -265,11 +268,38 @@ function initEditDialog() {
 }
 
 function initPrompt(promptId) {
-    $('#words-btn-' + promptId).off('click').on('click', function () {
+    $('#' + promptId + '-prompt-confirm').off('click').on('click', function () {
         const body = $('#' + promptId + '-prompt-body');
         const itemId = body.attr('item-id');
-        console.log(itemId);
+        if (!itemId) {
+            return;
+        }
+        $.ajax({
+            type: 'DELETE',
+            url: '/api/cards/' + itemId
+        }).done(function () {
+            drawDictionaryPage();
+        })
     });
+}
+
+function scrollToRow(rowSelector, headerSelector, onScroll) {
+    const start = new Date();
+    const timeout = 2000;
+    const wait = setInterval(function () {
+        const row = $(rowSelector);
+        const header = $(headerSelector)
+        if (row.length && header.length) {
+            const position = row.offset().top - header.offset().top + header.scrollTop();
+            header.scrollTop(position);
+            if (onScroll) {
+                onScroll(row);
+            }
+            clearInterval(wait);
+        } else if (new Date() - start > timeout) {
+            clearInterval(wait);
+        }
+    }, 50);
 }
 
 function onChangeDialogMains(dialogId) {
@@ -288,9 +318,9 @@ function createResourceItem(dialogId, items) {
     resItem.word = input.val();
     resItem.transcription = $('#' + dialogId + '-card-dialog-transcription').val();
     resItem.partOfSpeech = $('#' + dialogId + '-card-dialog-part-of-speech option:selected').text();
-    resItem.examples = $('#' + dialogId + '-card-dialog-examples').val().split("\n");
-    resItem.translations = $('#' + dialogId + '-card-dialog-translation').val().split("\n")
-        .map(x => x.trim().split(',').map(t => t.trim()));
+    resItem.examples = toArray($('#' + dialogId + '-card-dialog-examples').val(), '\n');
+    resItem.translations = toArray($('#' + dialogId + '-card-dialog-translation').val(), '\n')
+        .map(x => toArray(x, ','));
     return resItem;
 }
 

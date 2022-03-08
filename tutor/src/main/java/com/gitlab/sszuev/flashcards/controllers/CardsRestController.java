@@ -10,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -95,6 +96,11 @@ public class CardsRestController {
             throw new IllegalArgumentException("The given resource has no id.");
         }
         cardService.save(resource);
+    }
+
+    @DeleteMapping(value = "/api/cards/{card}")
+    public void delete(@PathVariable(name = "card") long cardId) {
+        cardService.deleteCard(cardId);
     }
 
     /**
