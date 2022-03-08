@@ -1,5 +1,7 @@
 package com.gitlab.sszuev.flashcards.dto;
 
+import com.gitlab.sszuev.flashcards.domain.Status;
+
 import java.util.List;
 import java.util.Map;
 
@@ -8,51 +10,14 @@ import java.util.Map;
  */
 @SuppressWarnings("unused")
 public record CardResource(Long id,
+                           long dictionaryId,
                            String word,
                            String transcription,
                            String partOfSpeech,
                            List<List<String>> translations,
                            List<String> examples,
                            String sound,
-                           int answered,
+                           Status status,
+                           Integer answered,
                            Map<Stage, Long> details) {
-
-    public Long getId() {
-        return id;
-    }
-
-    public Integer getAnswered() {
-        return answered;
-    }
-
-    public String getSound() {
-        return sound;
-    }
-
-    public String getWord() {
-        return word;
-    }
-
-    public List<List<String>> getTranslations() {
-        return translations;
-    }
-
-    public Map<Stage, Long> getDetails() {
-        return details;
-    }
-
-    @Override
-    public String transcription() {
-        return transcription;
-    }
-
-    @Override
-    public List<String> examples() {
-        return examples;
-    }
-
-    @Override
-    public String partOfSpeech() {
-        return partOfSpeech;
-    }
 }

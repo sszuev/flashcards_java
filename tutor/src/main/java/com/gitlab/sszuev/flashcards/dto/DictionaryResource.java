@@ -12,32 +12,4 @@ public record DictionaryResource(long id,
                                  List<String> partsOfSpeech,
                                  long total,
                                  long learned) {
-
-    public String getSourceLang() {
-        return sourceLang;
-    }
-
-    public String getTargetLang() {
-        return targetLang;
-    }
-
-    public List<String> getPartsOfSpeech() {
-        return partsOfSpeech;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public long getTotal() {
-        return total;
-    }
-
-    public long getLearned() {
-        return learned;
-    }
 }

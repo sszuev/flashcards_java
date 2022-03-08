@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -17,12 +16,18 @@ import java.util.stream.Stream;
  * Created by @ssz on 13.06.2021.
  */
 public class CardUtils {
-    private static final BiPredicate<Card, Card> SIMILAR = CardUtils::isSimilar;
 
     public static Collection<Card> selectRandomNonSimilarCards(List<Card> cards, int size) {
-        return CollectionUtils.trySelectUniqueRandomItems(cards, size, new Random(), SIMILAR);
+        return CollectionUtils.trySelectUniqueRandomItems(cards, size, new Random(), CardUtils::isSimilar);
     }
 
+    /**
+     * Answers {@code true} if two cards have similar meaning.
+     *
+     * @param left  {@link Card}
+     * @param right {@link Card}
+     * @return {@code boolean}
+     */
     public static boolean isSimilar(Card left, Card right) {
         Set<String> words = right.translations().flatMap(CardUtils::words).collect(Collectors.toSet());
         return left.translations().flatMap(CardUtils::words).anyMatch(words::contains);

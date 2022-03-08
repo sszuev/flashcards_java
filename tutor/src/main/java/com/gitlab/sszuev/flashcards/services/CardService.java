@@ -20,7 +20,7 @@ public interface CardService {
 
     /**
      * Returns all cards from the specified dictionary,
-     * the result is sorted in natural order (by {@link CardResource#getWord()}).
+     * the result is sorted in natural order (by {@link CardResource#word()}).
      *
      * @param dictionaryId {@code long} - id of dictionary
      * @return a {@code List} of {@link CardResource}s
@@ -57,7 +57,15 @@ public interface CardService {
 
     /**
      * Saves the given {@link CardResource} into db.
+     *
      * @param resource {@link CardResource}
      */
     void save(CardResource resource);
+
+    /**
+     * Deletes the specified card.
+     *
+     * @param cardId {@code long} card id
+     */
+    void deleteCard(long cardId);
 }

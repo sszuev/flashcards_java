@@ -14,12 +14,4 @@ public record CardUpdateResource(long id, Map<Stage, Integer> details) {
         this.id = id;
         this.details = details;
     }
-
-    public long getId() {
-        return id;
-    }
-
-    public Map<Stage, Integer> getDetails() {
-        return details;
-    }
 }

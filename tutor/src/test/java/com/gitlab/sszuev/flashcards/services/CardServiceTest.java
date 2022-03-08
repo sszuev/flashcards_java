@@ -78,9 +78,9 @@ public class CardServiceTest {
         Assertions.assertEquals(NUMBER_OF_WORDS_PER_RUN, res.size());
         Assertions.assertEquals(NUMBER_OF_WORDS_PER_RUN, new HashSet<>(res).size());
         res.forEach(s -> {
-            String w = words.get(s.getId());
-            Assertions.assertEquals(w, s.getWord());
-            Assertions.assertEquals("sound-" + w, s.getSound());
+            String w = words.get(s.id());
+            Assertions.assertEquals(w, s.word());
+            Assertions.assertEquals("sound-" + w, s.sound());
         });
     }
 
@@ -131,14 +131,14 @@ public class CardServiceTest {
 
     private void assertDictionaryResource(DictionaryResource res,
                                           long id, String name, Language src, Language dst, Map<Status, Integer> data) {
-        Assertions.assertEquals(name, res.getName());
-        Assertions.assertEquals(id, res.getId());
-        Assertions.assertEquals(src.getID(), res.getSourceLang());
-        Assertions.assertEquals(dst.getID(), res.getTargetLang());
-        Assertions.assertEquals(data.get(Status.LEARNED).longValue(), res.getLearned());
-        Assertions.assertEquals(data.values().stream().mapToLong(x -> x).sum(), res.getTotal());
+        Assertions.assertEquals(name, res.name());
+        Assertions.assertEquals(id, res.id());
+        Assertions.assertEquals(src.getID(), res.sourceLang());
+        Assertions.assertEquals(dst.getID(), res.targetLang());
+        Assertions.assertEquals(data.get(Status.LEARNED).longValue(), res.learned());
+        Assertions.assertEquals(data.values().stream().mapToLong(x -> x).sum(), res.total());
         List<String> partsOfSpeech = List.of(src.getPartsOfSpeech().toLowerCase(Locale.ROOT).split(","));
-        Assertions.assertEquals(partsOfSpeech, res.getPartsOfSpeech());
+        Assertions.assertEquals(partsOfSpeech, res.partsOfSpeech());
     }
 
     @Test
@@ -147,7 +147,7 @@ public class CardServiceTest {
         long id2 = -2;
         List<CardUpdateResource> requests = List.of(new CardUpdateResource(id1, Map.of(Stage.SELF_TEST, 1)),
                 new CardUpdateResource(id2, Map.of(Stage.OPTIONS, 0)));
-        Collection<Long> ids = requests.stream().map(CardUpdateResource::getId).collect(Collectors.toSet());
+        Collection<Long> ids = requests.stream().map(CardUpdateResource::id).collect(Collectors.toSet());
         Card card1 = TestUtils.createCard(id1, "x", 2, "{\"writing\":3,\"self-test\":4}");
         Card card2 = TestUtils.createCard(id2, "y", 1, "{\"mosaic\":1,\"self-test\":0}");
 
@@ -191,6 +191,6 @@ public class CardServiceTest {
         Assertions.assertNotNull(res);
         Assertions.assertEquals(words.size(), res.size());
         Assertions.assertEquals(words.stream().map(Map.Entry::getValue).sorted().toList(),
-                res.stream().map(CardResource::getWord).collect(Collectors.toList()));
+                res.stream().map(CardResource::word).collect(Collectors.toList()));
     }
 }
