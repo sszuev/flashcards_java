@@ -82,6 +82,12 @@ public class CardsRestController {
         throw new IllegalArgumentException();
     }
 
+    /**
+     * Creates new card.
+     *
+     * @param resource {@link CardResource}
+     * @return {@code long} - an id of the newly created card
+     */
     @PostMapping(value = "/api/cards", consumes = MediaType.APPLICATION_JSON_VALUE)
     public long create(@RequestBody CardResource resource) {
         if (resource.id() != null) {
@@ -90,6 +96,11 @@ public class CardsRestController {
         return cardService.save(resource);
     }
 
+    /**
+     * Edits the existing card.
+     *
+     * @param resource {@link CardResource}
+     */
     @PutMapping(value = "/api/cards", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void update(@RequestBody CardResource resource) {
         if (resource.id() == null) {
@@ -98,9 +109,24 @@ public class CardsRestController {
         cardService.save(resource);
     }
 
+    /**
+     * Deletes the given card.
+     *
+     * @param cardId {@code long} - an id of the card to be deleted
+     */
     @DeleteMapping(value = "/api/cards/{card}")
     public void delete(@PathVariable(name = "card") long cardId) {
         cardService.deleteCard(cardId);
+    }
+
+    /**
+     * Resets the status of the given card.
+     *
+     * @param cardId {@code long} - an id of the card to be reseted
+     */
+    @PatchMapping(value = "/api/cards/{card}")
+    public void resetStatus(@PathVariable(name = "card") long cardId) {
+        cardService.resetCardStatus(cardId);
     }
 
     /**

@@ -1,16 +1,17 @@
 app:
   loader:
+    # to load dictionary from the classpath
     enabled: false
   tutor:
     run:
-      # number of words per run in a show stage
+      # the number of words per run in the show stage
       words-for-show: 10
-      # number of words per stage
+      # the number of words per stage
       words-for-test: 5
-      # number of right answers per word (after which word changes its status to 'learned')
+      # the number of right answers per word (upon reaching this number, the card is considered 'learned')
       answers: 10
       stage-options:
-        # number of variants (right panel)
+        # the number of variants on the stage 'options' (the right panel)
         variants: 6
 
 spring:
