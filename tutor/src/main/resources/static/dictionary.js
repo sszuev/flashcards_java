@@ -70,12 +70,14 @@ function initWordsTable(items) {
 
     bootstrap.Modal.getOrCreateInstance(document.getElementById('add-card-dialog')).hide();
     bootstrap.Modal.getOrCreateInstance(document.getElementById('delete-prompt')).hide();
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('reset-prompt')).hide();
     const editPopup = bootstrap.Modal.getOrCreateInstance(document.getElementById('edit-card-dialog'));
     editPopup.hide();
 
     initDialog('add', items);
     initDialog('edit', items);
     initPrompt('delete');
+    initPrompt('reset');
 
     displayPage('words');
 
@@ -114,7 +116,8 @@ function wordRowOnClick(row, item) {
     markRowSelected(row);
     selectCardItemForEdit(row, item);
     selectCardItemForAdd(row, item.word);
-    selectCardItemForDelete(item);
+    selectCardItemForDeleteOrReset(item, 'delete');
+    selectCardItemForDeleteOrReset(item, 'reset');
 }
 
 function selectCardItemForEdit(row, item) {
@@ -161,9 +164,9 @@ function selectCardItemForAdd(row, word) {
     $('#add-card-dialog-examples').val('');
 }
 
-function selectCardItemForDelete(item) {
-    disableWordButton('delete', false);
-    const body = $('#delete-prompt-body');
+function selectCardItemForDeleteOrReset(item, action) {
+    disableWordButton(action, false);
+    const body = $('#' + action + '-prompt-body');
     body.attr('item-id', item.id);
     body.html(item.word);
 }
@@ -195,6 +198,7 @@ function resetWordSelection() {
     disableWordButton('add', true);
     disableWordButton('edit', true);
     disableWordButton('delete', true);
+    disableWordButton('reset', true);
     cleanDialogLinks('add');
     cleanDialogLinks('edit');
     resetRowSelection($('#words tbody'));
@@ -268,15 +272,18 @@ function initEditDialog() {
 function initPrompt(promptId) {
     $('#' + promptId + '-prompt-confirm').off('click').on('click', function () {
         const body = $('#' + promptId + '-prompt-body');
-        const itemId = body.attr('item-id');
-        if (!itemId) {
+        const id = body.attr('item-id');
+        if (!id) {
             return;
         }
         $.ajax({
-            type: 'DELETE',
-            url: '/api/cards/' + itemId
+            type: promptId === 'delete' ? 'DELETE' : 'PATCH',
+            url: '/api/cards/' + id
         }).done(function () {
             drawDictionaryPage();
+            if (promptId !== 'delete') {
+                scrollToRow('#w' + id, '#words-table-row', markRowSelected);
+            }
         })
     });
 }

@@ -74,6 +74,8 @@
                         data-bs-target="#add-card-dialog" disabled>Add</button>
                 <button id="words-btn-edit" type="button" class="btn btn-secondary" data-bs-toggle="modal"
                         data-bs-target="#edit-card-dialog" disabled>Edit</button>
+                <button id="words-btn-reset" type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                        data-bs-target="#reset-prompt" disabled>Reset status</button>
                 <button id="words-btn-delete" type="button" class="btn btn-secondary" data-bs-toggle="modal"
                         data-bs-target="#delete-prompt" disabled>Delete</button>
             </div>
@@ -83,6 +85,7 @@
 <div th:replace="card-dialog.html :: cardDialog(id='edit')"></div>
 <div th:replace="card-dialog.html :: cardDialog(id='add')"></div>
 <div th:replace="prompt.html :: prompt(id='delete')"></div>
+<div th:replace="prompt.html :: prompt(id='reset')"></div>
 
 <div id="show" class="page card container container-table" style="display: none;">
     <div class="card-body">
