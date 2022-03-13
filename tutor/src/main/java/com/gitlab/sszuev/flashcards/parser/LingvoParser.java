@@ -5,7 +5,6 @@ import com.gitlab.sszuev.flashcards.domain.Dictionary;
 import com.gitlab.sszuev.flashcards.domain.EntityFactory;
 import com.gitlab.sszuev.flashcards.domain.Example;
 import com.gitlab.sszuev.flashcards.domain.Language;
-import com.gitlab.sszuev.flashcards.domain.Status;
 import com.gitlab.sszuev.flashcards.domain.Translation;
 import com.gitlab.sszuev.flashcards.domain.User;
 import org.springframework.core.io.Resource;
@@ -127,7 +126,7 @@ public class LingvoParser {
         Status status = WrongDataException.requireNonNull(STATUS_MAP.get(WrongDataException
                 .requireNonNull(statistics.getAttribute("status"), "no status")), "unknown status");
         Integer answered;
-        if (status != Status.LEARNED) {
+        if (status != Status.UNKNOWN) {
             answered = Optional.of(statistics.getAttribute("answered"))
                     .filter(x -> x.matches("\\d+")).map(Integer::parseInt).orElse(0);
         } else { // in case of status=4 there is some big number
@@ -138,8 +137,7 @@ public class LingvoParser {
         List<Example> examples = DOMUtils.findElement(node, "examples")
                 .map(x -> DOMUtils.elements(x, "example")).orElseGet(Stream::empty)
                 .map(LingvoParser::parseExample).toList();
-        return EntityFactory.newCard(word,
-                transcription, pos, translations, examples, status, answered, "parsed from lingvo xml");
+        return EntityFactory.newCard(word, transcription, pos, translations, examples, answered, "parsed from lingvo xml");
     }
 
     private static Translation parseTranslation(Element node) {

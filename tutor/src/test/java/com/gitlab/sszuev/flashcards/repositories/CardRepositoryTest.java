@@ -1,6 +1,5 @@
 package com.gitlab.sszuev.flashcards.repositories;
 
-import com.gitlab.sszuev.flashcards.domain.Status;
 import org.hibernate.stat.Statistics;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -25,19 +24,20 @@ public class CardRepositoryTest extends RepositoryTestBase {
     private CardRepository repository;
 
     @Test
-    public void testFindByDictionaryAndStatusIn() {
+    public void testFindByDictionaryAndMaxAnswers() {
         Statistics statistics = prepareStatistics();
         Set<Long> ids = new HashSet<>();
-        repository.streamByDictionaryIdAndStatusIn(TEST_DICTIONARY_ID, List.of(Status.UNKNOWN, Status.IN_PROCESS))
+        int maxAnswers = 5;
+        repository.streamByDictionaryIdAndAnsweredLessThan(TEST_DICTIONARY_ID, maxAnswers)
                 .forEach(card -> {
                     long id = card.getID();
-                    Status st = card.getStatus();
+                    Integer answered = card.getAnswered();
                     long dicId = card.getDictionary().getID();
                     LOGGER.info("id={}, text='{}', status='{}', translations=[{}], examples=[{}]",
-                            id, card.getText(), st,
+                            id, card.getText(), answered,
                             card.translations().count(), card.examples().count());
                     Assertions.assertTrue(ids.add(id), "Duplicate id=" + id);
-                    Assertions.assertNotEquals(Status.LEARNED, st);
+                    Assertions.assertTrue(answered == null || answered < maxAnswers);
                     Assertions.assertEquals(TEST_DICTIONARY_ID, dicId);
                 });
         Assertions.assertEquals(2, statistics.getPrepareStatementCount());

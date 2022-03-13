@@ -46,7 +46,6 @@ public class EntityFactory {
                                String partOfSpeech,
                                Collection<Translation> translations,
                                Collection<Example> examples,
-                               Status status,
                                Integer answered,
                                String details) {
         Card res = new Card();
@@ -54,7 +53,6 @@ public class EntityFactory {
         res.setTranscription(transcription);
         res.setPartOfSpeech(partOfSpeech);
         res.setExamples(examples);
-        res.setStatus(status);
         res.setAnswered(answered);
         res.setDetails(details);
         res.setTranslations(translations);

@@ -4,7 +4,6 @@ import com.gitlab.sszuev.flashcards.RunConfig;
 import com.gitlab.sszuev.flashcards.domain.Card;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
 import com.gitlab.sszuev.flashcards.domain.Language;
-import com.gitlab.sszuev.flashcards.domain.Status;
 import com.gitlab.sszuev.flashcards.domain.User;
 import com.gitlab.sszuev.flashcards.dto.CardResource;
 import com.gitlab.sszuev.flashcards.dto.CardUpdateResource;
@@ -49,10 +48,10 @@ public class CardServiceImpl implements CardService {
                            CardRepository cardRepository,
                            EntityMapper mapper,
                            RunConfig config) {
-        this.config = Objects.requireNonNull(config);
         this.dictionaryRepository = Objects.requireNonNull(dictionaryRepository);
         this.cardRepository = Objects.requireNonNull(cardRepository);
         this.mapper = Objects.requireNonNull(mapper);
+        this.config = Objects.requireNonNull(config);
     }
 
     @Transactional(readOnly = true)
@@ -99,8 +98,8 @@ public class CardServiceImpl implements CardService {
     public Collection<Card> getRandomCards(long dicId, int length, boolean unknown) {
         List<Card> cards;
         if (unknown) {
-            cards = cardRepository.streamByDictionaryIdAndStatusIn(dicId,
-                    List.of(Status.UNKNOWN, Status.IN_PROCESS)).collect(Collectors.toList());
+            cards = cardRepository.streamByDictionaryIdAndAnsweredLessThan(dicId, config.getNumberOfRightAnswers())
+                .collect(Collectors.toList());
         } else {
             cards = cardRepository.streamByDictionaryId(dicId).collect(Collectors.toList());
         }
@@ -150,23 +149,17 @@ public class CardServiceImpl implements CardService {
             if (card == null) {
                 throw new IllegalStateException("Can't find card with id=" + id);
             }
-            if (card.getStatus() == Status.LEARNED) {
-                throw new IllegalStateException("Card id=" + id + " has already been learned.");
-            }
 
             Map<Stage, Integer> map = data.get(id);
             Map<Stage, Long> details = mapper.readDetailsAsMap(card.getDetails());
             merge(details, map);
             card.setDetails(mapper.writeDetailsAsString(details));
-            Status status;
             int answered = Optional.ofNullable(card.getAnswered()).orElse(0);
-            int an = (int) map.values().stream().filter(x -> x > 0).count();
-            if (an == map.size() && (answered = answered + an) >= config.getNumberOfRightAnswers()) {
-                status = Status.LEARNED;
-            } else {
-                status = Status.IN_PROCESS;
+            int answeredUpdate = (int) map.values().stream().filter(x -> x > 0).count();
+            if (answeredUpdate == map.size()) {
+                answered += answeredUpdate;
             }
-            card.setStatus(status);
+            String status = answered >= config.getNumberOfRightAnswers() ? "LEARNED" : "IN-PROGRESS";
             card.setAnswered(answered);
             LOGGER.info("Update card={} (status={}, answered={}), the data={}, text='{}'",
                     id, status, answered, map, card.getText());

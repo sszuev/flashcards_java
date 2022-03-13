@@ -1,7 +1,6 @@
 package com.gitlab.sszuev.flashcards.repositories;
 
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
-import com.gitlab.sszuev.flashcards.domain.Status;
 import com.gitlab.sszuev.flashcards.domain.User;
 import org.hibernate.stat.Statistics;
 import org.junit.jupiter.api.Assertions;
@@ -43,7 +42,7 @@ public class DictionaryRepositoryTest extends RepositoryTestBase {
             LOGGER.info("{} => {}({})", c.getText(),
                     c.translations().map(x -> x.getText()).collect(Collectors.joining(", ")),
                     c.examples().map(x -> x.getText()).collect(Collectors.joining(", ")));
-            Assertions.assertEquals(Status.UNKNOWN, c.getStatus());
+            Assertions.assertNull(c.getAnswered());
         });
         Assertions.assertEquals(6, statistics.getPrepareStatementCount());
     }

@@ -11,7 +11,6 @@ CREATE TABLE public.cards (
     answered integer,
     details text,
     part_of_speech character varying(255),
-    status character varying(255),
     transcription text,
     dictionary_id bigint NOT NULL
 );
