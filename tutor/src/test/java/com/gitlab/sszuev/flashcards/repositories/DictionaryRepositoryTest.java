@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Objects;
@@ -21,15 +20,10 @@ import java.util.stream.Collectors;
 public class DictionaryRepositoryTest extends RepositoryTestBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(DictionaryRepositoryTest.class);
 
-    private static final String TEST_DICTIONARY_NAME = "Weather";
-
-    @Autowired
-    private DictionaryRepository repository;
-
     @Test
     public void testListCards() {
         Statistics statistics = prepareStatistics();
-        Dictionary dic = repository.streamAll()
+        Dictionary dic = dictionaryRepository.streamAll()
                 .filter(x -> Objects.equals(User.SYSTEM_USER.getLogin(), x.getUser().getLogin()))
                 .filter(x -> Objects.equals(TEST_DICTIONARY_NAME, x.getName()))
                 .findFirst()
@@ -50,7 +44,7 @@ public class DictionaryRepositoryTest extends RepositoryTestBase {
     @Test
     public void testListByUser() {
         Statistics statistics = prepareStatistics();
-        List<Dictionary> list = repository.streamAllByUserId(1).toList();
+        List<Dictionary> list = dictionaryRepository.streamAllByUserId(1).toList();
         Assertions.assertEquals(2, list.size());
         Set<String> names = list.stream().map(Dictionary::getName).collect(Collectors.toSet());
         Assertions.assertEquals(2, names.size());
