@@ -3,8 +3,6 @@ package com.gitlab.sszuev.flashcards.domain;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -53,10 +51,6 @@ public class Card extends WithText implements HasID {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "dictionary_id", nullable = false)
     private Dictionary dictionary;
-
-    @Column
-    @Enumerated(EnumType.STRING)
-    private Status status;
 
     @Column
     private String details;
@@ -116,14 +110,6 @@ public class Card extends WithText implements HasID {
 
     public Stream<Example> examples() {
         return examples.stream();
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
     }
 
     public String getDetails() {

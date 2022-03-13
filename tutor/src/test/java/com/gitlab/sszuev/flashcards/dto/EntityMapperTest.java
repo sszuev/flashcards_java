@@ -1,6 +1,7 @@
 package com.gitlab.sszuev.flashcards.dto;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gitlab.sszuev.flashcards.RunConfig;
 import com.gitlab.sszuev.flashcards.services.SoundService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -18,9 +19,10 @@ import java.util.Map;
 @ContextConfiguration(classes = {EntityMapper.class, ObjectMapper.class})
 public class EntityMapperTest {
 
-    @SuppressWarnings("unused")
     @MockBean
     private SoundService service;
+    @MockBean
+    private RunConfig config;
     @Autowired
     private EntityMapper mapper;
 

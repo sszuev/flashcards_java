@@ -1,7 +1,5 @@
 package com.gitlab.sszuev.flashcards.dto;
 
-import com.gitlab.sszuev.flashcards.domain.Status;
-
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +15,6 @@ public record CardResource(Long id,
                            List<List<String>> translations,
                            List<String> examples,
                            String sound,
-                           Status status,
                            Integer answered,
                            Map<Stage, Long> details) {
 }

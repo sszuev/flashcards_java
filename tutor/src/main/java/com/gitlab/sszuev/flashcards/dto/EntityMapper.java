@@ -3,11 +3,11 @@ package com.gitlab.sszuev.flashcards.dto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gitlab.sszuev.flashcards.RunConfig;
 import com.gitlab.sszuev.flashcards.domain.Card;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
 import com.gitlab.sszuev.flashcards.domain.Example;
 import com.gitlab.sszuev.flashcards.domain.Language;
-import com.gitlab.sszuev.flashcards.domain.Status;
 import com.gitlab.sszuev.flashcards.domain.Translation;
 import com.gitlab.sszuev.flashcards.services.SoundService;
 import com.gitlab.sszuev.flashcards.utils.CardUtils;
@@ -38,10 +38,12 @@ public class EntityMapper {
 
     private final ObjectMapper mapper;
     private final SoundService speaker;
+    private final RunConfig config;
 
-    public EntityMapper(SoundService service, ObjectMapper mapper) {
+    public EntityMapper(SoundService service, ObjectMapper mapper, RunConfig config) {
         this.speaker = Objects.requireNonNull(service);
         this.mapper = Objects.requireNonNull(mapper);
+        this.config = Objects.requireNonNull(config);
     }
 
     public Card fromResource(CardResource card, Dictionary dictionary) {
@@ -50,7 +52,6 @@ public class EntityMapper {
         res.setText(card.word());
         res.setDictionary(dictionary);
         res.setTranscription(card.transcription());
-        res.setStatus(card.status());
         res.setAnswered(card.answered());
         res.setExamples(card.examples().stream().map(x -> newExample(x, res)).collect(Collectors.toList()));
         res.setTranslations(card.translations().stream().map(x -> newTranslation(x, res)).collect(Collectors.toList()));
@@ -69,16 +70,21 @@ public class EntityMapper {
         String partOfSpeech = parsePartsOfSpeech(card.getPartOfSpeech(), lang);
         Map<Stage, Long> details = readDetailsAsMap(card.getDetails());
         return new CardResource(card.getID(), dictionaryId, word, transcription,
-                partOfSpeech, translations, examples, speaker.getResourceName(word, lang.getID()), card.getStatus(), answered, details);
+                partOfSpeech, translations, examples, speaker.getResourceName(word, lang.getID()), answered, details);
     }
 
     public DictionaryResource toResource(Dictionary dictionary) {
         long total = dictionary.cards().count();
-        long learned = dictionary.cards().filter(x -> Status.LEARNED == x.getStatus()).count();
+        long learned = dictionary.cards().filter(this::isLearned).count();
         String src = dictionary.getSourceLanguage().getID();
         String dst = dictionary.getTargetLanguage().getID();
         List<String> partsOfSpeech = parsePartsOfSpeech(dictionary.getSourceLanguage());
         return new DictionaryResource(dictionary.getID(), dictionary.getName(), src, dst, partsOfSpeech, total, learned);
+    }
+
+    private boolean isLearned(Card c) {
+        Integer answered = c.getAnswered();
+        return answered != null && answered >= config.getNumberOfRightAnswers();
     }
 
     private static List<String> parsePartsOfSpeech(Language language) {

@@ -4,12 +4,12 @@ import com.gitlab.sszuev.flashcards.TestUtils;
 import com.gitlab.sszuev.flashcards.domain.Card;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
 import com.gitlab.sszuev.flashcards.domain.Language;
-import com.gitlab.sszuev.flashcards.domain.Status;
 import com.gitlab.sszuev.flashcards.domain.User;
 import com.gitlab.sszuev.flashcards.dto.CardResource;
 import com.gitlab.sszuev.flashcards.dto.CardUpdateResource;
 import com.gitlab.sszuev.flashcards.dto.DictionaryResource;
 import com.gitlab.sszuev.flashcards.dto.Stage;
+import com.gitlab.sszuev.flashcards.parser.Status;
 import com.gitlab.sszuev.flashcards.repositories.CardRepository;
 import com.gitlab.sszuev.flashcards.repositories.DictionaryRepository;
 import org.junit.jupiter.api.Assertions;
@@ -62,8 +62,8 @@ public class CardServiceTest {
                 "F", -7L, "G", -8L, "H", -9L, "I", -10L, "K");
 
         Dictionary dic = TestUtils.mockDictionary(dicId, dicName, TestUtils.mockLanguage(lang, null));
-        Mockito.when(cardRepository.streamByDictionaryIdAndStatusIn(Mockito.eq(dicId),
-                Mockito.eq(List.of(Status.UNKNOWN, Status.IN_PROCESS))))
+        Mockito.when(cardRepository.streamByDictionaryIdAndAnsweredLessThan(Mockito.eq(dicId),
+                        Mockito.eq(NUMBER_OF_ANSWERS_TO_LEARN)))
                 .thenReturn(words.entrySet().stream().map(e -> {
                     String word = e.getValue();
                     Mockito.when(soundService.getResourceName(Mockito.eq(word), Mockito.eq(lang)))
@@ -116,8 +116,8 @@ public class CardServiceTest {
         Map<Status, Integer> cards1 = Map.of(Status.IN_PROCESS, 2, Status.LEARNED, 3);
         Map<Status, Integer> cards2 = Map.of(Status.UNKNOWN, 1, Status.LEARNED, 42);
 
-        Dictionary dic1 = TestUtils.mockDictionary(id1, name1, lang1, lang2, cards1);
-        Dictionary dic2 = TestUtils.mockDictionary(id2, name2, lang2, lang3, cards2);
+        Dictionary dic1 = TestUtils.mockDictionary(id1, name1, lang1, lang2, NUMBER_OF_ANSWERS_TO_LEARN, cards1);
+        Dictionary dic2 = TestUtils.mockDictionary(id2, name2, lang2, lang3, NUMBER_OF_ANSWERS_TO_LEARN, cards2);
 
         Mockito.when(dictionaryRepository.streamAllByUserId(Mockito.eq(User.SYSTEM_USER.getID())))
                 .thenReturn(Stream.of(dic1, dic2));
@@ -130,7 +130,9 @@ public class CardServiceTest {
     }
 
     private void assertDictionaryResource(DictionaryResource res,
-                                          long id, String name, Language src, Language dst, Map<Status, Integer> data) {
+                                          long id, String name,
+                                          Language src, Language dst,
+                                          Map<Status, Integer> data) {
         Assertions.assertEquals(name, res.name());
         Assertions.assertEquals(id, res.id());
         Assertions.assertEquals(src.getID(), res.sourceLang());
@@ -166,8 +168,8 @@ public class CardServiceTest {
 
         Assertions.assertEquals(id1, card1.getID());
         Assertions.assertEquals(id2, card2.getID());
-        Assertions.assertEquals(Status.LEARNED, card1.getStatus());
-        Assertions.assertEquals(Status.IN_PROCESS, card2.getStatus());
+        Assertions.assertEquals(3, card1.getAnswered());
+        Assertions.assertEquals(1, card2.getAnswered());
 
         Assertions.assertEquals(3, card1.getAnswered());
         Assertions.assertEquals(1, card2.getAnswered());

@@ -4,17 +4,19 @@ import com.gitlab.sszuev.flashcards.domain.Card;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
 import com.gitlab.sszuev.flashcards.domain.EntityFactory;
 import com.gitlab.sszuev.flashcards.domain.Language;
-import com.gitlab.sszuev.flashcards.domain.Status;
+import com.gitlab.sszuev.flashcards.parser.Status;
 import org.mockito.Mockito;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.stream.IntStream;
 
 /**
  * Created by @ssz on 02.05.2021.
  */
 public class TestUtils {
+    private static final Random RANDOM = new Random();
 
     public static Language mockLanguage(String lang, List<String> partsOfSpeech) {
         Language res = Mockito.mock(Language.class);
@@ -44,10 +46,14 @@ public class TestUtils {
         return res;
     }
 
-    public static Dictionary mockDictionary(Long id, String name, Language src, Language dst, Map<Status, Integer> cards) {
+    public static Dictionary mockDictionary(Long id, String name,
+                                            Language src, Language dst,
+                                            int numberOfAnswersToLearn,
+                                            Map<Status, Integer> cards) {
         Dictionary res = mockDictionary(id, name, src, dst);
         List<Card> mockCards = cards.entrySet().stream()
-                .flatMap(e -> IntStream.range(0, e.getValue()).mapToObj(x -> mockCard(e.getKey()))).toList();
+                .flatMap(e -> IntStream.range(0, e.getValue())
+                        .mapToObj(x -> mockCard(numberOfAnswersToLearn, e.getKey()))).toList();
         Mockito.when(res.cards()).thenAnswer(i -> mockCards.stream());
         return res;
     }
@@ -63,14 +69,20 @@ public class TestUtils {
         return res;
     }
 
-    public static Card mockCard(Status status) {
+    public static Card mockCard(int numberOfAnswersToLearn, Status status) {
         Card res = mockCard();
-        Mockito.when(res.getStatus()).thenReturn(status);
+        Integer answered = null;
+        if (status == Status.IN_PROCESS) {
+            answered = RANDOM.nextInt(numberOfAnswersToLearn);
+        } else if (status == Status.LEARNED) {
+            answered = numberOfAnswersToLearn;
+        }
+        Mockito.when(res.getAnswered()).thenReturn(answered);
         return res;
     }
 
     public static Card createCard(long id, String word, int answered, String details) {
-        Card res = EntityFactory.newCard(word, null, null, List.of(), List.of(), null, answered, details);
+        Card res = EntityFactory.newCard(word, null, null, List.of(), List.of(), answered, details);
         res.setID(id);
         return res;
     }

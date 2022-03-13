@@ -1,4 +1,4 @@
-package com.gitlab.sszuev.flashcards.domain;
+package com.gitlab.sszuev.flashcards.parser;
 
 /**
  * Created by @ssz on 09.05.2021.

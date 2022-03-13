@@ -48,72 +48,72 @@ COPY public.dictionaries (id, target_lang, name, source_lang, user_id) FROM stdi
 -- Data for Name: cards; Type: TABLE DATA; Schema: public; Owner: dev
 --
 
-COPY public.cards (id, text, answered, details, part_of_speech, status, transcription, dictionary_id) FROM stdin;
-1	atmospheric	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	ˌætməs'ferik	1
-2	weather	0	parsed from lingvo xml	NOUN	UNKNOWN	'weðə	1
-3	snow	0	parsed from lingvo xml	NOUN	UNKNOWN	snəu	1
-4	rain	0	parsed from lingvo xml	NOUN	UNKNOWN	rein	1
-5	wind	0	parsed from lingvo xml	NOUN	UNKNOWN	wind	1
-6	hail	0	parsed from lingvo xml	NOUN	UNKNOWN	heil	1
-7	thunderstorm	0	parsed from lingvo xml	NOUN	UNKNOWN	'θʌndəstɔːm	1
-8	precipitation	0	parsed from lingvo xml	NOUN	UNKNOWN	priˌsipi'teiʃ(ə)n	1
-9	thunder	0	parsed from lingvo xml	NOUN	UNKNOWN	'θʌndə	1
-10	lightning	0	parsed from lingvo xml	NOUN	UNKNOWN	'laitniŋ	1
-11	anticyclone	0	parsed from lingvo xml	NOUN	UNKNOWN	'ænti'saikləun	1
-12	atmosphere	0	parsed from lingvo xml	NOUN	UNKNOWN	'ætməsfiə	1
-13	barometer	0	parsed from lingvo xml	NOUN	UNKNOWN	bə'rɔmitə	1
-14	windy	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	'windi	1
-15	humidity	0	parsed from lingvo xml	NOUN	UNKNOWN	hjuː'midəti	1
-16	humid	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	'hjuːmid	1
-17	moist	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	mɔist	1
-18	damp	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	dæmp	1
-19	sunrise	0	parsed from lingvo xml	NOUN	UNKNOWN	'sʌnraiz	1
-20	degree	0	parsed from lingvo xml	NOUN	UNKNOWN	di'griː	1
-21	pressure	0	parsed from lingvo xml	NOUN	UNKNOWN	'preʃə	1
-22	stuffy	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	'stʌfi	1
-23	heat	0	parsed from lingvo xml	NOUN	UNKNOWN	hiːt	1
-24	hot	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	hɔt	1
-25	sunset	0	parsed from lingvo xml	NOUN	UNKNOWN	'sʌnset	1
-26	frost	0	parsed from lingvo xml	NOUN	UNKNOWN	frɔst	1
-27	drizzle	0	parsed from lingvo xml	NOUN	UNKNOWN	'drizl	1
-28	haze	0	parsed from lingvo xml	NOUN	UNKNOWN	heiz	1
-29	ice	0	parsed from lingvo xml	NOUN	UNKNOWN	ais	1
-30	shower	0	parsed from lingvo xml	NOUN	UNKNOWN	'ʃəuə	1
-31	puddle	0	parsed from lingvo xml	NOUN	UNKNOWN	'pʌdl	1
-32	meteorology	0	parsed from lingvo xml	NOUN	UNKNOWN	ˌmiːti(ə)'rɔləʤi	1
-33	cloudy	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	'klaudi	1
-34	thaw	0	parsed from lingvo xml	NOUN	UNKNOWN	θɔː	1
-35	cool	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	kuːl	1
-36	dusty	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	'dʌsti	1
-37	rainbow	0	parsed from lingvo xml	NOUN	UNKNOWN	'reinbəu	1
-38	fresh	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	freʃ	1
-39	slippery	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	'slipəri	1
-40	slush	0	parsed from lingvo xml	NOUN	UNKNOWN	slʌʃ	1
-41	smog	0	parsed from lingvo xml	NOUN	UNKNOWN	smɔg	1
-42	snowfall	0	parsed from lingvo xml	NOUN	UNKNOWN		1
-43	sunny	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	'sʌni	1
-44	dry	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	drai	1
-45	wet	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	wet	1
-46	temperature	0	parsed from lingvo xml	NOUN	UNKNOWN	'tempriʧə	1
-47	warm	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	wɔːm	1
-48	thermometer	0	parsed from lingvo xml	NOUN	UNKNOWN	θə'mɔmitə	1
-49	fog	0	parsed from lingvo xml	NOUN	UNKNOWN	fɔg	1
-50	mist	0	parsed from lingvo xml	NOUN	UNKNOWN	mist	1
-51	foggy	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	'fɔgi	1
-52	water	0	parsed from lingvo xml	NOUN	UNKNOWN	'wɔːtə	1
-53	cold	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	kəuld	1
-54	cyclone	0	parsed from lingvo xml	NOUN	UNKNOWN	'saikləun	1
-55	storm	0	parsed from lingvo xml	NOUN	UNKNOWN	stɔːm	1
-56	clear	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	kliə	1
-57	sleet	0	parsed from lingvo xml	NOUN	UNKNOWN	sliːt	1
-58	cloud	0	parsed from lingvo xml	NOUN	UNKNOWN	klaud	1
-59	chilly	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	'ʧili	1
-60	downpour	0	parsed from lingvo xml	NOUN	UNKNOWN	'daunpɔː	1
-61	gale	0	parsed from lingvo xml	NOUN	UNKNOWN	geil	1
-62	scorching	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	'skɔːʧiŋ	1
-63	dust	0	parsed from lingvo xml	NOUN	UNKNOWN	dʌst	1
-64	blustery	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	'blʌstəri	1
-65	overcast	0	parsed from lingvo xml	ADJECTIVE	UNKNOWN	'əuvəkɑːst	1
+COPY public.cards (id, text, answered, details, part_of_speech, transcription, dictionary_id) FROM stdin;
+1	atmospheric	0	parsed from lingvo xml	ADJECTIVE	ˌætməs'ferik	1
+2	weather	0	parsed from lingvo xml	NOUN	'weðə	1
+3	snow	0	parsed from lingvo xml	NOUN	snəu	1
+4	rain	0	parsed from lingvo xml	NOUN	rein	1
+5	wind	0	parsed from lingvo xml	NOUN	wind	1
+6	hail	0	parsed from lingvo xml	NOUN	heil	1
+7	thunderstorm	0	parsed from lingvo xml	NOUN	'θʌndəstɔːm	1
+8	precipitation	0	parsed from lingvo xml	NOUN	priˌsipi'teiʃ(ə)n	1
+9	thunder	0	parsed from lingvo xml	NOUN	'θʌndə	1
+10	lightning	0	parsed from lingvo xml	NOUN	'laitniŋ	1
+11	anticyclone	0	parsed from lingvo xml	NOUN	'ænti'saikləun	1
+12	atmosphere	0	parsed from lingvo xml	NOUN	'ætməsfiə	1
+13	barometer	0	parsed from lingvo xml	NOUN	bə'rɔmitə	1
+14	windy	0	parsed from lingvo xml	ADJECTIVE	'windi	1
+15	humidity	0	parsed from lingvo xml	NOUN	hjuː'midəti	1
+16	humid	0	parsed from lingvo xml	ADJECTIVE	'hjuːmid	1
+17	moist	0	parsed from lingvo xml	ADJECTIVE	mɔist	1
+18	damp	0	parsed from lingvo xml	ADJECTIVE	dæmp	1
+19	sunrise	0	parsed from lingvo xml	NOUN	'sʌnraiz	1
+20	degree	0	parsed from lingvo xml	NOUN	di'griː	1
+21	pressure	0	parsed from lingvo xml	NOUN	'preʃə	1
+22	stuffy	0	parsed from lingvo xml	ADJECTIVE	'stʌfi	1
+23	heat	0	parsed from lingvo xml	NOUN	hiːt	1
+24	hot	0	parsed from lingvo xml	ADJECTIVE	hɔt	1
+25	sunset	0	parsed from lingvo xml	NOUN	'sʌnset	1
+26	frost	0	parsed from lingvo xml	NOUN	frɔst	1
+27	drizzle	0	parsed from lingvo xml	NOUN	'drizl	1
+28	haze	0	parsed from lingvo xml	NOUN	heiz	1
+29	ice	0	parsed from lingvo xml	NOUN	ais	1
+30	shower	0	parsed from lingvo xml	NOUN	'ʃəuə	1
+31	puddle	0	parsed from lingvo xml	NOUN	'pʌdl	1
+32	meteorology	0	parsed from lingvo xml	NOUN	ˌmiːti(ə)'rɔləʤi	1
+33	cloudy	0	parsed from lingvo xml	ADJECTIVE	'klaudi	1
+34	thaw	0	parsed from lingvo xml	NOUN	θɔː	1
+35	cool	0	parsed from lingvo xml	ADJECTIVE	kuːl	1
+36	dusty	0	parsed from lingvo xml	ADJECTIVE	'dʌsti	1
+37	rainbow	0	parsed from lingvo xml	NOUN	'reinbəu	1
+38	fresh	0	parsed from lingvo xml	ADJECTIVE	freʃ	1
+39	slippery	0	parsed from lingvo xml	ADJECTIVE	'slipəri	1
+40	slush	0	parsed from lingvo xml	NOUN	slʌʃ	1
+41	smog	0	parsed from lingvo xml	NOUN	smɔg	1
+42	snowfall	0	parsed from lingvo xml	NOUN		1
+43	sunny	0	parsed from lingvo xml	ADJECTIVE	'sʌni	1
+44	dry	0	parsed from lingvo xml	ADJECTIVE	drai	1
+45	wet	0	parsed from lingvo xml	ADJECTIVE	wet	1
+46	temperature	0	parsed from lingvo xml	NOUN	'tempriʧə	1
+47	warm	0	parsed from lingvo xml	ADJECTIVE	wɔːm	1
+48	thermometer	0	parsed from lingvo xml	NOUN	θə'mɔmitə	1
+49	fog	0	parsed from lingvo xml	NOUN	fɔg	1
+50	mist	0	parsed from lingvo xml	NOUN	mist	1
+51	foggy	0	parsed from lingvo xml	ADJECTIVE	'fɔgi	1
+52	water	0	parsed from lingvo xml	NOUN	'wɔːtə	1
+53	cold	0	parsed from lingvo xml	ADJECTIVE	kəuld	1
+54	cyclone	0	parsed from lingvo xml	NOUN	'saikləun	1
+55	storm	0	parsed from lingvo xml	NOUN	stɔːm	1
+56	clear	0	parsed from lingvo xml	ADJECTIVE	kliə	1
+57	sleet	0	parsed from lingvo xml	NOUN	sliːt	1
+58	cloud	0	parsed from lingvo xml	NOUN	klaud	1
+59	chilly	0	parsed from lingvo xml	ADJECTIVE	'ʧili	1
+60	downpour	0	parsed from lingvo xml	NOUN	'daunpɔː	1
+61	gale	0	parsed from lingvo xml	NOUN	geil	1
+62	scorching	0	parsed from lingvo xml	ADJECTIVE	'skɔːʧiŋ	1
+63	dust	0	parsed from lingvo xml	NOUN	dʌst	1
+64	blustery	0	parsed from lingvo xml	ADJECTIVE	'blʌstəri	1
+65	overcast	0	parsed from lingvo xml	ADJECTIVE	'əuvəkɑːst	1
 \.
 
 
