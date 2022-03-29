@@ -1,32 +1,28 @@
 package com.gitlab.sszuev.flashcards.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gitlab.sszuev.flashcards.RunConfig;
 import com.gitlab.sszuev.flashcards.TestUtils;
 import com.gitlab.sszuev.flashcards.domain.Card;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
 import com.gitlab.sszuev.flashcards.domain.Language;
 import com.gitlab.sszuev.flashcards.domain.User;
-import com.gitlab.sszuev.flashcards.dto.CardResource;
-import com.gitlab.sszuev.flashcards.dto.CardUpdateResource;
-import com.gitlab.sszuev.flashcards.dto.DictionaryResource;
-import com.gitlab.sszuev.flashcards.dto.Stage;
+import com.gitlab.sszuev.flashcards.dto.*;
 import com.gitlab.sszuev.flashcards.parser.Status;
 import com.gitlab.sszuev.flashcards.repositories.CardRepository;
 import com.gitlab.sszuev.flashcards.repositories.DictionaryRepository;
+import com.gitlab.sszuev.flashcards.services.impl.CardServiceImpl;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -34,6 +30,7 @@ import java.util.stream.Stream;
  * Created by @ssz on 02.05.2021.
  */
 @SpringBootTest
+@ContextConfiguration(classes = {CardServiceImpl.class, RunConfig.class, EntityMapper.class, ObjectMapper.class})
 @TestPropertySource(properties = {
         "app.loader.enabled=false",
         "app.tutor.run.words-for-show=" + CardServiceTest.NUMBER_OF_WORDS_PER_RUN,
@@ -194,5 +191,15 @@ public class CardServiceTest {
         Assertions.assertEquals(words.size(), res.size());
         Assertions.assertEquals(words.stream().map(Map.Entry::getValue).sorted().toList(),
                 res.stream().map(CardResource::word).collect(Collectors.toList()));
+    }
+
+    @Test
+    public void testResetStatus() {
+        Card card = TestUtils.createCard(42L, "x", 42, null);
+        Assumptions.assumeTrue(42 == card.getAnswered());
+        Mockito.when(cardRepository.findById(Mockito.eq(42L))).thenReturn(Optional.of(card));
+        service.resetCardStatus(42L);
+        Assertions.assertNull(card.getAnswered());
+        Mockito.verify(cardRepository, Mockito.times(1)).findById(Mockito.eq(42L));
     }
 }

@@ -10,8 +10,13 @@
         <div class="d-flex flex-row-reverse bd-highlight">
             <div class="logout d-inline-block">
                 <form name="logoutForm" th:action="@{/logout}" method="post">
-                    <input class="btn btn-link" type="submit" value="Sign Out"/>
+                    <input class="btn btn-link" type="submit" value="sign out"/>
                 </form>
+            </div>
+            <div class="d-inline-block">
+                <div class="btn">
+                    <div id="go-home" class="btn-link disabled">home</div>
+                </div>
             </div>
             <div class="d-inline-block">
                 <div class="btn">

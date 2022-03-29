@@ -1,4 +1,4 @@
-FROM postgres:13.2
+FROM postgres:14.2
 
 ENV POSTGRES_DB=flashcards
 ENV POSTGRES_USER=dev

@@ -136,6 +136,14 @@ public class CardServiceImpl implements CardService {
         cardRepository.deleteById(cardId);
     }
 
+    @Transactional
+    @Override
+    public void resetCardStatus(long cardId) {
+        LOGGER.info("Reset the status for the card with id={}", cardId);
+        cardRepository.findById(cardId)
+                .orElseThrow(() -> new IllegalArgumentException("Can't find card=" + cardId)).setAnswered(null);
+    }
+
     private void update(Map<Long, Map<Stage, Integer>> data) {
         Map<Long, Card> cards = cardRepository.streamByIdIn(data.keySet())
                 .collect(Collectors.toMap(Card::getID, Function.identity()));

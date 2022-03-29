@@ -69,4 +69,11 @@ public interface CardService {
      * @param cardId {@code long} card id
      */
     void deleteCard(long cardId);
+
+    /**
+     * Resets the card status.
+     *
+     * @param cardId {@code long}
+     */
+    void resetCardStatus(long cardId);
 }
