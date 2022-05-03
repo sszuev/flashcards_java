@@ -19,6 +19,14 @@ public interface CardService {
     List<DictionaryResource> getDictionaries();
 
     /**
+     * Uploads dictionary given as a string.
+     *
+     * @param xml {@code String}, not {@code null}
+     * @return {@link DictionaryResource}
+     */
+    DictionaryResource uploadDictionary(String xml);
+
+    /**
      * Returns all cards from the specified dictionary,
      * the result is sorted in natural order (by {@link CardResource#word()}).
      *

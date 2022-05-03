@@ -10,15 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
@@ -50,6 +42,17 @@ public class CardsRestController {
     }
 
     /**
+     * Uploads the given resource-xml into the database.
+     *
+     * @param resource {@code String}
+     * @return {@link DictionaryResource}
+     */
+    @PostMapping(value = "/api/dictionaries", consumes = MediaType.APPLICATION_XML_VALUE)
+    public DictionaryResource uploadDictionary(@RequestBody String resource) {
+        return cardService.uploadDictionary(resource);
+    }
+
+    /**
      * Gets a list of card-resources by dictionary id.
      *
      * @return a {@link List} of {@link CardResource}s
@@ -66,7 +69,7 @@ public class CardsRestController {
      * @param dictionary {@code long} - id of dictionary
      * @param length     {@code Integer} - the desired size of result collections
      * @param unknown    {@code Boolean} - {@code true} to return only unknown words,
-     *                   {@code false} or {@code null} if it is does not matter
+     *                   {@code false} or {@code null} if it does not matter
      * @return a {@code List} of {@link CardResource}s
      */
     @GetMapping(value = "/api/dictionaries/{dictionary}/cards/random", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -122,7 +125,7 @@ public class CardsRestController {
     /**
      * Resets the status of the given card.
      *
-     * @param cardId {@code long} - an id of the card to be reseted
+     * @param cardId {@code long} - an id of the card to be reset
      */
     @PatchMapping(value = "/api/cards/{card}")
     public void resetStatus(@PathVariable(name = "card") long cardId) {

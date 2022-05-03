@@ -8,6 +8,7 @@ import com.gitlab.sszuev.flashcards.domain.Dictionary;
 import com.gitlab.sszuev.flashcards.domain.Language;
 import com.gitlab.sszuev.flashcards.domain.User;
 import com.gitlab.sszuev.flashcards.dto.*;
+import com.gitlab.sszuev.flashcards.parser.LingvoParser;
 import com.gitlab.sszuev.flashcards.parser.Status;
 import com.gitlab.sszuev.flashcards.repositories.CardRepository;
 import com.gitlab.sszuev.flashcards.repositories.DictionaryRepository;
@@ -22,6 +23,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 
+import java.io.Reader;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -48,6 +50,8 @@ public class CardServiceTest {
     private CardRepository cardRepository;
     @MockBean
     private SoundService soundService;
+    @MockBean
+    private LingvoParser lingvoParser;
 
     @Test
     public void testNextDeckWithUnknownManyItems() {
@@ -124,6 +128,24 @@ public class CardServiceTest {
         Assertions.assertEquals(2, res.size());
         assertDictionaryResource(res.get(0), id1, name1, lang1, lang2, cards1);
         assertDictionaryResource(res.get(1), id2, name2, lang2, lang3, cards2);
+    }
+
+    @Test
+    public void testUploadDictionary() {
+        Language src = TestUtils.mockLanguage("src", null);
+        Language dst = TestUtils.mockLanguage("dst", null);
+
+        Dictionary dic1 = TestUtils.mockDictionary(null, "The dictionary #1");
+        Dictionary dic2 = TestUtils.mockDictionary(42L, "The dictionary #2", src, dst);
+        Mockito.when(lingvoParser.parse(Mockito.any(Reader.class))).thenReturn(dic1);
+        Mockito.when(dictionaryRepository.save(dic1)).thenReturn(dic2);
+
+        DictionaryResource res = service.uploadDictionary("<xml>");
+        Assertions.assertNotNull(res);
+        Assertions.assertEquals(42L, res.id());
+        Assertions.assertEquals("The dictionary #2", res.name());
+        Assertions.assertEquals("src", res.sourceLang());
+        Assertions.assertEquals("dst", res.targetLang());
     }
 
     private void assertDictionaryResource(DictionaryResource res,
