@@ -2,7 +2,6 @@ package com.gitlab.sszuev.flashcards.services;
 
 import com.gitlab.sszuev.flashcards.dto.CardResource;
 import com.gitlab.sszuev.flashcards.dto.CardUpdateResource;
-import com.gitlab.sszuev.flashcards.dto.DictionaryResource;
 
 import java.util.List;
 
@@ -10,21 +9,6 @@ import java.util.List;
  * Created by @ssz on 02.05.2021.
  */
 public interface CardService {
-
-    /**
-     * Returns dictionaries common info.
-     *
-     * @return a {@code List} of {@link DictionaryResource}s
-     */
-    List<DictionaryResource> getDictionaries();
-
-    /**
-     * Uploads dictionary given as a string.
-     *
-     * @param xml {@code String}, not {@code null}
-     * @return {@link DictionaryResource}
-     */
-    DictionaryResource uploadDictionary(String xml);
 
     /**
      * Returns all cards from the specified dictionary,

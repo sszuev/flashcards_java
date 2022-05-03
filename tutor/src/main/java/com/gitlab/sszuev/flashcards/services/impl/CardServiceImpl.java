@@ -4,9 +4,10 @@ import com.gitlab.sszuev.flashcards.RunConfig;
 import com.gitlab.sszuev.flashcards.domain.Card;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
 import com.gitlab.sszuev.flashcards.domain.Language;
-import com.gitlab.sszuev.flashcards.domain.User;
-import com.gitlab.sszuev.flashcards.dto.*;
-import com.gitlab.sszuev.flashcards.parser.LingvoParser;
+import com.gitlab.sszuev.flashcards.dto.CardResource;
+import com.gitlab.sszuev.flashcards.dto.CardUpdateResource;
+import com.gitlab.sszuev.flashcards.dto.EntityMapper;
+import com.gitlab.sszuev.flashcards.dto.Stage;
 import com.gitlab.sszuev.flashcards.repositories.CardRepository;
 import com.gitlab.sszuev.flashcards.repositories.DictionaryRepository;
 import com.gitlab.sszuev.flashcards.services.CardService;
@@ -16,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.StringReader;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -32,36 +32,15 @@ public class CardServiceImpl implements CardService {
     private final CardRepository cardRepository;
     private final EntityMapper mapper;
     private final RunConfig config;
-    private final LingvoParser lingvoParser;
 
     public CardServiceImpl(DictionaryRepository dictionaryRepository,
                            CardRepository cardRepository,
                            EntityMapper mapper,
-                           RunConfig config,
-                           LingvoParser lingvoParser) {
+                           RunConfig config) {
         this.dictionaryRepository = Objects.requireNonNull(dictionaryRepository);
         this.cardRepository = Objects.requireNonNull(cardRepository);
         this.mapper = Objects.requireNonNull(mapper);
         this.config = Objects.requireNonNull(config);
-        this.lingvoParser = Objects.requireNonNull(lingvoParser);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public List<DictionaryResource> getDictionaries() {
-        // todo: separated selects for total and learned counts
-        return dictionaryRepository.streamAllByUserId(User.SYSTEM_USER.getID())
-                .map(mapper::toResource).toList();
-    }
-
-    @Transactional()
-    @Override
-    public DictionaryResource uploadDictionary(String xml) {
-        Dictionary dic = lingvoParser.parse(new StringReader(xml));
-        LOGGER.debug("Dictionary '{}' is parsed.", dic.getName());
-        dic = dictionaryRepository.save(dic);
-        LOGGER.info("Dictionary '{}' is saved.", dic.getName());
-        return mapper.toResource(dic);
     }
 
     @Transactional(readOnly = true)
@@ -101,7 +80,7 @@ public class CardServiceImpl implements CardService {
         List<Card> cards;
         if (unknown) {
             cards = cardRepository.streamByDictionaryIdAndAnsweredLessThan(dicId, config.getNumberOfRightAnswers())
-                .collect(Collectors.toList());
+                    .collect(Collectors.toList());
         } else {
             cards = cardRepository.streamByDictionaryId(dicId).collect(Collectors.toList());
         }

@@ -4,6 +4,7 @@ import com.gitlab.sszuev.flashcards.dto.CardResource;
 import com.gitlab.sszuev.flashcards.dto.CardUpdateResource;
 import com.gitlab.sszuev.flashcards.dto.DictionaryResource;
 import com.gitlab.sszuev.flashcards.services.CardService;
+import com.gitlab.sszuev.flashcards.services.DictionaryService;
 import com.gitlab.sszuev.flashcards.services.SoundService;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -24,10 +25,14 @@ import java.util.Objects;
 @RestController
 public class CardsRestController {
     private final CardService cardService;
+    private final DictionaryService dictionaryService;
     private final SoundService soundService;
 
-    public CardsRestController(CardService cardService, SoundService soundService) {
+    public CardsRestController(CardService cardService,
+                               DictionaryService dictionaryService,
+                               SoundService soundService) {
         this.cardService = Objects.requireNonNull(cardService);
+        this.dictionaryService = Objects.requireNonNull(dictionaryService);
         this.soundService = Objects.requireNonNull(soundService);
     }
 
@@ -38,7 +43,7 @@ public class CardsRestController {
      */
     @GetMapping(value = "/api/dictionaries", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<DictionaryResource> getDictionaries() {
-        return cardService.getDictionaries();
+        return dictionaryService.getDictionaries();
     }
 
     /**
@@ -49,7 +54,7 @@ public class CardsRestController {
      */
     @PostMapping(value = "/api/dictionaries", consumes = MediaType.APPLICATION_XML_VALUE)
     public DictionaryResource uploadDictionary(@RequestBody String resource) {
-        return cardService.uploadDictionary(resource);
+        return dictionaryService.uploadDictionary(resource);
     }
 
     /**
