@@ -12,12 +12,21 @@ function drawDictionariesPage() {
         const tbody = $('#dictionaries tbody');
         const btnRun = $('#dictionaries-btn-run');
         const btnEdit = $('#dictionaries-btn-edit');
+
         tbody.html('');
         initTableListeners('dictionaries', resetDictionarySelection);
 
         btnRun.on('click', drawRunPage);
         btnEdit.on('click', drawDictionaryPage);
         $('#dictionaries-table-row').css('height', calcInitTableHeight());
+        $('#dictionaries-btn-upload').on('click', () => {
+            $('#dictionaries-btn-upload-label').removeClass('btn-outline-danger');
+        }).on('change', (e) => {
+            const file = e.target.files[0];
+            if (file !== undefined) {
+                uploadDictionary(file);
+            }
+        })
 
         $.each(response, function (key, value) {
             let row = $(`<tr id="${'d' + value.id}">
@@ -111,6 +120,30 @@ function initWordsTable(items) {
     });
 }
 
+function uploadDictionary(file) {
+    const btnUpload = $('#dictionaries-btn-upload-label');
+    const reader = new FileReader()
+    reader.onload = function (e) {
+        const txt = e.target.result.toString();
+        if (!isXML(txt)) {
+            btnUpload.addClass('btn-outline-danger');
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: '/api/dictionaries/',
+            contentType: "application/xml",
+            data: txt
+        }).done(function () {
+            drawDictionariesPage();
+        }).fail(function () {
+            btnUpload.addClass('btn-outline-danger');
+        })
+    }
+    reader.readAsText(file, 'utf-8')
+    $('#dictionaries-btn-upload').val('')
+}
+
 function wordRowOnClick(row, item) {
     resetWordSelection();
     markRowSelected(row);
@@ -192,6 +225,7 @@ function resetDictionarySelection() {
     $('#dictionaries-btn-group button').each(function (i, b) {
         $(b).prop('disabled', true);
     });
+    $('#dictionaries-btn-upload-label').removeClass('btn-outline-danger');
 }
 
 function resetWordSelection() {

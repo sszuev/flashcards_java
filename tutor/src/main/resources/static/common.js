@@ -58,3 +58,17 @@ function toArray(value, separator) {
     }
     return value.split(separator).map(x => x.trim());
 }
+
+/**
+ * Answers [true] if the string is xml
+ * @param canBeXml
+ * @returns {boolean}
+ */
+function isXML(canBeXml){
+    try {
+        $.parseXML(canBeXml);
+        return true;
+    } catch (err) {
+        return false;
+    }
+}
