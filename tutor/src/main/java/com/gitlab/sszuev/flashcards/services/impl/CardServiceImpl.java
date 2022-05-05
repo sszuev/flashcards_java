@@ -4,10 +4,8 @@ import com.gitlab.sszuev.flashcards.RunConfig;
 import com.gitlab.sszuev.flashcards.domain.Card;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
 import com.gitlab.sszuev.flashcards.domain.Language;
-import com.gitlab.sszuev.flashcards.domain.User;
 import com.gitlab.sszuev.flashcards.dto.CardResource;
 import com.gitlab.sszuev.flashcards.dto.CardUpdateResource;
-import com.gitlab.sszuev.flashcards.dto.DictionaryResource;
 import com.gitlab.sszuev.flashcards.dto.EntityMapper;
 import com.gitlab.sszuev.flashcards.dto.Stage;
 import com.gitlab.sszuev.flashcards.repositories.CardRepository;
@@ -19,16 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -52,14 +41,6 @@ public class CardServiceImpl implements CardService {
         this.cardRepository = Objects.requireNonNull(cardRepository);
         this.mapper = Objects.requireNonNull(mapper);
         this.config = Objects.requireNonNull(config);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public List<DictionaryResource> getDictionaries() {
-        // todo: separated selects for total and learned counts
-        return dictionaryRepository.streamAllByUserId(User.SYSTEM_USER.getID())
-                .map(mapper::toResource).toList();
     }
 
     @Transactional(readOnly = true)
@@ -99,7 +80,7 @@ public class CardServiceImpl implements CardService {
         List<Card> cards;
         if (unknown) {
             cards = cardRepository.streamByDictionaryIdAndAnsweredLessThan(dicId, config.getNumberOfRightAnswers())
-                .collect(Collectors.toList());
+                    .collect(Collectors.toList());
         } else {
             cards = cardRepository.streamByDictionaryId(dicId).collect(Collectors.toList());
         }

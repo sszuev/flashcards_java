@@ -4,21 +4,14 @@ import com.gitlab.sszuev.flashcards.dto.CardResource;
 import com.gitlab.sszuev.flashcards.dto.CardUpdateResource;
 import com.gitlab.sszuev.flashcards.dto.DictionaryResource;
 import com.gitlab.sszuev.flashcards.services.CardService;
+import com.gitlab.sszuev.flashcards.services.DictionaryService;
 import com.gitlab.sszuev.flashcards.services.SoundService;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
@@ -32,10 +25,14 @@ import java.util.Objects;
 @RestController
 public class CardsRestController {
     private final CardService cardService;
+    private final DictionaryService dictionaryService;
     private final SoundService soundService;
 
-    public CardsRestController(CardService cardService, SoundService soundService) {
+    public CardsRestController(CardService cardService,
+                               DictionaryService dictionaryService,
+                               SoundService soundService) {
         this.cardService = Objects.requireNonNull(cardService);
+        this.dictionaryService = Objects.requireNonNull(dictionaryService);
         this.soundService = Objects.requireNonNull(soundService);
     }
 
@@ -46,7 +43,18 @@ public class CardsRestController {
      */
     @GetMapping(value = "/api/dictionaries", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<DictionaryResource> getDictionaries() {
-        return cardService.getDictionaries();
+        return dictionaryService.getDictionaries();
+    }
+
+    /**
+     * Uploads the given resource-xml into the database.
+     *
+     * @param resource {@code String}
+     * @return {@link DictionaryResource}
+     */
+    @PostMapping(value = "/api/dictionaries", consumes = MediaType.APPLICATION_XML_VALUE)
+    public DictionaryResource uploadDictionary(@RequestBody String resource) {
+        return dictionaryService.uploadDictionary(resource);
     }
 
     /**
@@ -66,7 +74,7 @@ public class CardsRestController {
      * @param dictionary {@code long} - id of dictionary
      * @param length     {@code Integer} - the desired size of result collections
      * @param unknown    {@code Boolean} - {@code true} to return only unknown words,
-     *                   {@code false} or {@code null} if it is does not matter
+     *                   {@code false} or {@code null} if it does not matter
      * @return a {@code List} of {@link CardResource}s
      */
     @GetMapping(value = "/api/dictionaries/{dictionary}/cards/random", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -122,7 +130,7 @@ public class CardsRestController {
     /**
      * Resets the status of the given card.
      *
-     * @param cardId {@code long} - an id of the card to be reseted
+     * @param cardId {@code long} - an id of the card to be reset
      */
     @PatchMapping(value = "/api/cards/{card}")
     public void resetStatus(@PathVariable(name = "card") long cardId) {

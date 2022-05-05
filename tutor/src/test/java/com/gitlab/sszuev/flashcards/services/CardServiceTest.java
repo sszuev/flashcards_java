@@ -6,9 +6,10 @@ import com.gitlab.sszuev.flashcards.TestUtils;
 import com.gitlab.sszuev.flashcards.domain.Card;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
 import com.gitlab.sszuev.flashcards.domain.Language;
-import com.gitlab.sszuev.flashcards.domain.User;
-import com.gitlab.sszuev.flashcards.dto.*;
-import com.gitlab.sszuev.flashcards.parser.Status;
+import com.gitlab.sszuev.flashcards.dto.CardResource;
+import com.gitlab.sszuev.flashcards.dto.CardUpdateResource;
+import com.gitlab.sszuev.flashcards.dto.EntityMapper;
+import com.gitlab.sszuev.flashcards.dto.Stage;
 import com.gitlab.sszuev.flashcards.repositories.CardRepository;
 import com.gitlab.sszuev.flashcards.repositories.DictionaryRepository;
 import com.gitlab.sszuev.flashcards.services.impl.CardServiceImpl;
@@ -99,45 +100,6 @@ public class CardServiceTest {
         Assertions.assertNotNull(res);
         Assertions.assertEquals(words.size(), res.size());
         Assertions.assertEquals(words.size(), new HashSet<>(res).size());
-    }
-
-    @Test
-    public void testListDictionaries() {
-        long id1 = -1;
-        long id2 = -2;
-        String name1 = "A";
-        String name2 = "B";
-        Language lang1 = TestUtils.mockLanguage("ee", List.of("A", "B"));
-        Language lang2 = TestUtils.mockLanguage("rr", List.of("C", "D"));
-        Language lang3 = TestUtils.mockLanguage("xx", List.of("E", "F"));
-        Map<Status, Integer> cards1 = Map.of(Status.IN_PROCESS, 2, Status.LEARNED, 3);
-        Map<Status, Integer> cards2 = Map.of(Status.UNKNOWN, 1, Status.LEARNED, 42);
-
-        Dictionary dic1 = TestUtils.mockDictionary(id1, name1, lang1, lang2, NUMBER_OF_ANSWERS_TO_LEARN, cards1);
-        Dictionary dic2 = TestUtils.mockDictionary(id2, name2, lang2, lang3, NUMBER_OF_ANSWERS_TO_LEARN, cards2);
-
-        Mockito.when(dictionaryRepository.streamAllByUserId(Mockito.eq(User.SYSTEM_USER.getID())))
-                .thenReturn(Stream.of(dic1, dic2));
-
-        List<DictionaryResource> res = service.getDictionaries();
-        Assertions.assertNotNull(res);
-        Assertions.assertEquals(2, res.size());
-        assertDictionaryResource(res.get(0), id1, name1, lang1, lang2, cards1);
-        assertDictionaryResource(res.get(1), id2, name2, lang2, lang3, cards2);
-    }
-
-    private void assertDictionaryResource(DictionaryResource res,
-                                          long id, String name,
-                                          Language src, Language dst,
-                                          Map<Status, Integer> data) {
-        Assertions.assertEquals(name, res.name());
-        Assertions.assertEquals(id, res.id());
-        Assertions.assertEquals(src.getID(), res.sourceLang());
-        Assertions.assertEquals(dst.getID(), res.targetLang());
-        Assertions.assertEquals(data.get(Status.LEARNED).longValue(), res.learned());
-        Assertions.assertEquals(data.values().stream().mapToLong(x -> x).sum(), res.total());
-        List<String> partsOfSpeech = List.of(src.getPartsOfSpeech().toLowerCase(Locale.ROOT).split(","));
-        Assertions.assertEquals(partsOfSpeech, res.partsOfSpeech());
     }
 
     @Test
