@@ -29,14 +29,3 @@ function displayPage(id) {
     $('#' + id).show()
 }
 
-/**
- * Plays the audio resource in browser.
- * @param resource {string} - path to resource, not null
- * @param callback - function to call on complete
- */
-function playAudio(resource, callback) {
-    if (!callback) {
-        callback = () => {};
-    }
-    new Audio('/api/sounds/' + resource).play().then(callback);
-}

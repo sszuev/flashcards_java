@@ -44,7 +44,7 @@ function stageOptions() {
     }
     const dataLeft = randomArray(data, numberOfWordsPerStage);
     const length = dataLeft.length * numberOfOptionsPerWord;
-    $.get('/api/dictionaries/' + dictionary.id + "/cards/random?length=" + length + "&unknown=false").done(function (words) {
+    getNextCardDeck(dictionary.id, length, function (words) {
         const options = prepareOptionsDataArray(dataLeft, words);
         displayPage('options');
         drawOptionsCardPage(options, 0, () => stageWriting());
@@ -399,22 +399,8 @@ function drawAndPlayAudio(parent, audio) {
 }
 
 function updateItemsAndCall(array, stage, nextStageCallback) {
-    sendPatch(toUpdateResource(array, stage), function () {
+    patchCard(toUpdateResource(array, stage), function () {
         updateItemResource(array, stage);
         nextStageCallback();
     });
-}
-
-/**
- * Sends PATCH http request.
- * @param update - data to send
- * @param onDoneCallback - any function
- */
-function sendPatch(update, onDoneCallback) {
-    $.ajax({
-        type: 'PATCH',
-        url: '/api/cards/',
-        contentType: "application/json",
-        data: update
-    }).done(onDoneCallback);
 }

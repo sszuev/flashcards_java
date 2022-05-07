@@ -6,7 +6,7 @@ const tableHeightRation = 2. / 3;
 const lgFrameHeightRation = 7. / 18;
 
 function drawDictionariesPage() {
-    $.get('/api/dictionaries').done(function (response) {
+    getDictionaries(function (response) {
         displayPage('dictionaries');
 
         const tbody = $('#dictionaries tbody');
@@ -24,7 +24,7 @@ function drawDictionariesPage() {
         }).on('change', (e) => {
             const file = e.target.files[0];
             if (file !== undefined) {
-                uploadDictionary(file);
+                uploadDictionaryFile(file);
             }
         });
         bootstrap.Modal.getOrCreateInstance(document.getElementById('delete-dictionary-prompt')).hide();
@@ -47,7 +47,7 @@ function drawDictionariesPage() {
     });
 }
 
-function uploadDictionary(file) {
+function uploadDictionaryFile(file) {
     const btnUpload = $('#dictionaries-btn-upload-label');
     const reader = new FileReader()
     reader.onload = function (e) {
@@ -56,16 +56,7 @@ function uploadDictionary(file) {
             btnUpload.addClass('btn-outline-danger');
             return;
         }
-        $.ajax({
-            type: 'POST',
-            url: '/api/dictionaries/',
-            contentType: "application/xml",
-            data: txt
-        }).done(function () {
-            drawDictionariesPage();
-        }).fail(function () {
-            btnUpload.addClass('btn-outline-danger');
-        })
+        uploadDictionary(txt, drawDictionariesPage, () => btnUpload.addClass('btn-outline-danger'))
     }
     reader.readAsText(file, 'utf-8')
     $('#dictionaries-btn-upload').val('')
@@ -78,12 +69,7 @@ function initDictionaryDeletePrompt() {
         if (!id) {
             return;
         }
-        $.ajax({
-            type: 'delete',
-            url: '/api/dictionaries/' + id
-        }).done(function () {
-            drawDictionariesPage();
-        })
+        deleteDictionary(id, drawDictionariesPage);
     });
 }
 
@@ -117,7 +103,7 @@ function drawRunPage() {
         return;
     }
     resetRowSelection($('#dictionaries tbody'));
-    $.get('/api/dictionaries/' + dictionary.id + '/cards/random').done(function (array) {
+    getNextCardDeck(dictionary.id, null, function (array) {
         data = array;
         stageShow();
     });
@@ -133,7 +119,7 @@ function drawDictionaryPage() {
     $('#words tbody').html('');
     initTableListeners('words', resetCardSelection);
     $('#words-table-row').css('height', calcInitTableHeight());
-    $.get('/api/dictionaries/' + dictionary.id + '/cards').done(initWordsTable);
+    getCards(dictionary.id, initWordsTable);
 }
 
 function initWordsTable(items) {
@@ -301,18 +287,18 @@ function initCardDialog(dialogId, items) {
     });
     $('#' + dialogId + '-card-dialog-save').off('click').on('click', function () { // push save dialog button
         const res = createResourceCardItem(dialogId, items);
-        $.ajax({
-            type: res.id == null ? 'POST' : 'PUT',
-            url: '/api/cards/',
-            contentType: "application/json",
-            data: JSON.stringify(res)
-        }).done(function (id) {
+        const onDone = function (id) {
             if (id === '') {
                 id = res.id;
             }
             drawDictionaryPage();
             scrollToRow('#w' + id, '#words-table-row', markRowSelected);
-        })
+        };
+        if (res.id == null) {
+            createCard(res, onDone);
+        } else {
+            updateCard(res, onDone);
+        }
     });
     if ('edit' === dialogId) {
         initCardEditDialog();
@@ -341,15 +327,17 @@ function initCardPrompt(actionId) {
         if (!id) {
             return;
         }
-        $.ajax({
-            type: actionId === 'delete' ? 'DELETE' : 'PATCH',
-            url: '/api/cards/' + id
-        }).done(function () {
+        const onDone = function () {
             drawDictionaryPage();
             if (actionId !== 'delete') {
                 scrollToRow('#w' + id, '#words-table-row', markRowSelected);
             }
-        })
+        };
+        if (actionId === 'delete') {
+            deleteCard(id, onDone);
+        } else {
+            resetCard(id, onDone);
+        }
     });
 }
 
