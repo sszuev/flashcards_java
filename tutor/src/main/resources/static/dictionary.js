@@ -78,15 +78,15 @@ function initWordsTable(items) {
     const search = $('#words-search');
 
     bootstrap.Modal.getOrCreateInstance(document.getElementById('add-card-dialog')).hide();
-    bootstrap.Modal.getOrCreateInstance(document.getElementById('delete-prompt')).hide();
-    bootstrap.Modal.getOrCreateInstance(document.getElementById('reset-prompt')).hide();
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('delete-card-prompt')).hide();
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('reset-card-prompt')).hide();
     const editPopup = bootstrap.Modal.getOrCreateInstance(document.getElementById('edit-card-dialog'));
     editPopup.hide();
 
-    initDialog('add', items);
-    initDialog('edit', items);
-    initPrompt('delete');
-    initPrompt('reset');
+    initCardDialog('add', items);
+    initCardDialog('edit', items);
+    initCardPrompt('delete');
+    initCardPrompt('reset');
 
     displayPage('words');
 
@@ -197,9 +197,9 @@ function selectCardItemForAdd(row, word) {
     $('#add-card-dialog-examples').val('');
 }
 
-function selectCardItemForDeleteOrReset(item, action) {
-    disableWordButton(action, false);
-    const body = $('#' + action + '-prompt-body');
+function selectCardItemForDeleteOrReset(item, actionId) {
+    disableWordButton(actionId, false);
+    const body = $('#' + actionId + '-card-prompt-body');
     body.attr('item-id', item.id);
     body.html(item.word);
 }
@@ -248,7 +248,7 @@ function disableWordButton(suffix, disable) {
     $('#words-btn-' + suffix).prop('disabled', disable);
 }
 
-function initDialog(dialogId, items) {
+function initCardDialog(dialogId, items) {
     $('#' + dialogId + '-card-dialog-lg-collapse').off('show.bs.collapse').on('show.bs.collapse', function () {
         onCollapseLgFrame(dialogId);
     });
@@ -303,19 +303,19 @@ function initEditDialog() {
     });
 }
 
-function initPrompt(promptId) {
-    $('#' + promptId + '-prompt-confirm').off('click').on('click', function () {
-        const body = $('#' + promptId + '-prompt-body');
+function initCardPrompt(actionId) {
+    $('#' + actionId + '-card-prompt-confirm').off('click').on('click', function () {
+        const body = $('#' + actionId + '-card-prompt-body');
         const id = body.attr('item-id');
         if (!id) {
             return;
         }
         $.ajax({
-            type: promptId === 'delete' ? 'DELETE' : 'PATCH',
+            type: actionId === 'delete' ? 'DELETE' : 'PATCH',
             url: '/api/cards/' + id
         }).done(function () {
             drawDictionaryPage();
-            if (promptId !== 'delete') {
+            if (actionId !== 'delete') {
                 scrollToRow('#w' + id, '#words-table-row', markRowSelected);
             }
         })
