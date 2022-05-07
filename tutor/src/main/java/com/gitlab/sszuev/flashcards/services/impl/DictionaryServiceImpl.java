@@ -48,4 +48,11 @@ public class DictionaryServiceImpl implements DictionaryService {
         LOGGER.info("Dictionary '{}' is saved.", dic.getName());
         return mapper.toResource(dic);
     }
+
+    @Transactional
+    @Override
+    public void deleteDictionary(long dictionaryId) {
+        LOGGER.info("Delete dictionary with id={}", dictionaryId);
+        repository.deleteById(dictionaryId);
+    }
 }

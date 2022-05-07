@@ -164,4 +164,13 @@ public class CardServiceTest {
         Assertions.assertNull(card.getAnswered());
         Mockito.verify(cardRepository, Mockito.times(1)).findById(Mockito.eq(42L));
     }
+
+    @Test
+    public void testDeleteCard() {
+        Long id = 42L;
+        Mockito.doAnswer(i -> i.getArgument(0) == id ? null : Assertions.fail("unexpected arg"))
+                .when(cardRepository).deleteById(Mockito.anyLong());
+        service.deleteCard(id);
+        Mockito.verify(cardRepository, Mockito.times(1)).deleteById(Mockito.anyLong());
+    }
 }
