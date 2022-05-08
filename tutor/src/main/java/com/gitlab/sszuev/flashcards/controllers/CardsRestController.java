@@ -58,12 +58,22 @@ public class CardsRestController {
     }
 
     /**
+     * Deletes the given dictionary.
+     *
+     * @param dictionaryId {@code long} - an id of the dictionary to be deleted
+     */
+    @DeleteMapping(value = "/api/dictionaries/{dictionary}")
+    public void deleteDictionary(@PathVariable(name = "dictionary") long dictionaryId) {
+        dictionaryService.deleteDictionary(dictionaryId);
+    }
+
+    /**
      * Gets a list of card-resources by dictionary id.
      *
      * @return a {@link List} of {@link CardResource}s
      */
     @GetMapping(value = "/api/dictionaries/{dictionary}/cards", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<CardResource> getDictionaryCards(@PathVariable(name = "dictionary") long dictionary) {
+    public List<CardResource> getCards(@PathVariable(name = "dictionary") long dictionary) {
         return cardService.getAllCards(dictionary);
     }
 
@@ -97,7 +107,7 @@ public class CardsRestController {
      * @return {@code long} - an id of the newly created card
      */
     @PostMapping(value = "/api/cards", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public long create(@RequestBody CardResource resource) {
+    public long createCard(@RequestBody CardResource resource) {
         if (resource.id() != null) {
             throw new IllegalArgumentException("Existing resource specified: " + resource.id() + ".");
         }
@@ -110,7 +120,7 @@ public class CardsRestController {
      * @param resource {@link CardResource}
      */
     @PutMapping(value = "/api/cards", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void update(@RequestBody CardResource resource) {
+    public void updateCard(@RequestBody CardResource resource) {
         if (resource.id() == null) {
             throw new IllegalArgumentException("The given resource has no id.");
         }
@@ -123,7 +133,7 @@ public class CardsRestController {
      * @param cardId {@code long} - an id of the card to be deleted
      */
     @DeleteMapping(value = "/api/cards/{card}")
-    public void delete(@PathVariable(name = "card") long cardId) {
+    public void deleteCard(@PathVariable(name = "card") long cardId) {
         cardService.deleteCard(cardId);
     }
 
@@ -133,7 +143,7 @@ public class CardsRestController {
      * @param cardId {@code long} - an id of the card to be reset
      */
     @PatchMapping(value = "/api/cards/{card}")
-    public void resetStatus(@PathVariable(name = "card") long cardId) {
+    public void resetCardStatus(@PathVariable(name = "card") long cardId) {
         cardService.resetCardStatus(cardId);
     }
 
@@ -143,7 +153,7 @@ public class CardsRestController {
      * @param request a {@code List} of {@link CardUpdateResource}s
      */
     @PatchMapping(value = "/api/cards", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void update(@RequestBody List<CardUpdateResource> request) {
+    public void updateCards(@RequestBody List<CardUpdateResource> request) {
         cardService.update(request);
     }
 
@@ -154,7 +164,7 @@ public class CardsRestController {
      * @return a {@link ResponseEntity} with {@link Resource}
      */
     @GetMapping("/api/sounds/{path}")
-    public ResponseEntity<Resource> getSound(@PathVariable String path) {
+    public ResponseEntity<Resource> getAudionResource(@PathVariable String path) {
         if (path == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

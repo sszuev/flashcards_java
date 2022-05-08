@@ -88,6 +88,15 @@ public class DictionaryServiceTest {
         Assertions.assertEquals("dst", res.targetLang());
     }
 
+    @Test
+    public void testDeleteDictionary() {
+        Long id = 42L;
+        Mockito.doAnswer(i -> i.getArgument(0) == id ? null : Assertions.fail("unexpected arg"))
+                .when(dictionaryRepository).deleteById(Mockito.anyLong());
+        service.deleteDictionary(id);
+        Mockito.verify(dictionaryRepository, Mockito.times(1)).deleteById(Mockito.anyLong());
+    }
+
     private void assertDictionaryResource(DictionaryResource res,
                                           long id, String name,
                                           Language src, Language dst,

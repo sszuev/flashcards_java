@@ -1,64 +1,6 @@
 /*!
- * dictionary js-script library.
+ * page:cards js-script library.
  */
-
-const tableHeightRation = 2. / 3;
-const lgFrameHeightRation = 7. / 18;
-
-function drawDictionariesPage() {
-    $.get('/api/dictionaries').done(function (response) {
-        displayPage('dictionaries');
-
-        const tbody = $('#dictionaries tbody');
-        const btnRun = $('#dictionaries-btn-run');
-        const btnEdit = $('#dictionaries-btn-edit');
-
-        tbody.html('');
-        initTableListeners('dictionaries', resetDictionarySelection);
-
-        btnRun.on('click', drawRunPage);
-        btnEdit.on('click', drawDictionaryPage);
-        $('#dictionaries-table-row').css('height', calcInitTableHeight());
-        $('#dictionaries-btn-upload').on('click', () => {
-            $('#dictionaries-btn-upload-label').removeClass('btn-outline-danger');
-        }).on('change', (e) => {
-            const file = e.target.files[0];
-            if (file !== undefined) {
-                uploadDictionary(file);
-            }
-        })
-
-        $.each(response, function (key, value) {
-            let row = $(`<tr id="${'d' + value.id}">
-                            <td>${value.sourceLang}</td>
-                            <td>${value.targetLang}</td>
-                            <td>${value.name}</td>
-                            <td>${value.total}</td>
-                            <td>${value.learned}</td>
-                          </tr>`);
-            row.on('click', function () {
-                dictionary = value;
-                resetRowSelection(tbody);
-                markRowSelected(row);
-                btnRun.prop('disabled', false);
-                btnEdit.prop('disabled', false);
-            });
-            row.dblclick(drawRunPage);
-            tbody.append(row);
-        });
-    });
-}
-
-function drawRunPage() {
-    if (dictionary == null) {
-        return;
-    }
-    resetRowSelection($('#dictionaries tbody'));
-    $.get('/api/dictionaries/' + dictionary.id + '/cards/random').done(function (array) {
-        data = array;
-        stageShow();
-    });
-}
 
 function drawDictionaryPage() {
     if (dictionary == null) {
@@ -68,30 +10,30 @@ function drawDictionaryPage() {
 
     $('#words-title').html(dictionary.name);
     $('#words tbody').html('');
-    initTableListeners('words', resetWordSelection);
+    initTableListeners('words', resetCardSelection);
     $('#words-table-row').css('height', calcInitTableHeight());
-    $.get('/api/dictionaries/' + dictionary.id + '/cards').done(initWordsTable);
+    getCards(dictionary.id, initCardsTable);
 }
 
-function initWordsTable(items) {
+function initCardsTable(items) {
     const tbody = $('#words tbody');
     const search = $('#words-search');
 
     bootstrap.Modal.getOrCreateInstance(document.getElementById('add-card-dialog')).hide();
-    bootstrap.Modal.getOrCreateInstance(document.getElementById('delete-prompt')).hide();
-    bootstrap.Modal.getOrCreateInstance(document.getElementById('reset-prompt')).hide();
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('delete-card-prompt')).hide();
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('reset-card-prompt')).hide();
     const editPopup = bootstrap.Modal.getOrCreateInstance(document.getElementById('edit-card-dialog'));
     editPopup.hide();
 
-    initDialog('add', items);
-    initDialog('edit', items);
-    initPrompt('delete');
-    initPrompt('reset');
+    initCardDialog('add', items);
+    initCardDialog('edit', items);
+    initCardPrompt('delete');
+    initCardPrompt('reset');
 
     displayPage('words');
 
     search.off('input').on('input', function () {
-        resetWordSelection();
+        resetCardSelection();
         const item = findItem(items, search.val());
         if (item == null) {
             selectCardItemForAdd(null, search.val());
@@ -110,42 +52,18 @@ function initWordsTable(items) {
                             <td>${percentage(item)}</td>
                           </tr>`);
         row.off('click').on('click', function () {
-            wordRowOnClick(row, item);
+            cardRowOnClick(row, item);
         });
         row.off('dblclick').dblclick(function () {
-            wordRowOnClick(row, item);
+            cardRowOnClick(row, item);
             editPopup.show();
         });
         tbody.append(row);
     });
 }
 
-function uploadDictionary(file) {
-    const btnUpload = $('#dictionaries-btn-upload-label');
-    const reader = new FileReader()
-    reader.onload = function (e) {
-        const txt = e.target.result.toString();
-        if (!isXML(txt)) {
-            btnUpload.addClass('btn-outline-danger');
-            return;
-        }
-        $.ajax({
-            type: 'POST',
-            url: '/api/dictionaries/',
-            contentType: "application/xml",
-            data: txt
-        }).done(function () {
-            drawDictionariesPage();
-        }).fail(function () {
-            btnUpload.addClass('btn-outline-danger');
-        })
-    }
-    reader.readAsText(file, 'utf-8')
-    $('#dictionaries-btn-upload').val('')
-}
-
-function wordRowOnClick(row, item) {
-    resetWordSelection();
+function cardRowOnClick(row, item) {
+    resetCardSelection();
     markRowSelected(row);
     selectCardItemForEdit(row, item);
     selectCardItemForAdd(row, item.word);
@@ -154,13 +72,13 @@ function wordRowOnClick(row, item) {
 }
 
 function selectCardItemForEdit(row, item) {
-    cleanDialogLinks('edit');
+    cleanCardDialogLinks('edit');
     const input = $('#edit-card-dialog-word');
     input.val(item.word);
     input.attr('item-id', item.id);
 
-    insertDialogLinks('edit');
-    disableWordButton('edit', false);
+    insertCardDialogLinks('edit');
+    disableCardButton('edit', false);
 
     const btn = $('#edit-card-dialog-sound');
     btn.attr('word-txt', item.word);
@@ -182,13 +100,13 @@ function selectCardItemForEdit(row, item) {
 }
 
 function selectCardItemForAdd(row, word) {
-    cleanDialogLinks('add');
+    cleanCardDialogLinks('add');
     if (row != null) {
         markRowSelected(row);
     }
     $('#add-card-dialog-word').val(word);
-    insertDialogLinks('add');
-    disableWordButton('add', false);
+    insertCardDialogLinks('add');
+    disableCardButton('add', false);
 
     $('#add-card-dialog-part-of-speech option:selected').prop('selected', false);
 
@@ -197,67 +115,37 @@ function selectCardItemForAdd(row, word) {
     $('#add-card-dialog-examples').val('');
 }
 
-function selectCardItemForDeleteOrReset(item, action) {
-    disableWordButton(action, false);
-    const body = $('#' + action + '-prompt-body');
+function selectCardItemForDeleteOrReset(item, actionId) {
+    disableCardButton(actionId, false);
+    const body = $('#' + actionId + '-card-prompt-body');
     body.attr('item-id', item.id);
     body.html(item.word);
 }
 
-function initTableListeners(id, resetSelection) {
-    const thead = $('#' + id + ' thead');
-    const title = $('#' + id + ' .card-title');
-    const tbody = $('#' + id + ' tbody');
-
-    resetSelection();
-    thead.off('click').on('click', function () {
-        resetRowSelection(tbody);
-        resetSelection();
-    });
-    title.off('click').on('click', function () {
-        resetRowSelection(tbody);
-        resetSelection();
-    });
-}
-
-function resetDictionarySelection() {
-    dictionary = null;
-    $('#dictionaries-btn-group button').each(function (i, b) {
-        $(b).prop('disabled', true);
-    });
-    $('#dictionaries-btn-upload-label').removeClass('btn-outline-danger');
-}
-
-function resetWordSelection() {
-    disableWordButton('add', true);
-    disableWordButton('edit', true);
-    disableWordButton('delete', true);
-    disableWordButton('reset', true);
-    cleanDialogLinks('add');
-    cleanDialogLinks('edit');
+function resetCardSelection() {
+    disableCardButton('add', true);
+    disableCardButton('edit', true);
+    disableCardButton('delete', true);
+    disableCardButton('reset', true);
+    cleanCardDialogLinks('add');
+    cleanCardDialogLinks('edit');
     resetRowSelection($('#words tbody'));
 }
 
-function resetRowSelection(tbody) {
-    $('tr', tbody).each(function (i, r) {
-        $(r).removeClass();
-    })
-}
-
-function disableWordButton(suffix, disable) {
+function disableCardButton(suffix, disable) {
     $('#words-btn-' + suffix).prop('disabled', disable);
 }
 
-function initDialog(dialogId, items) {
+function initCardDialog(dialogId, items) {
     $('#' + dialogId + '-card-dialog-lg-collapse').off('show.bs.collapse').on('show.bs.collapse', function () {
         onCollapseLgFrame(dialogId);
     });
     $('#' + dialogId + '-card-dialog-word').off('input').on('input', function () {
-        onChangeDialogMains(dialogId);
-        insertDialogLinks(dialogId);
+        onChangeCardDialogMains(dialogId);
+        insertCardDialogLinks(dialogId);
     });
     $('#' + dialogId + '-card-dialog-translation').off('input').on('input', function () {
-        onChangeDialogMains(dialogId);
+        onChangeCardDialogMains(dialogId);
     });
     const select = $('#' + dialogId + '-card-dialog-part-of-speech').html('').append($(`<option value="-1"></option>`));
     $.each(dictionary.partsOfSpeech, function (index, value) {
@@ -265,30 +153,30 @@ function initDialog(dialogId, items) {
     });
 
     $('#words-btn-' + dialogId).off('click').on('click', function () { // push open dialog
-        onChangeDialogMains('edit');
-        onChangeDialogMains('add');
+        onChangeCardDialogMains('edit');
+        onChangeCardDialogMains('add');
     });
     $('#' + dialogId + '-card-dialog-save').off('click').on('click', function () { // push save dialog button
-        const res = createResourceItem(dialogId, items);
-        $.ajax({
-            type: res.id == null ? 'POST' : 'PUT',
-            url: '/api/cards/',
-            contentType: "application/json",
-            data: JSON.stringify(res)
-        }).done(function (id) {
+        const res = createResourceCardItem(dialogId, items);
+        const onDone = function (id) {
             if (id === '') {
                 id = res.id;
             }
             drawDictionaryPage();
             scrollToRow('#w' + id, '#words-table-row', markRowSelected);
-        })
+        };
+        if (res.id == null) {
+            createCard(res, onDone);
+        } else {
+            updateCard(res, onDone);
+        }
     });
     if ('edit' === dialogId) {
-        initEditDialog();
+        initCardEditDialog();
     }
 }
 
-function initEditDialog() {
+function initCardEditDialog() {
     const soundBtn = $('#edit-card-dialog-sound');
     soundBtn.prop('disabled', false);
     soundBtn.off('click').on('click', function () {
@@ -303,51 +191,34 @@ function initEditDialog() {
     });
 }
 
-function initPrompt(promptId) {
-    $('#' + promptId + '-prompt-confirm').off('click').on('click', function () {
-        const body = $('#' + promptId + '-prompt-body');
+function initCardPrompt(actionId) {
+    $('#' + actionId + '-card-prompt-confirm').off('click').on('click', function () {
+        const body = $('#' + actionId + '-card-prompt-body');
         const id = body.attr('item-id');
         if (!id) {
             return;
         }
-        $.ajax({
-            type: promptId === 'delete' ? 'DELETE' : 'PATCH',
-            url: '/api/cards/' + id
-        }).done(function () {
+        const onDone = function () {
             drawDictionaryPage();
-            if (promptId !== 'delete') {
+            if (actionId !== 'delete') {
                 scrollToRow('#w' + id, '#words-table-row', markRowSelected);
             }
-        })
+        };
+        if (actionId === 'delete') {
+            deleteCard(id, onDone);
+        } else {
+            resetCard(id, onDone);
+        }
     });
 }
 
-function scrollToRow(rowSelector, headerSelector, onScroll) {
-    const start = new Date();
-    const timeout = 2000;
-    const wait = setInterval(function () {
-        const row = $(rowSelector);
-        const header = $(headerSelector)
-        if (row.length && header.length) {
-            const position = row.offset().top - header.offset().top + header.scrollTop();
-            header.scrollTop(position);
-            if (onScroll) {
-                onScroll(row);
-            }
-            clearInterval(wait);
-        } else if (new Date() - start > timeout) {
-            clearInterval(wait);
-        }
-    }, 50);
-}
-
-function onChangeDialogMains(dialogId) {
+function onChangeCardDialogMains(dialogId) {
     const word = $('#' + dialogId + '-card-dialog-word');
     const translation = $('#' + dialogId + '-card-dialog-translation');
     $('#' + dialogId + '-card-dialog-save').prop('disabled', !(word.val() && translation.val()));
 }
 
-function createResourceItem(dialogId, items) {
+function createResourceCardItem(dialogId, items) {
     const input = $('#' + dialogId + '-card-dialog-word');
 
     const itemId = input.attr('item-id');
@@ -363,14 +234,14 @@ function createResourceItem(dialogId, items) {
     return resItem;
 }
 
-function cleanDialogLinks(dialogId) {
+function cleanCardDialogLinks(dialogId) {
     $('#' + dialogId + '-card-dialog-gl-link').html('');
     $('#' + dialogId + '-card-dialog-yq-link').html('');
     $('#' + dialogId + '-card-dialog-lg-link').html('');
     $('#' + dialogId + '-card-dialog-lg-collapse').removeClass('show');
 }
 
-function insertDialogLinks(dialogId) {
+function insertCardDialogLinks(dialogId) {
     const input = $('#' + dialogId + '-card-dialog-word');
     const sl = dictionary.sourceLang;
     const tl = dictionary.targetLang;
@@ -406,16 +277,4 @@ function onCollapseLgFrame(dialogId) {
     frame.attr('height', height);
     lgDiv.html('').append(frame);
     dialogLinksDiv.attr('word-txt', text);
-}
-
-function markRowSelected(row) {
-    row.addClass('table-success');
-}
-
-function calcInitTableHeight() {
-    return Math.round($(document).height() * tableHeightRation);
-}
-
-function calcInitLgFrameHeight() {
-    return Math.round($(document).height() * lgFrameHeightRation);
 }

@@ -8,7 +8,10 @@
     <script src="/webjars/bootstrap/js/bootstrap.js"></script>
     <script src="/common.js"></script>
     <script src="/data.js"></script>
-    <script src="/dictionary.js"></script>
+    <script src="/api.js"></script>
+    <script src="/tables.js"></script>
+    <script src="/dictionaries.js"></script>
+    <script src="/cards.js"></script>
     <script src="/tutor.js"></script>
     <script src="/main.js"></script>
 </head>
@@ -45,7 +48,10 @@
             <div id="dictionaries-btn-group" class="btn-group" role="group" aria-label="Dictionaries group">
                 <button id="dictionaries-btn-run" type="button" class="btn btn-secondary" disabled>Run</button>
                 <button id="dictionaries-btn-edit" type="button" class="btn btn-secondary" disabled>Edit</button>
-                <label id="dictionaries-btn-upload-label" for="dictionaries-btn-upload" class="btn btn-secondary btn-file-upload">Upload</label>
+                <button id="dictionaries-btn-delete" type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                        data-bs-target="#delete-dictionary-prompt" disabled>Delete</button>
+                <label id="dictionaries-btn-upload-label" for="dictionaries-btn-upload"
+                       class="btn btn-secondary btn-file-upload">Upload</label>
                 <input id="dictionaries-btn-upload" type="file" style="display: none;"/>
             </div>
         </div>
@@ -77,17 +83,18 @@
                 <button id="words-btn-edit" type="button" class="btn btn-secondary" data-bs-toggle="modal"
                         data-bs-target="#edit-card-dialog" disabled>Edit</button>
                 <button id="words-btn-reset" type="button" class="btn btn-secondary" data-bs-toggle="modal"
-                        data-bs-target="#reset-prompt" disabled>Reset status</button>
+                        data-bs-target="#reset-card-prompt" disabled>Reset status</button>
                 <button id="words-btn-delete" type="button" class="btn btn-secondary" data-bs-toggle="modal"
-                        data-bs-target="#delete-prompt" disabled>Delete</button>
+                        data-bs-target="#delete-card-prompt" disabled>Delete</button>
             </div>
         </div>
     </div>
 </div>
 <div th:replace="card-dialog.html :: cardDialog(id='edit')"></div>
 <div th:replace="card-dialog.html :: cardDialog(id='add')"></div>
-<div th:replace="prompt.html :: prompt(id='delete')"></div>
-<div th:replace="prompt.html :: prompt(id='reset')"></div>
+<div th:replace="prompt.html :: prompt(id='delete-card')"></div>
+<div th:replace="prompt.html :: prompt(id='reset-card')"></div>
+<div th:replace="prompt.html :: prompt(id='delete-dictionary')"></div>
 
 <div id="show" class="page card container container-table" style="display: none;">
     <div class="card-body">

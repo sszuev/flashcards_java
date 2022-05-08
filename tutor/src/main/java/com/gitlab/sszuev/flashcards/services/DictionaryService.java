@@ -20,4 +20,11 @@ public interface DictionaryService {
      * @return {@link DictionaryResource}
      */
     DictionaryResource uploadDictionary(String xml);
+
+    /**
+     * Deletes the specified dictionary.
+     *
+     * @param dictionaryId {@code long} id
+     */
+    void deleteDictionary(long dictionaryId);
 }
