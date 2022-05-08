@@ -1,5 +1,5 @@
 /*!
- * main script.
+ * main common script, contains generic functions.
  */
 
 // selected dictionary resource (todo: support selecting several dictionaries)
