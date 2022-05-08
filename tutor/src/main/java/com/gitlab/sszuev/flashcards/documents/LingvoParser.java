@@ -1,12 +1,6 @@
-package com.gitlab.sszuev.flashcards.parser;
+package com.gitlab.sszuev.flashcards.documents;
 
-import com.gitlab.sszuev.flashcards.domain.Card;
-import com.gitlab.sszuev.flashcards.domain.Dictionary;
-import com.gitlab.sszuev.flashcards.domain.EntityFactory;
-import com.gitlab.sszuev.flashcards.domain.Example;
-import com.gitlab.sszuev.flashcards.domain.Language;
-import com.gitlab.sszuev.flashcards.domain.Translation;
-import com.gitlab.sszuev.flashcards.domain.User;
+import com.gitlab.sszuev.flashcards.domain.*;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -18,11 +12,7 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;

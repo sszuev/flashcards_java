@@ -1,4 +1,4 @@
-package com.gitlab.sszuev.flashcards.parser;
+package com.gitlab.sszuev.flashcards.documents;
 
 import com.gitlab.sszuev.flashcards.domain.Card;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;

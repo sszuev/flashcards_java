@@ -1,10 +1,10 @@
 package com.gitlab.sszuev.flashcards.services.impl;
 
+import com.gitlab.sszuev.flashcards.documents.LingvoParser;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
 import com.gitlab.sszuev.flashcards.domain.User;
 import com.gitlab.sszuev.flashcards.dto.DictionaryResource;
 import com.gitlab.sszuev.flashcards.dto.EntityMapper;
-import com.gitlab.sszuev.flashcards.parser.LingvoParser;
 import com.gitlab.sszuev.flashcards.repositories.DictionaryRepository;
 import com.gitlab.sszuev.flashcards.services.DictionaryService;
 import org.slf4j.Logger;

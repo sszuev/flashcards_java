@@ -1,10 +1,10 @@
 package com.gitlab.sszuev.flashcards;
 
+import com.gitlab.sszuev.flashcards.documents.Status;
 import com.gitlab.sszuev.flashcards.domain.Card;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
 import com.gitlab.sszuev.flashcards.domain.EntityFactory;
 import com.gitlab.sszuev.flashcards.domain.Language;
-import com.gitlab.sszuev.flashcards.parser.Status;
 import org.mockito.Mockito;
 
 import java.util.List;

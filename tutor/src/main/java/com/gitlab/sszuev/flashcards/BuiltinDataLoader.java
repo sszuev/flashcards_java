@@ -1,9 +1,9 @@
 package com.gitlab.sszuev.flashcards;
 
+import com.gitlab.sszuev.flashcards.documents.LingvoParser;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
 import com.gitlab.sszuev.flashcards.domain.Language;
 import com.gitlab.sszuev.flashcards.domain.User;
-import com.gitlab.sszuev.flashcards.parser.LingvoParser;
 import com.gitlab.sszuev.flashcards.repositories.DictionaryRepository;
 import com.gitlab.sszuev.flashcards.repositories.LanguageRepository;
 import com.gitlab.sszuev.flashcards.repositories.UserRepository;
