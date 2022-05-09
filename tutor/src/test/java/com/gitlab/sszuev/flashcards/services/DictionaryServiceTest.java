@@ -3,6 +3,7 @@ package com.gitlab.sszuev.flashcards.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gitlab.sszuev.flashcards.RunConfig;
 import com.gitlab.sszuev.flashcards.TestUtils;
+import com.gitlab.sszuev.flashcards.documents.impl.LingvoDictionaryWriter;
 import com.gitlab.sszuev.flashcards.documents.impl.LingvoDocumentParser;
 import com.gitlab.sszuev.flashcards.documents.impl.Status;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
@@ -25,6 +26,7 @@ import java.io.Reader;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @SpringBootTest
@@ -42,6 +44,8 @@ public class DictionaryServiceTest {
     private DictionaryRepository dictionaryRepository;
     @MockBean
     private LingvoDocumentParser lingvoParser;
+    @MockBean
+    private LingvoDictionaryWriter lingvoWriter;
     @MockBean
     private SoundService soundService;
 
@@ -95,6 +99,16 @@ public class DictionaryServiceTest {
                 .when(dictionaryRepository).deleteById(Mockito.anyLong());
         service.deleteDictionary(id);
         Mockito.verify(dictionaryRepository, Mockito.times(1)).deleteById(Mockito.anyLong());
+    }
+
+    @Test
+    public void testDownloadDictionary() {
+        Long id = 42L;
+        Dictionary d = TestUtils.mockDictionary(id, "XXx");
+        Mockito.when(dictionaryRepository.findById(Mockito.eq(id))).thenReturn(Optional.of(d));
+        service.downloadDictionary(id);
+        Mockito.verify(dictionaryRepository, Mockito.times(1)).findById(Mockito.eq(id));
+        Mockito.verify(lingvoWriter, Mockito.times(1)).write(d);
     }
 
     private void assertDictionaryResource(DictionaryResource res,

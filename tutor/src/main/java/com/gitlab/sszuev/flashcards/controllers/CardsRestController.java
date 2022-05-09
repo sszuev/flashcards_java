@@ -58,6 +58,17 @@ public class CardsRestController {
     }
 
     /**
+     * Downloads the dictionary as a binary resource.
+     *
+     * @param dictionaryId {@code long} - an id of the dictionary to download
+     * @return {@link Resource}
+     */
+    @GetMapping(value = "/api/dictionaries/{dictionary}/download", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public Resource downloadDictionary(@PathVariable(name = "dictionary") long dictionaryId) {
+        return dictionaryService.downloadDictionary(dictionaryId);
+    }
+
+    /**
      * Deletes the given dictionary.
      *
      * @param dictionaryId {@code long} - an id of the dictionary to be deleted
