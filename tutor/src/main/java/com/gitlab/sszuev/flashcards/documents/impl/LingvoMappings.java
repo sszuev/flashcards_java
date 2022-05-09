@@ -50,11 +50,12 @@ public class LingvoMappings {
     }
 
     private static <X extends Enum<X>> String byValue(Map<String, X> map, String value) {
-        return map.entrySet().stream().filter(x -> Objects.equals(value, x.getValue().name()))
-                .findFirst().orElseThrow(() -> new IllegalArgumentException("Can't find value " + value)).getKey();
+        String v = Objects.requireNonNull(value);
+        return map.entrySet().stream().filter(x -> v.equalsIgnoreCase(x.getValue().name()))
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("Can't find value '" + value + "'")).getKey();
     }
 
     private static <X extends Enum<X>> X byKey(Map<String, X> map, String key) {
-        return Objects.requireNonNull(map.get(key), "Can't find key " + key);
+        return Objects.requireNonNull(map.get(key), "Can't find key '" + key + "'");
     }
 }

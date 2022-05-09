@@ -82,9 +82,33 @@ public class TestUtils {
     }
 
     public static Card createCard(long id, String word, int answered, String details) {
-        Card res = EntityFactory.newCard(word, null, null, List.of(), List.of(), answered, details);
+        return createCard(id, word, null, answered, null, List.of(), List.of(), details);
+    }
+
+    public static Card createCard(Long id,
+                                  String word,
+                                  String transcription,
+                                  Integer answered,
+                                  String partOfSpeech,
+                                  List<String> translations,
+                                  List<String> examples,
+                                  String details) {
+        Card res = EntityFactory.newCard(word, transcription, partOfSpeech,
+                translations.stream().map(EntityFactory::newTranslation).toList(),
+                examples.stream().map(EntityFactory::newExample).toList(),
+                answered, details);
         res.setID(id);
         return res;
+    }
+
+    public static Dictionary createDictionary(Long id,
+                                              String name,
+                                              String srcLanguage,
+                                              String dstLanguage,
+                                              List<Card> cards) {
+        return EntityFactory.newDictionary(null, name,
+                EntityFactory.newLanguage(srcLanguage, null),
+                EntityFactory.newLanguage(dstLanguage, null), cards);
     }
 
 }
