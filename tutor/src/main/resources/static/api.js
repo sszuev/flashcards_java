@@ -15,6 +15,13 @@ function uploadDictionary(xml, onDone, onFail) {
     }).done(onDone).fail(onFail);
 }
 
+function downloadDictionary(id, onDone) {
+    $.ajax({
+        type: 'GET',
+        url: '/api/dictionaries/' + id + '/download'
+    }).done(onDone)
+}
+
 function deleteDictionary(id, onDone) {
     $.ajax({
         type: 'DELETE',

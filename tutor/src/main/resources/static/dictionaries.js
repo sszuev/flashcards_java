@@ -7,16 +7,14 @@ function drawDictionariesPage() {
         displayPage('dictionaries');
 
         const tbody = $('#dictionaries tbody');
-        const btnRun = $('#dictionaries-btn-run');
-        const btnEdit = $('#dictionaries-btn-edit');
 
         tbody.html('');
         initTableListeners('dictionaries', resetDictionarySelection);
 
-        btnRun.on('click', drawRunPage);
-        btnEdit.on('click', drawDictionaryPage);
+        $('#dictionaries-btn-run').off().on('click', drawRunPage);
+        $('#dictionaries-btn-edit').off().on('click', drawDictionaryPage);
         $('#dictionaries-table-row').css('height', calcInitTableHeight());
-        $('#dictionaries-btn-upload').on('click', () => {
+        $('#dictionaries-btn-upload').off().on('click', () => {
             $('#dictionaries-btn-upload-label').removeClass('btn-outline-danger');
         }).on('change', (e) => {
             const file = e.target.files[0];
@@ -24,6 +22,8 @@ function drawDictionariesPage() {
                 uploadDictionaryFile(file);
             }
         });
+        $('#dictionaries-btn-download').off().on('click', downloadDictionaryFile);
+
         bootstrap.Modal.getOrCreateInstance(document.getElementById('delete-dictionary-prompt')).hide();
         initDictionaryDeletePrompt();
 
@@ -53,10 +53,32 @@ function uploadDictionaryFile(file) {
             btnUpload.addClass('btn-outline-danger');
             return;
         }
-        uploadDictionary(txt, drawDictionariesPage, () => btnUpload.addClass('btn-outline-danger'))
+        uploadDictionary(txt, drawDictionariesPage, function () {
+            btnUpload.addClass('btn-outline-danger');
+        });
     }
-    reader.readAsText(file, 'utf-8')
-    $('#dictionaries-btn-upload').val('')
+    reader.readAsText(file, 'utf-16');
+    $('#dictionaries-btn-upload').val('');
+}
+
+function downloadDictionaryFile() {
+    if (dictionary == null) {
+        return;
+    }
+    downloadDictionary(dictionary.id, function (response) {
+        const filename = toFilename(dictionary.name) + '-' + new Date().toISOString().substring(0, 19) + '.xml';
+        const file = new Blob([response], {type: 'xml'});
+        const tmpLink = document.createElement("a");
+        const url = URL.createObjectURL(file);
+        tmpLink.href = url;
+        tmpLink.download = filename;
+        document.body.appendChild(tmpLink);
+        tmpLink.click();
+        setTimeout(function() {
+            document.body.removeChild(tmpLink);
+             window.URL.revokeObjectURL(url);
+        }, 0);
+    });
 }
 
 function initDictionaryDeletePrompt() {
@@ -76,11 +98,13 @@ function dictionaryRowOnClick(row, dict) {
     const btnRun = $('#dictionaries-btn-run');
     const btnEdit = $('#dictionaries-btn-edit');
     const btnDelete = $('#dictionaries-btn-delete');
+    const btnDownload = $('#dictionaries-btn-download');
     resetRowSelection(tbody);
     markRowSelected(row);
     btnRun.prop('disabled', false);
     btnEdit.prop('disabled', false);
     btnDelete.prop('disabled', false);
+    btnDownload.prop('disabled', false);
 
     const body = $('#delete-dictionary-prompt-body');
     body.attr('item-id', dict.id);

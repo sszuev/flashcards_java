@@ -72,3 +72,12 @@ function isXML(canBeXml){
         return false;
     }
 }
+
+/**
+ * Prepares the filename to save.
+ * @param string
+ * @returns {string}
+ */
+function toFilename(string) {
+    return string.replace(/[^a-z\d]/gi, '_').toLowerCase();
+}
