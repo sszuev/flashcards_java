@@ -1,5 +1,6 @@
-package com.gitlab.sszuev.flashcards.documents;
+package com.gitlab.sszuev.flashcards.documents.impl;
 
+import com.gitlab.sszuev.flashcards.documents.DictionaryParser;
 import com.gitlab.sszuev.flashcards.domain.*;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
@@ -13,9 +14,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -26,31 +25,26 @@ import java.util.stream.Stream;
  * Created by @ssz on 01.05.2021.
  */
 @Component
-public class LingvoParser {
-    private static final Map<String, StandardLanguage> LANGUAGE_MAP = Map.of(
-            "1033", StandardLanguage.EN,
-            "1049", StandardLanguage.RU);
-    private static final Map<String, StandardPartOfSpeech> PART_OF_SPEECH_MAP = Map.of(
-            "1", StandardPartOfSpeech.NOUN,
-            "2", StandardPartOfSpeech.ADJECTIVE,
-            "3", StandardPartOfSpeech.VERB);
-    private static final Map<String, Status> STATUS_MAP = Map.of(
-            "2", Status.UNKNOWN,
-            "3", Status.IN_PROCESS,
-            "4", Status.LEARNED);
+public class LingvoDocumentParser implements DictionaryParser {
+    private final LingvoMappings mappings;
+
+    public LingvoDocumentParser(LingvoMappings mappings) {
+        this.mappings = Objects.requireNonNull(mappings);
+    }
 
     /**
      * Performs parsing XML.
      *
      * @param resource {@link Resource}, not {@code null}
      * @return {@link Dictionary}
-     * @throws WrongDataException - when can't read or parse {@code resource}
+     * @throws RuntimeException - when can't read or parse {@code resource}
      */
+    @Override
     public Dictionary parse(Resource resource) {
         try (InputStream in = resource.getInputStream()) {
             return parse(in);
         } catch (IOException e) {
-            throw new WrongDataException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -60,10 +54,11 @@ public class LingvoParser {
      *
      * @param input {@link InputStream}, not {@code null}
      * @return {@link Dictionary}
-     * @throws WrongDataException - when can't read or parse {@code input}
+     * @throws RuntimeException - when can't read or parse {@code input}
      */
+    @Override
     public Dictionary parse(InputStream input) {
-        return parse(new BufferedReader(new InputStreamReader(Objects.requireNonNull(input), StandardCharsets.UTF_16)));
+        return parse(new BufferedReader(new InputStreamReader(Objects.requireNonNull(input), mappings.charset())));
     }
 
     /**
@@ -72,17 +67,18 @@ public class LingvoParser {
      *
      * @param input {@link Reader}, not {@code null}
      * @return {@link Dictionary}
-     * @throws WrongDataException - when can't read or parse {@code input}
+     * @throws RuntimeException - when can't read or parse {@code input}
      */
+    @Override
     public Dictionary parse(Reader input) {
         try {
             return loadDictionary(new InputSource(input));
-        } catch (ParserConfigurationException | IOException | SAXException e) {
-            throw new WrongDataException(e);
+        } catch (ParserConfigurationException | IOException | SAXException ex) {
+            throw new IllegalStateException(ex);
         }
     }
 
-    public static Dictionary loadDictionary(InputSource in) throws ParserConfigurationException, IOException, SAXException {
+    public Dictionary loadDictionary(InputSource in) throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         DocumentBuilder db = dbf.newDocumentBuilder();
@@ -93,28 +89,26 @@ public class LingvoParser {
         return EntityFactory.newDictionary(User.SYSTEM_USER, root.getAttribute("title"), src, dst, parseCardList(root));
     }
 
-    private static Language parseLanguage(Element root, String id) {
-        return EntityFactory.newLanguage(WrongDataException.requireNonNull(LANGUAGE_MAP.get(root.getAttribute(id)).name(),
-                "Can't find language " + id), null);
+    private Language parseLanguage(Element root, String id) {
+        return EntityFactory.newLanguage(mappings.toLanguageTag(root.getAttribute(id)), null);
     }
 
-    private static List<Card> parseCardList(Element root) {
-        return DOMUtils.elements(root, "card").flatMap(LingvoParser::parseMeanings).toList();
+    private List<Card> parseCardList(Element root) {
+        return DOMUtils.elements(root, "card").flatMap(this::parseMeanings).toList();
     }
 
-    private static Stream<Card> parseMeanings(Element node) {
+    private Stream<Card> parseMeanings(Element node) {
         String word = DOMUtils.getNormalizedContent(DOMUtils.getElement(node, "word"));
         return DOMUtils.elements(DOMUtils.getElement(node, "meanings"), "meaning")
                 .map(n -> parseMeaning(word, n));
     }
 
-    private static Card parseMeaning(String word, Element node) {
+    private Card parseMeaning(String word, Element node) {
         String transcription = node.getAttribute("transcription");
         String id = node.getAttribute("partOfSpeech");
-        String pos = Optional.ofNullable(PART_OF_SPEECH_MAP.get(id)).map(Enum::name).orElse(null);
+        String pos = id.isBlank() ? null : mappings.toPartOfSpeechTag(id);
         Element statistics = DOMUtils.getElement(node, "statistics");
-        Status status = WrongDataException.requireNonNull(STATUS_MAP.get(WrongDataException
-                .requireNonNull(statistics.getAttribute("status"), "no status")), "unknown status");
+        Status status = mappings.toStatus(statistics.getAttribute("status"));
         Integer answered;
         if (status != Status.UNKNOWN) {
             answered = Optional.of(statistics.getAttribute("answered"))
@@ -123,10 +117,10 @@ public class LingvoParser {
             answered = null;
         }
         List<Translation> translations = DOMUtils.elements(DOMUtils.getElement(node, "translations"), "word")
-                .map(LingvoParser::parseTranslation).toList();
+                .map(LingvoDocumentParser::parseTranslation).toList();
         List<Example> examples = DOMUtils.findElement(node, "examples")
                 .map(x -> DOMUtils.elements(x, "example")).orElseGet(Stream::empty)
-                .map(LingvoParser::parseExample).toList();
+                .map(LingvoDocumentParser::parseExample).toList();
         return EntityFactory.newCard(word, transcription, pos, translations, examples, answered, "parsed from lingvo xml");
     }
 

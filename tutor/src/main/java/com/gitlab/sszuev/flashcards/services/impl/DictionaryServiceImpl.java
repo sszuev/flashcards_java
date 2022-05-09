@@ -1,6 +1,6 @@
 package com.gitlab.sszuev.flashcards.services.impl;
 
-import com.gitlab.sszuev.flashcards.documents.LingvoParser;
+import com.gitlab.sszuev.flashcards.documents.DictionaryParser;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
 import com.gitlab.sszuev.flashcards.domain.User;
 import com.gitlab.sszuev.flashcards.dto.DictionaryResource;
@@ -21,14 +21,14 @@ public class DictionaryServiceImpl implements DictionaryService {
 
     private final DictionaryRepository repository;
     private final EntityMapper mapper;
-    private final LingvoParser lingvoParser;
+    private final DictionaryParser dictionaryParser;
 
     public DictionaryServiceImpl(DictionaryRepository repository,
                                  EntityMapper mapper,
-                                 LingvoParser lingvoParser) {
+                                 DictionaryParser dictionaryParser) {
         this.repository = repository;
         this.mapper = mapper;
-        this.lingvoParser = lingvoParser;
+        this.dictionaryParser = dictionaryParser;
     }
 
     @Transactional(readOnly = true)
@@ -42,7 +42,7 @@ public class DictionaryServiceImpl implements DictionaryService {
     @Transactional
     @Override
     public DictionaryResource uploadDictionary(String xml) {
-        Dictionary dic = lingvoParser.parse(new StringReader(xml));
+        Dictionary dic = dictionaryParser.parse(new StringReader(xml));
         LOGGER.debug("Dictionary '{}' is parsed.", dic.getName());
         dic = repository.save(dic);
         LOGGER.info("Dictionary '{}' is saved.", dic.getName());

@@ -1,5 +1,7 @@
 package com.gitlab.sszuev.flashcards.documents;
 
+import com.gitlab.sszuev.flashcards.documents.impl.LingvoDocumentParser;
+import com.gitlab.sszuev.flashcards.documents.impl.LingvoMappings;
 import com.gitlab.sszuev.flashcards.domain.Card;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
 import org.junit.jupiter.api.Assertions;
@@ -20,12 +22,12 @@ import java.util.stream.Collectors;
  * Created by @ssz on 17.05.2021.
  */
 @SpringBootTest
-@ContextConfiguration(classes = LingvoParser.class)
-public class LingvoParserTest {
-    private static final Logger LOGGER = LoggerFactory.getLogger(LingvoParserTest.class);
+@ContextConfiguration(classes = {LingvoMappings.class, LingvoDocumentParser.class})
+public class LingvoDocumentParserTest {
+    private static final Logger LOGGER = LoggerFactory.getLogger(LingvoDocumentParserTest.class);
 
     @Autowired
-    private LingvoParser lingvoParser;
+    private DictionaryParser parser;
 
     @Test
     public void testParse() throws IOException {
@@ -38,6 +40,7 @@ public class LingvoParserTest {
             Assertions.assertTrue(cards.add(w));
             Assertions.assertFalse(w.contains("\n"));
         });
+        Assertions.assertEquals(242, dic.getCardsCount());
     }
 
     private String toKey(Card c) {
@@ -47,8 +50,8 @@ public class LingvoParserTest {
 
     @SuppressWarnings("SameParameterValue")
     private Dictionary load(String name) throws IOException {
-        try (InputStream in = LingvoParserTest.class.getResourceAsStream(name)) {
-            return lingvoParser.parse(in);
+        try (InputStream in = LingvoDocumentParserTest.class.getResourceAsStream(name)) {
+            return parser.parse(in);
         }
     }
 

@@ -3,8 +3,8 @@ package com.gitlab.sszuev.flashcards.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gitlab.sszuev.flashcards.RunConfig;
 import com.gitlab.sszuev.flashcards.TestUtils;
-import com.gitlab.sszuev.flashcards.documents.LingvoParser;
-import com.gitlab.sszuev.flashcards.documents.Status;
+import com.gitlab.sszuev.flashcards.documents.impl.LingvoDocumentParser;
+import com.gitlab.sszuev.flashcards.documents.impl.Status;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
 import com.gitlab.sszuev.flashcards.domain.Language;
 import com.gitlab.sszuev.flashcards.domain.User;
@@ -41,7 +41,7 @@ public class DictionaryServiceTest {
     @MockBean
     private DictionaryRepository dictionaryRepository;
     @MockBean
-    private LingvoParser lingvoParser;
+    private LingvoDocumentParser lingvoParser;
     @MockBean
     private SoundService soundService;
 
