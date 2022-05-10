@@ -1,6 +1,6 @@
 package com.gitlab.sszuev.flashcards.services.impl;
 
-import com.gitlab.sszuev.flashcards.documents.DictionaryParser;
+import com.gitlab.sszuev.flashcards.documents.DictionaryReader;
 import com.gitlab.sszuev.flashcards.documents.DictionaryWriter;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
 import com.gitlab.sszuev.flashcards.domain.User;
@@ -14,7 +14,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.StringReader;
 import java.util.List;
 
 @Service
@@ -23,16 +22,16 @@ public class DictionaryServiceImpl implements DictionaryService {
 
     private final DictionaryRepository repository;
     private final EntityMapper mapper;
-    private final DictionaryParser dictionaryParser;
+    private final DictionaryReader dictionaryReader;
     private final DictionaryWriter dictionaryWriter;
 
     public DictionaryServiceImpl(DictionaryRepository repository,
                                  EntityMapper mapper,
-                                 DictionaryParser dictionaryParser,
+                                 DictionaryReader dictionaryReader,
                                  DictionaryWriter dictionaryWriter) {
         this.repository = repository;
         this.mapper = mapper;
-        this.dictionaryParser = dictionaryParser;
+        this.dictionaryReader = dictionaryReader;
         this.dictionaryWriter = dictionaryWriter;
     }
 
@@ -46,8 +45,8 @@ public class DictionaryServiceImpl implements DictionaryService {
 
     @Transactional
     @Override
-    public DictionaryResource uploadDictionary(String xml) {
-        Dictionary dic = dictionaryParser.parse(new StringReader(xml));
+    public DictionaryResource uploadDictionary(Resource resource) {
+        Dictionary dic = dictionaryReader.parse(resource);
         LOGGER.debug("Dictionary '{}' is parsed.", dic.getName());
         dic = repository.save(dic);
         LOGGER.info("Dictionary '{}' is saved.", dic.getName());
@@ -66,6 +65,7 @@ public class DictionaryServiceImpl implements DictionaryService {
     public void deleteDictionary(long dictionaryId) {
         LOGGER.info("Delete dictionary with id={}", dictionaryId);
         repository.deleteById(dictionaryId);
+        LOGGER.debug("The dictionary id={} has been deleted.", dictionaryId);
     }
 
     public Dictionary getDictionary(long dictionaryId) {

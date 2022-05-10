@@ -45,6 +45,13 @@ public class LingvoMappings {
         return byValue(STATUS_MAP, status.name());
     }
 
+    /**
+     * Impl notes:
+     * Uses {@link StandardCharsets#UTF_16},
+     * Lingvo ABBYY Tutor Words 16.1.3.70 requires UTF-16.
+     *
+     * @return {@link Charset}
+     */
     public Charset charset() {
         return StandardCharsets.UTF_16;
     }

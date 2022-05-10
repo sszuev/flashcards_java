@@ -48,16 +48,12 @@ function uploadDictionaryFile(file) {
     const btnUpload = $('#dictionaries-btn-upload-label');
     const reader = new FileReader()
     reader.onload = function (e) {
-        const txt = e.target.result.toString();
-        if (!isXML(txt)) {
-            btnUpload.addClass('btn-outline-danger');
-            return;
-        }
+        const txt = e.target.result;
         uploadDictionary(txt, drawDictionariesPage, function () {
             btnUpload.addClass('btn-outline-danger');
         });
     }
-    reader.readAsText(file, 'utf-16');
+    reader.readAsArrayBuffer(file);
     $('#dictionaries-btn-upload').val('');
 }
 
@@ -65,20 +61,14 @@ function downloadDictionaryFile() {
     if (dictionary == null) {
         return;
     }
-    downloadDictionary(dictionary.id, function (response) {
-        const filename = toFilename(dictionary.name) + '-' + new Date().toISOString().substring(0, 19) + '.xml';
-        const file = new Blob([response], {type: 'xml'});
-        const tmpLink = document.createElement("a");
-        const url = URL.createObjectURL(file);
-        tmpLink.href = url;
-        tmpLink.download = filename;
-        document.body.appendChild(tmpLink);
-        tmpLink.click();
-        setTimeout(function() {
-            document.body.removeChild(tmpLink);
-             window.URL.revokeObjectURL(url);
-        }, 0);
-    });
+    const tmpLink = document.createElement("a");
+    tmpLink.href = downloadDictionaryURL(dictionary.id);
+    tmpLink.download = toFilename(dictionary.name) + '-' + new Date().toISOString().substring(0, 19) + '.xml';
+    document.body.appendChild(tmpLink);
+    tmpLink.click();
+    setTimeout(function () {
+        document.body.removeChild(tmpLink);
+    }, 0);
 }
 
 function initDictionaryDeletePrompt() {

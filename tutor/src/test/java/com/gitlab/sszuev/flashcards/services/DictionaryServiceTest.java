@@ -3,8 +3,8 @@ package com.gitlab.sszuev.flashcards.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gitlab.sszuev.flashcards.RunConfig;
 import com.gitlab.sszuev.flashcards.TestUtils;
+import com.gitlab.sszuev.flashcards.documents.impl.LingvoDictionaryReader;
 import com.gitlab.sszuev.flashcards.documents.impl.LingvoDictionaryWriter;
-import com.gitlab.sszuev.flashcards.documents.impl.LingvoDocumentParser;
 import com.gitlab.sszuev.flashcards.documents.impl.Status;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
 import com.gitlab.sszuev.flashcards.domain.Language;
@@ -19,10 +19,12 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 
-import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -43,7 +45,7 @@ public class DictionaryServiceTest {
     @MockBean
     private DictionaryRepository dictionaryRepository;
     @MockBean
-    private LingvoDocumentParser lingvoParser;
+    private LingvoDictionaryReader lingvoParser;
     @MockBean
     private LingvoDictionaryWriter lingvoWriter;
     @MockBean
@@ -78,13 +80,14 @@ public class DictionaryServiceTest {
     public void testUploadDictionary() {
         Language src = TestUtils.mockLanguage("src", null);
         Language dst = TestUtils.mockLanguage("dst", null);
+        Resource in = new ByteArrayResource("<xml>".getBytes(StandardCharsets.UTF_16));
 
         Dictionary dic1 = TestUtils.mockDictionary(null, "The dictionary #1");
         Dictionary dic2 = TestUtils.mockDictionary(42L, "The dictionary #2", src, dst);
-        Mockito.when(lingvoParser.parse(Mockito.any(Reader.class))).thenReturn(dic1);
+        Mockito.when(lingvoParser.parse(Mockito.eq(in))).thenReturn(dic1);
         Mockito.when(dictionaryRepository.save(dic1)).thenReturn(dic2);
 
-        DictionaryResource res = service.uploadDictionary("<xml>");
+        DictionaryResource res = service.uploadDictionary(in);
         Assertions.assertNotNull(res);
         Assertions.assertEquals(42L, res.id());
         Assertions.assertEquals("The dictionary #2", res.name());

@@ -16,7 +16,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -32,7 +33,7 @@ public class LingvoDictionaryWriter implements DictionaryWriter {
     }
 
     @Override
-    public void write(Dictionary dictionary, Writer writer) {
+    public void write(Dictionary dictionary, OutputStream writer) {
         Document document = toDocument(dictionary);
         Transformer transformer = createTransformer();
         try {
@@ -43,18 +44,9 @@ public class LingvoDictionaryWriter implements DictionaryWriter {
     }
 
     @Override
-    public void write(Dictionary dictionary, OutputStream out) {
-        write(dictionary, new OutputStreamWriter(out, mappings.charset()));
-    }
-
-    @Override
     public Resource write(Dictionary dictionary) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        try (Writer w = new OutputStreamWriter(out, mappings.charset())) {
-            write(dictionary, w);
-        } catch (IOException ex) {
-            throw new UncheckedIOException(ex);
-        }
+        write(dictionary, out);
         return new ByteArrayResource(out.toByteArray());
     }
 
@@ -140,7 +132,9 @@ public class LingvoDictionaryWriter implements DictionaryWriter {
         } catch (ParserConfigurationException ex) {
             throw new RuntimeException(ex);
         }
-        return builder.newDocument();
+        Document res = builder.newDocument();
+        res.setXmlStandalone(true);
+        return res;
     }
 
     private Transformer createTransformer() {
@@ -153,6 +147,7 @@ public class LingvoDictionaryWriter implements DictionaryWriter {
         }
         transformer.setOutputProperty(OutputKeys.ENCODING, mappings.charset().name());
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty(OutputKeys.STANDALONE, "yes");
         return transformer;
     }
 }

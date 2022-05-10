@@ -17,10 +17,10 @@ public interface DictionaryService {
     /**
      * Uploads dictionary given as a string.
      *
-     * @param xml {@code String}, not {@code null}
+     * @param xml {@link Resource}, not {@code null}
      * @return {@link DictionaryResource}
      */
-    DictionaryResource uploadDictionary(String xml);
+    DictionaryResource uploadDictionary(Resource xml);
 
     /**
      * Deletes the specified dictionary.

@@ -60,20 +60,6 @@ function toArray(value, separator) {
 }
 
 /**
- * Answers [true] if the string is xml
- * @param canBeXml
- * @returns {boolean}
- */
-function isXML(canBeXml){
-    try {
-        $.parseXML(canBeXml);
-        return true;
-    } catch (err) {
-        return false;
-    }
-}
-
-/**
  * Prepares the filename to save.
  * @param string
  * @returns {string}

@@ -1,6 +1,6 @@
 package com.gitlab.sszuev.flashcards.documents.impl;
 
-import com.gitlab.sszuev.flashcards.documents.DictionaryParser;
+import com.gitlab.sszuev.flashcards.documents.DictionaryReader;
 import com.gitlab.sszuev.flashcards.domain.*;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
@@ -13,7 +13,9 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -25,10 +27,10 @@ import java.util.stream.Stream;
  * Created by @ssz on 01.05.2021.
  */
 @Component
-public class LingvoDocumentParser implements DictionaryParser {
+public class LingvoDictionaryReader implements DictionaryReader {
     private final LingvoMappings mappings;
 
-    public LingvoDocumentParser(LingvoMappings mappings) {
+    public LingvoDictionaryReader(LingvoMappings mappings) {
         this.mappings = Objects.requireNonNull(mappings);
     }
 
@@ -58,19 +60,6 @@ public class LingvoDocumentParser implements DictionaryParser {
      */
     @Override
     public Dictionary parse(InputStream input) {
-        return parse(new BufferedReader(new InputStreamReader(Objects.requireNonNull(input), mappings.charset())));
-    }
-
-    /**
-     * Performs parsing XML.
-     * The caller is responsible for closing {@code input}.
-     *
-     * @param input {@link Reader}, not {@code null}
-     * @return {@link Dictionary}
-     * @throws RuntimeException - when can't read or parse {@code input}
-     */
-    @Override
-    public Dictionary parse(Reader input) {
         try {
             return loadDictionary(new InputSource(input));
         } catch (ParserConfigurationException | IOException | SAXException ex) {
@@ -117,10 +106,10 @@ public class LingvoDocumentParser implements DictionaryParser {
             answered = null;
         }
         List<Translation> translations = DOMUtils.elements(DOMUtils.getElement(node, "translations"), "word")
-                .map(LingvoDocumentParser::parseTranslation).toList();
+                .map(LingvoDictionaryReader::parseTranslation).toList();
         List<Example> examples = DOMUtils.findElement(node, "examples")
                 .map(x -> DOMUtils.elements(x, "example")).orElseGet(Stream::empty)
-                .map(LingvoDocumentParser::parseExample).toList();
+                .map(LingvoDictionaryReader::parseExample).toList();
         return EntityFactory.newCard(word, transcription, pos, translations, examples, answered, "parsed from lingvo xml");
     }
 

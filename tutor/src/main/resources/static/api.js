@@ -6,20 +6,18 @@ function getDictionaries(onDone) {
     $.get('/api/dictionaries').done(onDone)
 }
 
-function uploadDictionary(xml, onDone, onFail) {
+function uploadDictionary(data, onDone, onFail) {
     $.ajax({
         type: 'POST',
         url: '/api/dictionaries/',
-        contentType: "application/xml",
-        data: xml
+        contentType: "application/octet-stream",
+        data: data,
+        processData: false,
     }).done(onDone).fail(onFail);
 }
 
-function downloadDictionary(id, onDone) {
-    $.ajax({
-        type: 'GET',
-        url: '/api/dictionaries/' + id + '/download'
-    }).done(onDone)
+function downloadDictionaryURL(id) {
+    return '/api/dictionaries/' + id + '/download';
 }
 
 function deleteDictionary(id, onDone) {
