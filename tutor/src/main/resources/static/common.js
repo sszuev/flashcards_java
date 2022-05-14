@@ -60,15 +60,10 @@ function toArray(value, separator) {
 }
 
 /**
- * Answers [true] if the string is xml
- * @param canBeXml
- * @returns {boolean}
+ * Prepares the filename to save.
+ * @param string
+ * @returns {string}
  */
-function isXML(canBeXml){
-    try {
-        $.parseXML(canBeXml);
-        return true;
-    } catch (err) {
-        return false;
-    }
+function toFilename(string) {
+    return string.replace(/[^a-z\d]/gi, '_').toLowerCase();
 }

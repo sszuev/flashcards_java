@@ -1,4 +1,4 @@
-package com.gitlab.sszuev.flashcards.parser;
+package com.gitlab.sszuev.flashcards.documents.impl;
 
 /**
  * Created by @ssz on 09.05.2021.

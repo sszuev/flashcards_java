@@ -73,7 +73,7 @@ public class CardServiceImpl implements CardService {
 
     public Dictionary getDictionary(long dicId) {
         return dictionaryRepository.findById(dicId)
-                .orElseThrow(() -> new IllegalStateException("Can't find dictionary by id=" + dicId));
+                .orElseThrow(() -> new IllegalArgumentException("Can't find dictionary by id=" + dicId));
     }
 
     public Collection<Card> getRandomCards(long dicId, int length, boolean unknown) {

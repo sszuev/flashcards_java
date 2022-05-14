@@ -1,9 +1,9 @@
 package com.gitlab.sszuev.flashcards;
 
+import com.gitlab.sszuev.flashcards.documents.DictionaryReader;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
 import com.gitlab.sszuev.flashcards.domain.Language;
 import com.gitlab.sszuev.flashcards.domain.User;
-import com.gitlab.sszuev.flashcards.parser.LingvoParser;
 import com.gitlab.sszuev.flashcards.repositories.DictionaryRepository;
 import com.gitlab.sszuev.flashcards.repositories.LanguageRepository;
 import com.gitlab.sszuev.flashcards.repositories.UserRepository;
@@ -38,7 +38,7 @@ public class BuiltinDataLoader implements ApplicationListener<ApplicationReadyEv
     private static final Logger LOGGER = LoggerFactory.getLogger(BuiltinDataLoader.class);
 
     private final Resource[] resources;
-    private final LingvoParser parser;
+    private final DictionaryReader parser;
 
     private final LanguageRepository languageRepository;
     private final DictionaryRepository dictionaryRepository;
@@ -46,7 +46,7 @@ public class BuiltinDataLoader implements ApplicationListener<ApplicationReadyEv
 
     public BuiltinDataLoader(@Value("${app.data.dir:classpath:data/*}") String dir,
                              ResourcePatternResolver resolver,
-                             LingvoParser parser,
+                             DictionaryReader parser,
                              LanguageRepository languageRepository,
                              DictionaryRepository dictionaryRepository,
                              UserRepository userRepository) {

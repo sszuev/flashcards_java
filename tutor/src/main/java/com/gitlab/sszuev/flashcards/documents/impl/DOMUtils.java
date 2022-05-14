@@ -1,15 +1,10 @@
-package com.gitlab.sszuev.flashcards.parser;
+package com.gitlab.sszuev.flashcards.documents.impl;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Spliterator;
-import java.util.Spliterators;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -25,12 +20,12 @@ public class DOMUtils {
      * @param parent {@link Element}
      * @param tag    {@code String}
      * @return {@link Element}
-     * @throws WrongDataException if no element found
+     * @throws IllegalStateException if no element found
      */
     public static Element getElement(Element parent, String tag) {
         List<Element> list = getElements(parent, tag);
         if (list.size() != 1) {
-            throw new WrongDataException("Expected single member for tag='" + tag + "'");
+            throw new IllegalStateException("Expected single member for tag='" + tag + "'");
         }
         return list.get(0);
     }
@@ -41,7 +36,7 @@ public class DOMUtils {
      * @param parent {@link Element}
      * @param tag    {@code String}
      * @return an {@code Optional} with {@link Element}
-     * @throws WrongDataException if there is more than one element found
+     * @throws IllegalStateException if there is more than one element found
      */
     public static Optional<Element> findElement(Element parent, String tag) {
         List<Element> list = getElements(parent, tag);
@@ -50,7 +45,7 @@ public class DOMUtils {
         } else if (list.isEmpty()) {
             return Optional.empty();
         }
-        throw new WrongDataException("Expected not more than one member for tag='" + tag + "'");
+        throw new IllegalStateException("Expected not more than one member for tag='" + tag + "'");
     }
 
     /**

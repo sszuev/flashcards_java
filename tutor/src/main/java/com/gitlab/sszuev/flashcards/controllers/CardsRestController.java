@@ -47,14 +47,25 @@ public class CardsRestController {
     }
 
     /**
-     * Uploads the given resource-xml into the database.
+     * Uploads the given resource into the database.
      *
-     * @param resource {@code String}
+     * @param resource {@link Resource} binary array, UTF-16 as encoding
      * @return {@link DictionaryResource}
      */
-    @PostMapping(value = "/api/dictionaries", consumes = MediaType.APPLICATION_XML_VALUE)
-    public DictionaryResource uploadDictionary(@RequestBody String resource) {
+    @PostMapping(value = "/api/dictionaries", consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public DictionaryResource uploadDictionary(@RequestBody Resource resource) {
         return dictionaryService.uploadDictionary(resource);
+    }
+
+    /**
+     * Downloads the dictionary as a binary resource.
+     *
+     * @param dictionaryId {@code long} - an id of the dictionary to download
+     * @return {@link Resource} binary array, UTF-16 as encoding
+     */
+    @GetMapping(value = "/api/dictionaries/{dictionary}/download", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public Resource downloadDictionary(@PathVariable(name = "dictionary") long dictionaryId) {
+        return dictionaryService.downloadDictionary(dictionaryId);
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.gitlab.sszuev.flashcards.services;
 
 import com.gitlab.sszuev.flashcards.dto.DictionaryResource;
+import org.springframework.core.io.Resource;
 
 import java.util.List;
 
@@ -16,10 +17,10 @@ public interface DictionaryService {
     /**
      * Uploads dictionary given as a string.
      *
-     * @param xml {@code String}, not {@code null}
+     * @param xml {@link Resource}, not {@code null}
      * @return {@link DictionaryResource}
      */
-    DictionaryResource uploadDictionary(String xml);
+    DictionaryResource uploadDictionary(Resource xml);
 
     /**
      * Deletes the specified dictionary.
@@ -27,4 +28,12 @@ public interface DictionaryService {
      * @param dictionaryId {@code long} id
      */
     void deleteDictionary(long dictionaryId);
+
+    /**
+     * Downloads the specified dictionary as a resource to be saved in the client-side.
+     *
+     * @param dictionaryId {@code long} id
+     * @return a {@link Resource} with binary data
+     */
+    Resource downloadDictionary(long dictionaryId);
 }

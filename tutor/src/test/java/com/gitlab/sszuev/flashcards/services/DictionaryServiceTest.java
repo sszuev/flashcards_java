@@ -3,13 +3,14 @@ package com.gitlab.sszuev.flashcards.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gitlab.sszuev.flashcards.RunConfig;
 import com.gitlab.sszuev.flashcards.TestUtils;
+import com.gitlab.sszuev.flashcards.documents.impl.LingvoDictionaryReader;
+import com.gitlab.sszuev.flashcards.documents.impl.LingvoDictionaryWriter;
+import com.gitlab.sszuev.flashcards.documents.impl.Status;
 import com.gitlab.sszuev.flashcards.domain.Dictionary;
 import com.gitlab.sszuev.flashcards.domain.Language;
 import com.gitlab.sszuev.flashcards.domain.User;
 import com.gitlab.sszuev.flashcards.dto.DictionaryResource;
 import com.gitlab.sszuev.flashcards.dto.EntityMapper;
-import com.gitlab.sszuev.flashcards.parser.LingvoParser;
-import com.gitlab.sszuev.flashcards.parser.Status;
 import com.gitlab.sszuev.flashcards.repositories.DictionaryRepository;
 import com.gitlab.sszuev.flashcards.services.impl.DictionaryServiceImpl;
 import org.junit.jupiter.api.Assertions;
@@ -18,13 +19,16 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 
-import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @SpringBootTest
@@ -41,7 +45,9 @@ public class DictionaryServiceTest {
     @MockBean
     private DictionaryRepository dictionaryRepository;
     @MockBean
-    private LingvoParser lingvoParser;
+    private LingvoDictionaryReader lingvoParser;
+    @MockBean
+    private LingvoDictionaryWriter lingvoWriter;
     @MockBean
     private SoundService soundService;
 
@@ -74,13 +80,14 @@ public class DictionaryServiceTest {
     public void testUploadDictionary() {
         Language src = TestUtils.mockLanguage("src", null);
         Language dst = TestUtils.mockLanguage("dst", null);
+        Resource in = new ByteArrayResource("<xml>".getBytes(StandardCharsets.UTF_16));
 
         Dictionary dic1 = TestUtils.mockDictionary(null, "The dictionary #1");
         Dictionary dic2 = TestUtils.mockDictionary(42L, "The dictionary #2", src, dst);
-        Mockito.when(lingvoParser.parse(Mockito.any(Reader.class))).thenReturn(dic1);
+        Mockito.when(lingvoParser.parse(Mockito.eq(in))).thenReturn(dic1);
         Mockito.when(dictionaryRepository.save(dic1)).thenReturn(dic2);
 
-        DictionaryResource res = service.uploadDictionary("<xml>");
+        DictionaryResource res = service.uploadDictionary(in);
         Assertions.assertNotNull(res);
         Assertions.assertEquals(42L, res.id());
         Assertions.assertEquals("The dictionary #2", res.name());
@@ -95,6 +102,16 @@ public class DictionaryServiceTest {
                 .when(dictionaryRepository).deleteById(Mockito.anyLong());
         service.deleteDictionary(id);
         Mockito.verify(dictionaryRepository, Mockito.times(1)).deleteById(Mockito.anyLong());
+    }
+
+    @Test
+    public void testDownloadDictionary() {
+        Long id = 42L;
+        Dictionary d = TestUtils.mockDictionary(id, "XXx");
+        Mockito.when(dictionaryRepository.findById(Mockito.eq(id))).thenReturn(Optional.of(d));
+        service.downloadDictionary(id);
+        Mockito.verify(dictionaryRepository, Mockito.times(1)).findById(Mockito.eq(id));
+        Mockito.verify(lingvoWriter, Mockito.times(1)).write(d);
     }
 
     private void assertDictionaryResource(DictionaryResource res,
