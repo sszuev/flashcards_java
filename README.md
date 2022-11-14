@@ -1,5 +1,10 @@
 ## OpenTutor - a flashcard system to learn words 
 
+### Notice
+
+**The activity in this repository is frozen. 
+The new project's home is https://github.com/crowdproj/opentutor**
+
 A simple opensource application that provides flashcards to learn foreign words.    
 It is supposed to be similar to Lingvo Tutor.  
 Right now it is under development.  
